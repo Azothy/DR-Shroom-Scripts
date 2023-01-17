@@ -1,5 +1,6 @@
-#Climbing in Shard by Shroom
-#debuglevel 5
+# Climbing Shard by Shroom
+# Start anywhere inside/around Shard
+#debug 5
 ## USER VARIABLES
 ## Set weapons to wield for more difficult climbing
 var weapon1 sabre
