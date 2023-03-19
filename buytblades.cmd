@@ -1,4 +1,8 @@
+## Buy Throwing Blades by Shroom
+## Start around Shard
+
 include move.inc
+include utility.inc
 START:
      var tBlade 0
      put #echo >Log Pink **** RESTOCKING THROWING BLADES!

@@ -22,11 +22,13 @@
 var masters 0
 var grandmasters 0
 var keyblanks 0
+var broken 0
 
 if_1 then var keyblanks %1
 if_2 then var masters %2
 if_3 then var grandmasters %3
 
+action goto ABORT when That's too heavy to go (on|in) there\!
 KHRI:
      put khri %khri
      pause 1
@@ -110,8 +112,13 @@ CARVELOCK2:
      matchwait
 
 BROKEN:
-     pause
+     pause 0.1
+     math broken add 1
+     echo
      echo **** DOH! Broke one.. 
+     echo
+     pause 0.5
+     pause 0.5
      goto Carve
 
 End.Master:
@@ -142,7 +149,8 @@ FINISH:
      pause 0.1
      echo
      echo =================
-     echo *** %keyblanks LOCKPICKS CARVED
+     echo *** %keyblanks TOTAL LOCKPICKS CARVED
+     echo *** %broken BROKEN
      echo *** %masters MASTERS
      echo *** %grandmasters GRANDMASTERS
      echo =================
@@ -189,12 +197,23 @@ FINISHED:
      put clean $charactername
      pause 0.001
      pause 0.001
-     put #echo >Log Lime **** Lockpick Bot: Restocked %keyblanks lockpicks on shelf
+     put #echo >Log Lime **** Lockpicks restocked on shelf - Carved %keyblanks Lockpicks
      put #echo >Log Lime **** %masters Masters / %grandmasters Grandmasters
      if ("$game" = "DRF") then
           {
-               put chatt ** Lockpick Bot Restocked %keyblanks lockpicks on FC shelf
+               put chatt ** LockpickBot: Lockpicks restocked on shelf! - Carved %keyblanks
                put chatt ** %masters Masters - %grandmasters GMs
           }
      pause 0.5
      exit
+     
+ABORT:
+echo
+echo *** CONTAINER IS OUT OF ROOM!!! MAKE SOME ROOM!
+echo
+     if ("$game" = "DRF") then
+          {
+               put chatt ** LockpickBot: Lockpicks restocked on shelf! - Carved %keyblanks
+               put chatt ** %masters Masters - %grandmasters GMs
+          }
+exit

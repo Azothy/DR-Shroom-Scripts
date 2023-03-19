@@ -1,8 +1,8 @@
 #debuglevel 5
 ################################################################################################################################
 ################################################################################################################################
-# Smart Disarm Script v13 - by Shroom
-# UPDATE - 1/1/23
+# Smart Disarm Script v13.2 - by Shroom
+# UPDATE - 3/12/23
 #
 # Specialized for thieves, works for anyone
 # - Analyzes the appraisal difficulty of the trap compared to what type of trap it is
@@ -1509,6 +1509,7 @@ pick_Cont_1:
      if ($Locksmithing.Ranks > 1700) then var mode quick
      pause 0.0001
      matchre RETURN With a soft click|A sharp click|Roundtime|^Pick what|It\'s not even locked\, why bother\?
+     matchre RETURN ^As you touch the lockpick to the .* lock, you suddenly notice it's already been opened somehow\.
      matchre weapon hinders your attempt|knuckles|handwraps|hand claws
 	matchre pick_Cont_1 ^\.\.\.wait|^Sorry\,|^I could not|^Please rephrase|^You are still stunned
 	matchre pick_Cont_1 You are unable to make

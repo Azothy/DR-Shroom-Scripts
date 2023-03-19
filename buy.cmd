@@ -1,7 +1,6 @@
 var max.keyblanks 120
-var container back
-#############
 var keyblanks 0
+
 Start:
 pause 0.001
 math keyblanks add 1
@@ -12,7 +11,10 @@ pause 0.001
 pause 0.001
 put offer 120
 waitforre hands|Sorry|Kilam|think
-put put key in my %container
+pause 0.1
+pause 0.001
+put put key in my ruck
+pause 0.1
 pause 0.1
 if (%keyblanks >= %max.keyblanks) then goto DONE
 echo * %keyblanks
