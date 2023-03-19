@@ -61,8 +61,7 @@
                var BOX.CONTAINER %boxstore
                var SHEATH  %sheathcontainer
           }
-var skinables antenna|ashu'a|barb|beak|bone|bristle|carapace|catgut|claw|collarbone|ear|eye|eyeball|fang|feather|foreclaw|foreleg|fragment|gland|hair|heart|hide|hoof|horn|impaler|mandible|milk-tooth|mosshair|paw|pelt|pseudopod|quill|rib|sac|scale|scalp|shell|skin|sliver|spine|spinneret|stinger|tail|talon|tentacle|toenail|tongue|tooth|tusk|tusks|vertebra|wing
-var trash splintered war club|vulture|pick|$origami|arrowhead|mining cowl
+var skinables \b(antenna|ashu'a|barb|beak|(?<!divination )bones?|bristle|carapace|clay strip|catgut|pelt|claw|collarbone|ear|(?<!golden )eye|eyeball|(?<!curving )fang|feather|foreclaw|foreleg|(?<!iron |Iron )fragment|furry tuft|gland|hair|(?<!verdant )heart|(?<!wrapped in lava-drake )hide|hoof|horn(?! (crossbow|bow|latchbow|sling))|(?<!capped with a viciously sharp warklin )impaler|mandible|milk-tooth|mosshair|paw|pseudopod|quill|remnant|rib|sac|scale|scalp|shell|skin|sliver|(?<!book |along the )spine|spinneret|stinger|tail(?!brush|band)|talon|tentacle|toenail|tongue|(?<!angiswaerd |ivory )tooth|tusk|tusks|vertebra|(?<!wyvern )wing|(?<!farmer's )hand)\b
 var skins malchata rib|scale|barb|claw
 var retry.command.triggers ^\.\.\.wait\s+\d+\s+sec(?:onds?|s)?\.?$|^Sorry\,|^You are still stunned|^You don't seem to be able to move to do that|^You can't do that while entangled in a web|^You struggle against the shadowy webs to no avail\.|^You struggle with .* great weight but can't quite lift it\!|^You attempt that, but end up getting caught in an invisible box\.|^Sorry, you may|^It's all a blur\!|You notice a single flea leap off of your|Something tickles under your arm|Several fleas the size of rice-grains swarm|Your feet are suddenly consumed by the painful biting|A tremendous itching begins|A slight tickle precedes a painful itch
 var boxtype brass|copper|deobar|driftwood|iron|ironwood|mahogany|oaken|pine|steel|wooden
@@ -433,7 +432,7 @@ GET:
 #### HOLD SUB
 HOLD:
      delay 0.0001
-     var get $0
+     var todo $0
      var LOCATION HOLD_1
      HOLD_1:
      matchre WAIT ^\.\.\.wait|^Sorry\,
@@ -446,16 +445,16 @@ HOLD:
      matchre RETURN ^Hold hands with whom\?
      matchre RETURN ^What were you referring to\?
      matchre RETURN ^I could not find what you were referring to\.
-     send hold %get
+     send hold %todo
      matchwait 15
      put #echo >$Log Crimson $datetime *** MISSING MATCH IN HOLD! (utility.inc) ***
-     put #echo >$Log Crimson $datetime Get = %get
+     put #echo >$Log Crimson $datetime Get = %todo
      put #log $datetime MISSING MATCH IN HOLD (utility.inc)
      return
 REM:
 REMOVE:
      var LOCATION REMOVE_1
-     var remove $0
+     var todo $0
      REMOVE_1:
      matchre RETURN ^You take
      matchre RETURN ^You slide
@@ -471,10 +470,10 @@ REMOVE:
      matchre RETURN ^You aren't wearing
      matchre RETURN ^What were you referring to\?
      matchre RETURN ^You loosen the straps securing
-     put remove %remove
+     put remove %todo
      matchwait 15
      put #echo >$Log Crimson $datetime *** MISSING MATCH IN REMOVE! (utility.inc) ***
-     put #echo >$Log Crimson $datetime Remove = %remove
+     put #echo >$Log Crimson $datetime Remove = %todo
      put #log $datetime MISSING MATCH IN Remove (utility.inc)
      RETURN
 ###############################################################################################################################
