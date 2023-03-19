@@ -76,7 +76,7 @@ put wealth
 waitforre Wealth:|You count
 put dep all
 put balance
-waitforre current balance is|finally manage to locate the jar|You count
+waitforre current balance is|finally manage to locate the jar|You count|You find your jar
 return
 
 Shard.Outside:

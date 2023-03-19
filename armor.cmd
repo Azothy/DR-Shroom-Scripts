@@ -3,8 +3,8 @@ include utility.inc
 if ($charactername = "Shroom") then
      {
      var CHEST.ARMOR khiynit robe
-     var HEAD.ARMOR plate mask
-     var HEAD2.ARMOR lamellar helm
+     var HEAD.ARMOR leather cowl
+     var HEAD2.ARMOR NULL
      var HAND.ARMOR assassin's sleeves
      var LEG.ARMOR NULL
      var SHIELD diamondwood shield
@@ -196,17 +196,17 @@ WEARARMOR:
      gosub wear my %SHIELD
      gosub get my %CHEST.ARMOR
      gosub wear my %CHEST.ARMOR
-     gosub get my %HEAD.ARMOR
-     gosub wear my %HEAD.ARMOR
-     if ("%HEAD2.ARMOR" != "null") then gosub get my %HEAD2.ARMOR
-     if ("%HEAD2.ARMOR" != "null") then gosub wear my %HEAD2.ARMOR
-     gosub get my %HAND.ARMOR
-     gosub wear my %HAND.ARMOR
+     if !matchre("%HEAD.ARMOR", "(?i)NULL") then gosub get my %HEAD.ARMOR
+     if !matchre("%HEAD.ARMOR", "(?i)NULL") then gosub wear my %HEAD.ARMOR
+     if !matchre("%HEAD2.ARMOR", "(?i)NULL") then gosub get my %HEAD2.ARMOR
+     if !matchre("%HEAD2.ARMOR", "(?i)NULL") then gosub wear my %HEAD2.ARMOR
+     if !matchre("%HAND.ARMOR", "(?i)NULL") then gosub get my %HAND.ARMOR
+     if !matchre("%HAND.ARMOR", "(?i)NULL") then gosub wear my %HAND.ARMOR
      gosub retreat
-     gosub get my %LEG.ARMOR
-     gosub wear my %LEG.ARMOR
-     gosub get my %KNUCKLE
-     gosub wear my %KNUCKLE
+     if !matchre("%LEG.ARMOR", "(?i)NULL") then gosub get my %LEG.ARMOR
+     if !matchre("%LEG.ARMOR", "(?i)NULL") then gosub wear my %LEG.ARMOR
+     if !matchre("%KNUCKLE", "(?i)NULL") then gosub get my %KNUCKLE
+     if !matchre("%KNUCKLE", "(?i)NULL") then gosub wear my %KNUCKLE
      gosub get my parry stick
      gosub wear my parry stick
      put #var current.armor.head %HEAD.ARMOR
