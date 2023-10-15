@@ -1,8 +1,29 @@
+#action put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put quit;put #script abort all when ^\s*SEND
+#action put quit;put #script abort all when ^\s*SEND\s*\[.*\]
+action put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put quit;put #script abort all when character transfer(?!\?  The EMAIL verb has you covered)
+TOP:
+
 #### Prime AFK Triggers
 var target
-var puppetstring ^(?!(?:\w+ (?:(?:\w+? )?says?, "|(?:\w+? )?exclaims?, "|(?:\w+? )?asks?, "|ponders?|whispers?, "|smiles |mutters something into the air about )|\(\b\w+).*$)(?:.*)
-action var skillValue $1 when ^.*\:\s*(\d+)\s\d+\.\d+\%.*
-action var skillValue $1 when \((\d+)\)
+var homecity Crossing
+var puppetstring ^(?!(?:TWEET|\w+ (?:(?:\w+? )?(?:ask|exclaim|whisper|say)s?(?:(?: to)? you)?, ")|\w+ (?:ponder|frown|smile|mutter)s? |\(\w+.*\))|\[)
+action var skillValue $1 when %puppetstring\:\s*(\d+)\s\d+\.\d+\%.*
+action var skillValue $1 when %puppetstring\((\d+)\)
+action put #disconnect;put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put #script abort all when %puppetstring(?i)(?:something bad|bad (?:thing|stuff)|you.*(?<!in )(?<!too long. please )respon(?:d(?:ing)?|se)\b|right now)
+action put #disconnect;put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put #script abort all when %puppetstring(?:[c][_\W]*[e][_\W]*[n][_\W]*[s][_\W]*[u][_\W]*[s]|[C][_\W]*[e][_\W]*[N][_\W]*[s][_\W]*[U][_\W]*[s]|[c][_\W]*[E][_\W]*[n][_\W]*[S][_\W]*[u][_\W]*[S]|[C][_\W]*[E][_\W]*[N][_\W]*[S][_\W]*[U][_\W]*[S])
+action put #disconnect;put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put #script abort all when %puppetstring(?:(?:[l][_\W]*[a][_\W]*[s][_\W]*[t]|[L][_\W]*[a][_\W]*[S][_\W]*[t]|[l][_\W]*[A][_\W]*[s][_\W]*[T]|[L][_\W]*[A][_\W]*[S][_\W]*[T]|[f][_\W]*[i][_\W]*[n][_\W]*[a][_\W]*[l]|[F][_\W]*[i][_\W]*[N][_\W]*[a][_\W]*[L]|[f][_\W]*[I][_\W]*[n][_\W]*[A][_\W]*[l]|[F][_\W]*[I][_\W]*[N][_\W]*[A][_\W]*[L])[_\s\W]*(?:[c][_\W]*[h][_\W]*[a][_\W]*[n][_\W]*[c][_\W]*[e]|[C][_\W]*[h][_\W]*[A][_\W]*[n][_\W]*[C][_\W]*[e]|[c][_\W]*[H][_\W]*[a][_\W]*[N][_\W]*[c][_\W]*[E]|[C][_\W]*[H][_\W]*[A][_\W]*[N][_\W]*[C][_\W]*[E]|[o][_\W]*[p][_\W]*[p][_\W]*[o][_\W]*[r][_\W]*[t][_\W]*[u][_\W]*[n][_\W]*[i][_\W]*[t][_\W]*[y]|[O][_\W]*[p][_\W]*[P][_\W]*[o][_\W]*[R][_\W]*[t][_\W]*[U][_\W]*[n][_\W]*[I][_\W]*[t][_\W]*[Y]|[o][_\W]*[P][_\W]*[p][_\W]*[O][_\W]*[r][_\W]*[T][_\W]*[u][_\W]*[N][_\W]*[i][_\W]*[T][_\W]*[y]|[O][_\W]*[P][_\W]*[P][_\W]*[O][_\W]*[R][_\W]*[T][_\W]*[U][_\W]*[N][_\W]*[I][_\W]*[T][_\W]*[Y]))
+action var string $0;var action $1;goto action when %puppetstring\b(?:urge|need|time|desire|chance)\b.*(sneeze|cough|hiccup|shiver|sniffle|yawn|belch|gulp|inhale|blink)
+action var string $0;var action dance happy;goto action when %puppetstring(?:he wants to see dancing| joined him in dance|You feel like dancing with him)
+action var string $0;var action cover ears;goto action when %puppetstring(?:COVER.*(?i)ears)
+action var string $0;var action cover ears;goto action when %puppetstring(?:bagpiper)
+
+#action put #disconnect;put #log >scriptcheck.txt [$datetime] Script check! Saw $0;put #script abort all when %puppetstring.*(?i)(?<!struck down at )An?\b (?:[\w'-]* )*\bgorbesh(?! catapult basket|.*languages|.*into the air)
+
+action put #log >scriptcheck.txt [$datetime] Script check! Saw $0;goto favorite when %puppetstring(?:.*\byour?.*preferred method)
+action put #log >scriptcheck.txt [$datetime] Script check! Saw $0;goto favorite when %puppetstring(?:.*\btame any animal)
+action (favorite) put #log >scriptcheck.txt [$datetime] Script check! Saw $0;goto favorite when %puppetstring(?:.*\b(?:plead|inquire?|chant|persist|ask|implore?|declare|demand|continue?|presse?|interrogate?|query|petition|request)(?:ing|s)?\b(?! that honor))(?=.*")(?=.*your?\b)(?=.*(?:which instrument|Immortal|most|best|favorite|liked?|enjoy))
+
+action goto sayit when %puppetstring(?:say|(?:tell|ask) it to) go away
 action var string $0;var action answer $1;goto action when %puppetstring(?:(?:(?<!\w)[a][_\W]+[n][_\W]+[s][_\W]+[w][_\W]+[e][_\W]+[r][_\W]+(?!\w)|(?<!\w)[A][_\W]*[n][_\W]*[S][_\W]*[w][_\W]*[E][_\W]*[r][_\W]*(?!\w)|(?<!\w)[a][_\W]*[N][_\W]*[s][_\W]*[W][_\W]*[e][_\W]*[R][_\W]*|[A][_\W]*[N][_\W]*[S][_\W]*[W][_\W]*[E][_\W]*[R](?!\w)[_\W]*)(\b\w+)).*
 action var string $0;var action applaud;goto action when %puppetstring(?:(?:(?<!\w)[a][_\W]+[p][_\W]+[p][_\W]+[l][_\W]+[a][_\W]+[u][_\W]+[d](?!\w)|(?<!\w)[A][_\W]*[p][_\W]*[P][_\W]*[l][_\W]*[A][_\W]*[u][_\W]*[D](?!\w)|(?<!\w)[a][_\W]*[P][_\W]*[p][_\W]*[L][_\W]*[a][_\W]*[U][_\W]*[d](?!\w)|(?<!\w)[A][_\W]*[P][_\W]*[P][_\W]*[L][_\W]*[A][_\W]*[U][_\W]*[D](?!\w))).*
 action var string $0;var action babble;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[a][_\W]+[b][_\W]+[b][_\W]+[l][_\W]+[e](?!\w)|(?<!\w)[B][_\W]*[a][_\W]*[B][_\W]*[b][_\W]*[L][_\W]*[e](?!\w)|(?<!\w)[b][_\W]*[A][_\W]*[b][_\W]*[B][_\W]*[l][_\W]*[E](?!\w)|(?<!\w)[B][_\W]*[A][_\W]*[B][_\W]*[B][_\W]*[L][_\W]*[E](?!\w))).*
@@ -11,8 +32,9 @@ action var string $0;var action bask;goto action when %puppetstring(?:(?:(?<!\w)
 action var string $0;var action bawl;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[a][_\W]+[w][_\W]+[l](?!\w)|(?<!\w)[B][_\W]*[a][_\W]*[W][_\W]*[l](?!\w)|(?<!\w)[b][_\W]*[A][_\W]*[w][_\W]*[L](?!\w)|(?<!\w)[B][_\W]*[A][_\W]*[W][_\W]*[L](?!\w))).*
 action var string $0;var action beam;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[e][_\W]+[a][_\W]+[m](?!\w)|(?<!\w)[B][_\W]*[e][_\W]*[A][_\W]*[m](?!\w)|(?<!\w)[b][_\W]*[E][_\W]*[a][_\W]*[M](?!\w)|(?<!\w)[B][_\W]*[E][_\W]*[A][_\W]*[M](?!\w))).*
 action var string $0;var action beckon;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[e][_\W]+[c][_\W]+[k][_\W]+[o][_\W]+[n](?!\w)[_\W]+|(?<!\w)[B][_\W]*[e][_\W]*[C][_\W]*[k][_\W]*[O][_\W]*[n](?!\w)[_\W]*|(?<!\w)[b][_\W]*[E][_\W]*[c][_\W]*[K][_\W]*[o][_\W]*[N](?!\w)[_\W]*|(?<!\w)[B][_\W]*[E][_\W]*[C][_\W]*[K][_\W]*[O][_\W]*[N][_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn](?!\w)[_\W]*)?(\b\w+)?).*
-action var string $0;var action belch;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[e][_\W]+[l][_\W]+[c][_\W]+[h](?!\w)|(?<!\w)[B][_\W]*[e][_\W]*[L][_\W]*[c][_\W]*[H](?!\w)|(?<!\w)[b][_\W]*[E][_\W]*[l][_\W]*[C][_\W]*[h](?!\w)|(?<!\w)[B][_\W]*[E][_\W]*[L][_\W]*[C][_\W]*[H](?!\w))).*
+action var string $0;var action belch;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[e][_\W]+[l][_\W]+[c][_\W]+[h](?!\w)|(?<!\w)[B][_\W]*[e][_\W]*[L][_\W]*[c][_\W]*[H](?!\w)|(?<!\w)[b][_\W]*[E][_\W]*[l][_\W]*[C][_\W]*[h](?!\w)|(?<!\w)[B][_\W]*[E][_\W]*[L][_\W]*[C][_\W]*[H](?![\*\w]))).*
 action var string $0;var action blame;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[l][_\W]+[a][_\W]+[m][_\W]+[e](?!\w)[_\W]+|(?<!\w)[B][_\W]*[l][_\W]*[A][_\W]*[m][_\W]*[E](?!\w)[_\W]*|(?<!\w)[b][_\W]*[L][_\W]*[a][_\W]*[M][_\W]*[e](?!\w)[_\W]*|(?<!\w)[B][_\W]*[L][_\W]*[A][_\W]*[M][_\W]*[E][_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn](?!\w)[_\W]*)?(\b\w+)?).*
+action var string $0;var action blanch;goto action when %puppetstring(?i)(?:(?:(?<!\w)[b][_\W]+[l][_\W]+[a][_\W]+[n][_\W]+[c][_\W]+[h](?!\w))).*
 action var string $0;var action blink;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[l][_\W]+[i][_\W]+[n][_\W]+[k](?!\w)|(?<!\w)[B][_\W]*[l][_\W]*[I][_\W]*[n][_\W]*[K](?!\w)|(?<!\w)[b][_\W]*[L][_\W]*[i][_\W]*[N][_\W]*[k](?!\w)|(?<!\w)[B][_\W]*[L][_\W]*[I][_\W]*[N][_\W]*[K](?!\w))).*
 action var string $0;var action bop;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[o][_\W]+[p](?!\w)[_\W]+|(?<!\w)[B][_\W]*[o][_\W]*[P](?!\w)[_\W]*|(?<!\w)(?<!\w)[b][_\W]*[O][_\W]*[p](?!\w)[_\W]*|(?<!\w)[B][_\W]*[O][_\W]*[P][_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn](?!\w)[_\W]*)?(\b\w+)?).*
 action var string $0;var action bounce;goto action when %puppetstring(?:(?:(?<!\w)[b][_\W]+[o][_\W]+[u][_\W]+[n][_\W]+[c][_\W]+[e](?!\w)|(?<!\w)[B][_\W]*[o][_\W]*[U][_\W]*[n][_\W]*[C][_\W]*[e](?!\w)|(?<!\w)[b][_\W]*[O][_\W]*[u][_\W]*[N][_\W]*[c][_\W]*[E](?!\w)|(?<!\w)[B][_\W]*[O][_\W]*[U][_\W]*[N][_\W]*[C][_\W]*[E](?!\w))).*
@@ -71,7 +93,7 @@ action var string $0;var action jump;goto action when %puppetstring(?:(?:(?<!\w)
 action var string $0;var action laugh;goto action when %puppetstring(?:(?:(?<!\w)[l][_\W]+[a][_\W]+[u][_\W]+[g][_\W]+[h](?!\w)|(?<!\w)[L][_\W]*[a][_\W]*[U][_\W]*[g][_\W]*[H](?!\w)|(?<!\w)[l][_\W]*[A][_\W]*[u][_\W]*[G][_\W]*[h](?!\w)|(?<!\w)[L][_\W]*[A][_\W]*[U][_\W]*[G][_\W]*[H](?!\w))).*
 action var string $0;var action lean;goto action when %puppetstring(?:(?:(?<!\w)[l][_\W]+[e][_\W]+[a][_\W]+[n](?!\w)|(?<!\w)[L][_\W]*[e][_\W]*[A][_\W]*[n](?!\w)|(?<!\w)[l][_\W]*[E][_\W]*[a][_\W]*[N](?!\w)|(?<!\w)[L][_\W]*[E][_\W]*[A][_\W]*[N](?!\w))).*
 action var string $0;var action leap;goto action when %puppetstring(?:(?:(?<!\w)[l][_\W]+[e][_\W]+[a][_\W]+[p](?!\w)|(?<!\w)[L][_\W]*[e][_\W]*[A][_\W]*[p](?!\w)|(?<!\w)[l][_\W]*[E][_\W]*[a][_\W]*[P](?!\w)|(?<!\w)[L][_\W]*[E][_\W]*[A][_\W]*[P](?!\w))).*
-action var string $0;var action mark;goto action when %puppetstring(?:(?:(?<!\w)[m][_\W]+[a][_\W]+[r][_\W]+[k](?!\w)|(?<!\w)[M][_\W]*[a][_\W]*[R][_\W]*[k](?!\w)|(?<!\w)[m][_\W]*[A][_\W]*[r][_\W]*[K](?!\w)|(?<!\w)[M][_\W]*[A][_\W]*[R][_\W]*[K](?!\w))).*
+action var string $0;var action mark;goto action when %puppetstring(?:(?:(?<!\w)[m][_\W]+[a][_\W]+[r][_\W]+[k](?!\w)|(?<!\w)[M][_\W]*[a][_\W]*[R][_\W]*[k](?!\w)|(?<!\w)[m][_\W]*[A][_\W]*[r][_\W]*[K](?!\w)|(?<!\w)[M][_\W]*[A][_\W]*[R][_\W]*[K](?!\w| HELP))).*
 action var string $0;var action meow;goto action when %puppetstring(?:(?:(?<!\w)[m][_\W]+[e][_\W]+[o][_\W]+[w](?!\w)|(?<!\w)[M][_\W]*[e][_\W]*[O][_\W]*[w](?!\w)|(?<!\w)[m][_\W]*[E][_\W]*[o][_\W]*[W](?!\w)|(?<!\w)[M][_\W]*[E][_\W]*[O][_\W]*[W](?!\w))).*
 action var string $0;var action mumble;goto action when %puppetstring(?:(?:(?<!\w)[m][_\W]+[u][_\W]+[m][_\W]+[b][_\W]+[l][_\W]+[e](?!\w)|(?<!\w)[M][_\W]*[u][_\W]*[M][_\W]*[b][_\W]*[L][_\W]*[e](?!\w)|(?<!\w)[m][_\W]*[U][_\W]*[m][_\W]*[B][_\W]*[l][_\W]*[E](?!\w)|(?<!\w)[M][_\W]*[U][_\W]*[M][_\W]*[B][_\W]*[L][_\W]*[E](?!\w))).*
 action var string $0;var action mutter;goto action when %puppetstring(?:(?:(?<!\w)[m][_\W]+[u][_\W]+[t][_\W]+[t][_\W]+[e][_\W]+[r](?!\w)|(?<!\w)[M][_\W]*[u][_\W]*[T][_\W]*[t][_\W]*[E][_\W]*[r](?!\w)|(?<!\w)[m][_\W]*[U][_\W]*[t][_\W]*[T][_\W]*[e][_\W]*[R](?!\w)|(?<!\w)[M][_\W]*[U][_\W]*[T][_\W]*[T][_\W]*[E][_\W]*[R](?!\w))).*
@@ -86,12 +108,12 @@ action var string $0;var action pose;goto action when %puppetstring(?:(?:(?<!\w)
 action var string $0;var action pout;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[o][_\W]+[u][_\W]+[t](?!\w)|(?<!\w)[P][_\W]*[o][_\W]*[U][_\W]*[t](?!\w)|(?<!\w)[p][_\W]*[O][_\W]*[u][_\W]*[T](?!\w)|(?<!\w)[P][_\W]*[O][_\W]*[U][_\W]*[T](?!\w))).*
 action var string $0;var action preen;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[r][_\W]+[e][_\W]+[e][_\W]+[n](?!\w)|(?<!\w)[P][_\W]*[r][_\W]*[E][_\W]*[e][_\W]*[N](?!\w)|(?<!\w)[p][_\W]*[R][_\W]*[e][_\W]*[E][_\W]*[n](?!\w)|(?<!\w)[P][_\W]*[R][_\W]*[E][_\W]*[E][_\W]*[N](?!\w))).*
 action var string $0;var action pucker;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[c][_\W]+[k][_\W]+[e][_\W]+[r](?!\w)|(?<!\w)[P][_\W]*[u][_\W]*[C][_\W]*[k][_\W]*[E][_\W]*[r](?!\w)|(?<!\w)[p][_\W]*[U][_\W]*[c][_\W]*[K][_\W]*[e][_\W]*[R](?!\w)|(?<!\w)[P][_\W]*[U][_\W]*[C][_\W]*[K][_\W]*[E][_\W]*[R](?!\w))).*
-action var string $0;var action pull;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[l][_\W]+[l](?!\w)[_\W]+|(?<!\w)[P][_\W]*[u][_\W]*[L][_\W]*[l](?!\w)[_\W]*|(?<!\w)[p][_\W]*[U][_\W]*[l][_\W]*[L](?!\w)[_\W]*|(?<!\w)[P][_\W]*[U][_\W]*[L][_\W]*[L](?!\w)[_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
+action var string $0;var action pull;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[l][_\W]+[l](?!\w)[_\W]+|(?<!\w)[P][_\W]*[u][_\W]*[L][_\W]*[l](?!\w)[_\W]*|(?<!\w)[p][_\W]*[U][_\W]*[l][_\W]*[L](?!\w)[_\W]*|(?<!\w)[P][_\W]*[U][_\W]*[L][_\W]*[L](?!\w)(?! a bundle)[_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
 action var string $0;var action purr;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[r][_\W]+[r](?!\w)|(?<!\w)[P][_\W]*[u][_\W]*[R][_\W]*[r](?!\w)|(?<!\w)[p][_\W]*[U][_\W]*[r][_\W]*[R](?!\w)|(?<!\w)[P][_\W]*[U][_\W]*[R][_\W]*[R](?!\w))).*
-action var string $0;var action push;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[s][_\W]+[h](?!\w)[_\W]+|(?<!\w)[P][_\W]*[u][_\W]*[S][_\W]*[h](?!\w)[_\W]*|(?<!\w)[p][_\W]*[U][_\W]*[s][_\W]*[H](?!\w)[_\W]*|(?<!\w)[P][_\W]*[U][_\W]*[S][_\W]*[H](?!\w)[_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
+action var string $0;var action push;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[p][_\W]+[u][_\W]+[s][_\W]+[h](?!\w)[_\W]+|(?<!\w)[P][_\W]*[u][_\W]*[S][_\W]*[h](?!\w)[_\W]*|(?<!\w)[p][_\W]*[U][_\W]*[s][_\W]*[H](?!\w)[_\W]*|(?<!\w)[P][_\W]*[U][_\W]*[S][_\W]*[H](?!\w| the (?:TUB|GRINDSTONE))[_\W]*)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
 action var string $0;var action raise;var target $1;goto action when %puppetstring(?!Usage: )[R][_\W]*[A][_\W]*[I][_\W]*[S][_\W]*[E][_\W]*(?!(?:EYEBROW |VOICE )?[_\W]*\[)(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|.*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(.*[Hh][_\W]*[Aa][_\W]*[Nn][_\W]*[Dd]|.*[Ee][_\W]*[Yy][_\W]*[Ee][_\W]*[Bb][_\W]*[Rr][_\W]*[Oo][_\W]*[Ww]|.*[Vv][_\W]*[Oo][_\W]*[Ii][_\W]*[Cc][_\W]*[Ee]).*
 action var string $0;var action raspberry;goto action when %puppetstring(?:(?:(?<!\w)[r][_\W]+[a][_\W]+[s][_\W]+[p][_\W]+[b][_\W]+[e][_\W]+[r][_\W]+[r][_\W]+[y](?!\w)|(?<!\w)[R][_\W]*[a][_\W]*[S][_\W]*[p][_\W]*[B][_\W]*[e][_\W]*[R][_\W]*[r][_\W]*[Y](?!\w)|(?<!\w)[r][_\W]*[A][_\W]*[s][_\W]*[P][_\W]*[b][_\W]*[E][_\W]*[r][_\W]*[R][_\W]*[y](?!\w)|(?<!\w)[R][_\W]*[A][_\W]*[S][_\W]*[P][_\W]*[B][_\W]*[E][_\W]*[R][_\W]*[R][_\W]*[Y](?!\w))).*
-action var string $0;var action rub;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[r][_\W]+[u][_\W]+[b](?!\w)[_\W]+|(?<!\w)[R][_\W]*[u][_\W]*[B](?!\w)[_\W]*|(?<!\w)[r][_\W]*[U][_\W]*[b](?!\w)[_\W]*|(?<!\w)[R][_\W]*[U][_\W]*[B](?!\w)[_\W]*)(?!\()(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
+action var string $0;var action rub;var target $1;goto action when %puppetstring(?:(?:(?<!\w)[r][_\W]+[u][_\W]+[b](?!\w)[_\W]+|(?<!\w)[R][_\W]*[u][_\W]*[B](?!\w)[_\W]*|(?<!\w)[r][_\W]*[U][_\W]*[b](?!\w)[_\W]*|(?<!\w)[R][_\W]*[U][_\W]*[B](?! \(item\|person\|critter\|self\)| \(person\|self\)|\w| the clothing with it repeatedly)[_\W]*)(?!\()(?:.*[Tt][_\W]*[Hh][_\W]*[Ee][_\W]*|.*[Aa][_\W]*|[Mm][_\W]*[Yy][_\W]*|[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*|.*[Aa][_\W]*[Nn][_\W]*)?(\b\w+)).*
 action var string $0;var action salute;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[a][_\W]+[l][_\W]+[u][_\W]+[t][_\W]+[e](?!\w)|(?<!\w)[S][_\W]*[a][_\W]*[L][_\W]*[u][_\W]*[T][_\W]*[e](?!\w)|(?<!\w)[s][_\W]*[A][_\W]*[l][_\W]*[U][_\W]*[t][_\W]*[E](?!\w)|(?<!\w)[S][_\W]*[A][_\W]*[L][_\W]*[U][_\W]*[T][_\W]*[E](?!\w))).*
 action var string $0;var action scoff;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[c][_\W]+[o][_\W]+[f][_\W]+[f](?!\w)|(?<!\w)[S][_\W]*[c][_\W]*[O][_\W]*[f][_\W]*[F](?!\w)|(?<!\w)[s][_\W]*[C][_\W]*[o][_\W]*[F][_\W]*[f](?!\w)|(?<!\w)[S][_\W]*[C][_\W]*[O][_\W]*[F][_\W]*[F](?!\w))).*
 action var string $0;var action scratch $charactername;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[c][_\W]+[r][_\W]+[a][_\W]+[t][_\W]+[c][_\W]+[h](?!\w)|(?<!\w)i[_\W]+t[_\W]+c[_\W]+h(?!\w)|(?<!\w)[S][_\W]*[c][_\W]*[R][_\W]*[a][_\W]*[T][_\W]*[c][_\W]*[H](?!\w)|(?<!\w)I[_\W]*t[_\W]*C[_\W]*h(?!\w)|(?<!\w)[s][_\W]*[C][_\W]*[r][_\W]*[A][_\W]*[t][_\W]*[C][_\W]*[h](?!\w)|(?<!\w)i[_\W]*T[_\W]*c[_\W]*H(?!\w)|(?<!\w)[S][_\W]*[C][_\W]*[R][_\W]*[A][_\W]*[T][_\W]*[C][_\W]*[H](?!\w)|(?<!\w)I[_\W]*T[_\W]*C[_\W]*H(?!\w))).*
@@ -105,7 +127,7 @@ action var string $0;var action slap;var target $1;goto action when %puppetstrin
 action var string $0;var action slink;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[l][_\W]+[i][_\W]+[n][_\W]+[k](?!\w)|(?<!\w)[S][_\W]*[l][_\W]*[I][_\W]*[n][_\W]*[K](?!\w)|(?<!\w)[S][_\W]*[l][_\W]*[I][_\W]*[n][_\W]*[K](?!\w)|(?<!\w)[S][_\W]*[L][_\W]*[I][_\W]*[N][_\W]*[K](?!\w))).*
 action var string $0;var action smile;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[m][_\W]+[i][_\W]+[l][_\W]+[e](?!\w)|(?<!\w)[S][_\W]*[m][_\W]*[I][_\W]*[l][_\W]*[E](?!\w)|(?<!\w)[s][_\W]*[M][_\W]*[i][_\W]*[L][_\W]*[e](?!\w)|(?<!\w)[S][_\W]*[M][_\W]*[I][_\W]*[L][_\W]*[E](?!\w))).*
 action var string $0;var action smirk;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[m][_\W]+[i][_\W]+[r][_\W]+[k](?!\w)|(?<!\w)[S][_\W]*[m][_\W]*[I][_\W]*[r][_\W]*[K](?!\w)|(?<!\w)[s][_\W]*[M][_\W]*[i][_\W]*[R][_\W]*[k](?!\w)|(?<!\w)[S][_\W]*[M][_\W]*[I][_\W]*[R][_\W]*[K](?!\w))).*
-action var string $0;var action snap;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[n][_\W]+[a][_\W]+[p](?!\w)|(?<!\w)[S][_\W]*[n][_\W]*[A][_\W]*[p](?!\w)|(?<!\w)[s][_\W]*[N][_\W]*[a][_\W]*[P](?!\w)|(?<!\w)[S][_\W]*[N][_\W]*[A][_\W]*[P](?!\w))).*
+action var string $0;var action snap;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[n][_\W]+[a][_\W]+[p](?!\w)|(?<!\w)[S][_\W]*[n][_\W]*[A][_\W]*[p](?!\w)|(?<!\w)[s][_\W]*[N][_\W]*[a][_\W]*[P](?!\w)|(?<!\w)[S][_\W]*[N][_\W]*[A][_\W]*[P](?!\w|\*| of breaking glass indicates you were less than successful))).*
 action var string $0;var action snarl;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[n][_\W]+[a][_\W]+[r][_\W]+[l](?!\w)|(?<!\w)[S][_\W]*[n][_\W]*[A][_\W]*[r][_\W]*[L](?!\w)|(?<!\w)[s][_\W]*[N][_\W]*[a][_\W]*[R][_\W]*[l](?!\w)|(?<!\w)[S][_\W]*[N][_\W]*[A][_\W]*[R][_\W]*[L](?!\w))).*
 action var string $0;var action sneer;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[n][_\W]+[e][_\W]+[e][_\W]+[r](?!\w)|(?<!\w)[S][_\W]*[n][_\W]*[E][_\W]*[e][_\W]*[R](?!\w)|(?<!\w)[s][_\W]*[N][_\W]*[e][_\W]*[E][_\W]*[r](?!\w)|(?<!\w)[S][_\W]*[N][_\W]*[E][_\W]*[E][_\W]*[R](?!\w))).*
 action var string $0;var action sneeze;goto action when %puppetstring(?:(?:(?<!\w)[s][_\W]+[n][_\W]+[e][_\W]+[e][_\W]+[z][_\W]+[e](?!\w)|(?<!\w)[S][_\W]*[n][_\W]*[E][_\W]*[e][_\W]*[Z][_\W]*[e](?!\w)|(?<!\w)[s][_\W]*[N][_\W]*[e][_\W]*[E][_\W]*[z][_\W]*[E](?!\w)|(?<!\w)[S][_\W]*[N][_\W]*[E][_\W]*[E][_\W]*[Z][_\W]*[E](?!\w))).*
@@ -122,7 +144,7 @@ action var string $0;var action tap;var target $1;goto action when %puppetstring
 action var string $0;var action wail;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[a][_\W]+[i][_\W]+[l](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[I][_\W]*[l](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[i][_\W]*[L](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[I][_\W]*[L](?!\w))).*
 action var string $0;var action wait;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[a][_\W]+[i][_\W]+[t](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[I][_\W]*[t](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[i][_\W]*[T](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[I][_\W]*[T](?!\w))).*
 action var string $0;var action wake;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[a][_\W]+[k][_\W]+[e](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[K][_\W]*[e](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[k][_\W]*[E](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[K][_\W]*[E](?!\w))).*
-action var string $0;var action wave;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[a][_\W]+[v][_\W]+[e](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[V][_\W]*[e](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[v][_\W]*[E](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[V][_\W]*[E](?!\w))).*
+action var string $0;var action wave;goto action when %puppetstring(?:Waving your hand|wave it away|(?:(?<!\w)[w][_\W]+[a][_\W]+[v][_\W]+[e](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[V][_\W]*[e](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[v][_\W]*[E](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[V][_\W]*[E](?!\w))).*
 action var string $0;var action wail;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[a][_\W]+[i][_\W]+[l](?!\w)|(?<!\w)[W][_\W]*[a][_\W]*[I][_\W]*[l](?!\w)|(?<!\w)[w][_\W]*[A][_\W]*[i][_\W]*[L](?!\w)|(?<!\w)[W][_\W]*[A][_\W]*[I][_\W]*[L](?!\w))).*
 action var string $0;var action weep;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[e][_\W]+[e][_\W]+[p](?!\w)|(?<!\w)[W][_\W]*[e][_\W]*[E][_\W]*[p](?!\w)|(?<!\w)[w][_\W]*[E][_\W]*[e][_\W]*[P](?!\w)|(?<!\w)[W][_\W]*[E][_\W]*[E][_\W]*[P](?!\w))).*
 action var string $0;var action whine;goto action when %puppetstring(?:(?:(?<!\w)[w][_\W]+[h][_\W]+[i][_\W]+[n][_\W]+[e](?!\w)|(?<!\w)[W][_\W]*[h][_\W]*[I][_\W]*[n][_\W]*[E](?!\w)|(?<!\w)[w][_\W]*[H][_\W]*[i][_\W]*[N][_\W]*[e](?!\w)|(?<!\w)[W][_\W]*[H][_\W]*[I][_\W]*[N][_\W]*[E](?!\w))).*
@@ -131,25 +153,61 @@ action var string $0;var action yawn;goto action when %puppetstring(?:(?:(?<!\w)
 
 action var string $0;var action skill $1;goto action when %puppetstring(?:(?:(?<!\w)[T][_\W]*[E][_\W]*[L][_\W]*[L][_\W]*[M][_\W]*[E][_\W]*[Y][_\W]*[O][_\W]*[U][_\W]*[R]|S[_\W]*A[_\W]*Y|[S][_\W]*[P][_\W]*[E][_\W]*[A][_\W]*[K]|W[_\W]*H[_\W]*A[_\W]*T[_\W]*I[_\W]*S|[W][_\W]*[H][_\W]*[A][_\W]*[T][_\W]*[S]|T[_\W]*E[_\W]*L[_\W]*L[_\W]*M[_\W]*E)[_\W]*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*(.+)[_\W]*[Ss][_\W]*[Kk][_\W]*[Ii][_\W]*[Ll][_\W]*[Ll]).*
 action var string $0;var action say $charactername;goto action when %puppetstring(?:(?:(?<!\w)[T][_\W]*[E][_\W]*[L][_\W]*[L][_\W]*[M][_\W]*[E][_\W]*[Y][_\W]*[O][_\W]*[U][_\W]*[R]|S[_\W]*A[_\W]*Y|[S][_\W]*[P][_\W]*[E][_\W]*[A][_\W]*[K]|W[_\W]*H[_\W]*A[_\W]*T[_\W]*I[_\W]*S|[W][_\W]*[H][_\W]*[A][_\W]*[T][_\W]*[S]|T[_\W]*E[_\W]*L[_\W]*L[_\W]*M[_\W]*E)[_\W]*[Yy][_\W]*[Oo][_\W]*[Uu][_\W]*[Rr][_\W]*[Nn][_\W]*[Aa][_\W]*[Mm][_\W]*[Ee]).*
+action var string $0;goto FRIEND when %puppetstring(?:be my friend|(?:let's|we) be friends)
 
-action var string $0;var action $1;goto action when say your (\S+) stat
-action var string $0;var action $1;goto action when SAY YOUR (.+) STAT
-action var string $0;var action $1;goto action when SPEAK YOUR (\S+) STAT
-action var string $0;var action $1;goto action when SPEAK YOUR (.+) STAT
-action var string $0;var action $1;goto action when WHAT IS YOUR (\S+) STAT
-action var string $0;var action $1;goto action when what is your (\S+) stat
-action var string $0;var action $1;goto action when what's your (\S+) stat
-action var string $0;var action $1;goto action when WHAT IS YOUR (.+) STAT
-action var string $0;var action $1;goto action when WHAT'S YOUR (\S+) STAT
-action var string $0;var action $1;goto action when WHAT'S YOUR (.+) STAT
-action var string $0;var action $1;goto action when say your (.+) stat
-action var string $0;var action $1;goto action when SAY YOUR (.+) STAT
-action var string $0;var action $1;goto action when speak your (.+) stat
-action var string $0;var action $1;goto action when TELL ME YOUR (.+) STAT
-action var string $0;var action $1;goto action when tell me your (.+) stat
+action var string $0;var birthday 1;goto statuscheck when %puppetstring(?:date of (?:your )?birth|birth date|when you were born|when were you born)
+action var string $0;var hometown 1;goto statuscheck when %puppetstring(?:where (?:do )?you (?:currently )?reside|where (?:do )?you (?:currently )?live|you (?:currently )?call home)
+
+action var string $0;var action strength;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[s][_\W]*[t][_\W]*[r][_\W]*[e][_\W]*[n][_\W]*[g]?[_\W]*[t]?[_\W]*[h]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action discipline;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[d][_\W]*[i][_\W]*[s][_\W]*[c][_\W]*[i]?[_\W]*[p]?[_\W]*[l]?[_\W]*[i]?[_\W]*[n]?[_\W]*[e]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action wisdom;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[w][_\W]*[i][_\W]*[s][_\W]*[d]?[_\W]*[o]?[_\W]*[m]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action intelligence;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[i][_\W]*[n][_\W]*[t][_\W]*[e]?[_\W]*[l]?[_\W]*[l]?[_\W]*[i]?[_\W]*[g]?[_\W]*[e]?[_\W]*[n]?[_\W]*[c]?[_\W]*[e]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action reflex;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[r][_\W]*[e][_\W]*[f][_\W]*[l][_\W]*[e]?[_\W]*[x]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action agility;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[a][_\W]*[g][_\W]*[i][_\W]*[l]?[_\W]*[i]?[_\W]*[t]?[_\W]*[y]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action stamina;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[s][_\W]*[t][_\W]*[a][_\W]*[m][_\W]*[i]?[_\W]*[n]?[_\W]*[a]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+action var string $0;var action charisma;goto action when %puppetstring(?:[a-zA-z' ]*) (?i)(?:you|your|the) (?:(?<!\w)[c][_\W]*[h][_\W]*[a][_\W]*[r][_\W]*[i][_\W]*[s]?[_\W]*[m]?[_\W]*[a]?[_\W]*(?!\w)) (?:\bstat\b|statistic)(?-i).*
+# Jail Triggers. 
+if matchre("$charactername", "\b(?:Carlae|Ataelos)\b") then {
+action (jail) goto JailSequence when ^The eyes of the court are upon you|PLEAD INNOCENT or PLEAD GUILTY|Your silence shall be taken|How do you plead\?|Shouldn't you be worrying about something else
+action (jail) goto JailSequence when ^You slowly wake up again to find that all your belongings|a sound not unlike that of a tomb|binds you in chains|firmly off to jail|drag you off to jail|brings you to the jail
+action (jail) goto JailSequence when Dwarves burst out from everywhere|your belongings have been stripped|in a jail cell wearing a set of heavy manacles|strip you of all your possessions|binds your hands behind your back
+action (jail) goto JailSequence when Do not resist, for your crimes|Jail Cell|Gallows Tree, Cell|your possessions have been stripped|the last thing you see before you black out|submits you to a brutal strip search 
+action (jail) goto JailSequence when Your silence shall be taken as an indication of your guilt|The eyes of the court are upon you|Your silence can only be taken as evidence of your guilt|a sound not unlike that of a tomb
+action (jail) on
+action (jail) off when ^pausing jail
+action (jail) on when ^resuming jail
+}
 wait:
+debug 10
 pause 3600
+debug 0
 goto wait
+
+FRIEND:
+pause 2
+random 1 5
+goto FRIEND.%r
+
+FRIEND.1:
+pause
+put say Go away. I have enough friends.
+goto AFK.Pause
+FRIEND.2:
+pause
+put say No, I don't need any new friends, but thanks.
+goto AFK.Pause
+FRIEND.3:
+pause
+put say No, we can't be friends. Now leave.
+goto AFK.Pause
+FRIEND.4:
+pause
+put say No, I don't want to be your friend.
+goto AFK.Pause
+FRIEND.5:
+pause
+put say You are interrupting my training, that's not a good friend.
+goto AFK.Pause
 
 action:
 eval target replacere("%target", "[\W_]", "")
@@ -174,17 +232,51 @@ matchre expcheck Time Development Points
 matchwait 10
 expcheck:
 put #log >scriptcheck.txt [$datetime] Script check! Did: %action %target Trigger: %string
-if ("%skillValue"!="None") then put say %skillValue
-put #script resume all
+if !matchre("%skillValue", "\b(?:None)\b") then put say %skillValue
 if ("%skillValue" !="None") then put #echo >Log Gold *** Action taken: Said- %skillValue
 if ("%skillValue" ="None") then put #echo >Log Gold *** Action taken: %action
+unvar skillValue
 put #echo >Log Crimson ************************************************************
 #goto wait
 goto AFK.WAIT
-
+statuscheck:
+pause
+var action STATUSCHECK
+put #echo
+put #echo *** WARNING!!! WARNING!!! WARNING!!!! ***
+put #echo *** GETTING SCRIPT CHECKED!!! ALERT!!! ***
+put #echo
+put #play PowerfulEnemy.wav
+put #echo >Log Crimson ************************************************************
+put #echo >Log Crimson *** RED ALERT!!! WARNING! WARNING!
+put #echo >Log Crimson *** AFK SCRIPT CHECK IN PROGRESS!!!!
+put #echo >Log Crimson *** ENTERING DEFCON 5 - ATTEMPTING TO AUTOMATE
+put #echo >Log Crimson *** Action Taking: %action - Trigger: %string
+put #script pause all;-1#script resume scriptcheck
+pause
+action var birthdate $1 when ^You were born on the (.*)\,
+action var homecity $1 when ^Name: .* of (\w+)
+matchre statuschecked Name|Wealth|Debt
+put info
+matchwait 10
+statuschecked:
+pause 2
+if ((%birthday = 1) && (%hometown != 1)) then put say Born on %birthdate
+if ((%birthday != 1) && (%hometown = 1)) then put say I live in %homecity
+if ((%birthday = 1) && (%hometown = 1)) then put say Born on %birthdate, and I live in %homecity
+put #log >scriptcheck.txt [$datetime] Script check! Did: %action %target Trigger: %string
+if (%birthday = 1) then put #echo >Log Gold *** Action taken: Said Birthdate: %birthdate
+if (%hometown = 1) then put #echo >Log Gold *** Action taken: Said Homecity: %homecity
+goto AFK.WAIT
 
 AFK.WAIT:
-pause 7
+unvar action
+unvar target
+unvar hometown
+unvar birthday
+pause 3
+put #queue clear
+pause 3
 random 1 20
 goto AFK.%r
 AFK.1: 
@@ -269,4 +361,72 @@ put 'go home
 goto AFK.Pause
 AFK.Pause:
 pause 10
+put #parse ESCAPE NOW!
+# put #script resume all
 goto wait
+
+favorite:
+action (favorite) off
+put #echo
+put #echo *** WARNING!!! WARNING!!! WARNING!!!! ***
+put #echo *** GETTING SCRIPT CHECKED!!! ALERT!!! ***
+put #echo
+put #play PowerfulEnemy.wav
+put #echo >Log Crimson ************************************************************
+put #echo >Log Crimson *** RED ALERT!!! WARNING! WARNING!
+put #echo >Log Gold *** AFK SCRIPT CHECK IN PROGRESS!!!!
+put #echo >Log Gold *** ENTERING DEFCON 5 - ATTEMPTING TO AUTOMATE
+put #echo >Log Gold *** Action: %action FAVORITE - Trigger: %string
+put #script pause all;-1#script resume scriptcheck
+#action remove %puppetstring(?:.*\b(?:inquire?|chant|persist|ask|implore?|declare|demand|continue?|presse?|interrogate?|query|petition|request)(?:ing|s)?\b(?! that honor))(?=.*")(?=.*your?\b)(?=.*(?:which instrument|Immortal|most|best|favorite|liked?|enjoy))
+pause 5
+if matchre("$0", ("elements") then
+{
+     if matchre("$guild", "(Empath|Ranger)") then
+          {
+               put say Life magic is my favorite
+               goto favorite2
+          }
+     if matchre("$guild", "(Moon|Trader)") then
+          {
+               put say Lunar magic is my favorite
+               goto favorite2
+          }
+     if matchre("$guild", "(Warrior|Bard)") then
+          {
+               put say Elemental magic is my favorite
+               goto favorite2
+          }
+     if matchre("$guild", "Paladin") then
+          {
+               put say Holy magic is my favorite
+               goto favorite2
+          }
+}
+put say I dunno if I could say one way or the other. Could go any number of ways.
+favorite2:
+pause 7
+put say now please leave me be
+pause 4
+put quit
+put #script abort all
+exit
+
+sayit:
+action remove %puppetstring(?:say|(?:tell|ask) it to) go away
+put say go away
+pause 10
+action goto sayit when %puppetstring(?:say|(?:tell|ask) it to) go away
+goto wait
+
+#### JAIL RECOVERY
+JailSequence:
+	put #script pause all except scriptcheck
+     action (jail) off
+	pause 0.5
+     put .jail
+     waitforre DONE JAIL
+     action (jail) on
+     pause 0.5
+     put .go
+     goto TOP

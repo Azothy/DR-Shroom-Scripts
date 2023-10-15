@@ -1,0 +1,94 @@
+#############################
+## SPIDERSILK TURN IN SCRIPT
+#############################
+var tasks 0
+action goto TASK_COMPLETE when ^A concerned arachnologist hands you
+## TO TASK GUY
+     if ($zoneid = 67) then gosub automove east
+     gosub automove portal
+     if ($zoneid = 150) then 
+          {
+               gosub automove 85
+               put go meeting portal
+          }
+     pause 0.5
+MAIN_TASK:
+     pause 0.1
+     if ($roomid = 0) then gosub moveRandomDirection
+     if ("$roomid" != "1") then gosub automove 1
+     pause 0.1
+     matchre SPIDERSILK Researchers in the field report that the corrupted unyns\, birdcatcher spiders and blade spiders spin an unusual form of spidersilk
+     matchre DECLINE_WAIT You claim to want to advance scientific knowledge\, but you refuse to dirty your hands in the field
+     matchre DECLINE_WAIT You don\'t like the work I offer\, you can wait
+     matchre DECLINE_TASK It seems that the tomiek\-iguji broodlings are exerting an unnatural influence on the  unyns\, birdcatcher spiders and blade spiders\.  
+     matchre DECLINE_TASK Would you be willing to humanely euthanize
+     matchre DECLINE_TASK One of my colleagues got tangled in the webs|Could you rescue anyone you find before the broodlings mistake them for prey\?
+     matchre DECLINE_TASK Unfortunately\, some of the webs being spun to heal the Spider have been placed in inconvenient locations\.
+     matchre DECLINE_TASK Engineers at Asemath Academy have been researching potential applications of the tomiek chitin slivers
+     matchre DECLINE_TASK Would you be willing to humanely euthanize them in order to protect the health of the population\?
+     matchre DECLINE_TASK decline by typing DECLINE
+     matchre DECLINE_TASK You are already on a task
+     matchre TASK_CHECK You are already on a task
+     put ask arach for task
+     matchwait 8
+DECLINE_TASK:
+     pause 0.1
+     put decline task
+     pause 0.2
+     put ask arach for task cancel
+     pause 0.5
+     put ask arach for task cancel
+     pause 
+     goto DECLINE_WAIT
+     
+DECLINE_WAIT:
+     echo *** Waiting for Task Cooldown
+     if ($zoneid = 66) then gosub automove east
+     pause 2
+     put collect rock
+     pause 4
+     put kick pile
+     pause 2
+     put collect rock
+     pause 4
+     put kick pile
+     pause 2
+     put collect rock
+     pause 4
+     put kick pile
+     pause 2
+     if ($zoneid = 67) then gosub automove east
+     goto MAIN_TASK
+     
+SPIDERSILK:
+     pause 0.1
+     put accept task
+     echo
+     echo *** Turn in Spidersilk!
+     echo
+     pause 0.3
+SPIDERSILK_1:
+     put get my spidersilk 
+     pause 0.5
+     pause 0.4
+     if !matchre("($righthand|$lefthand)", "spidersilk") then goto TASK_WAIT
+     put give spidersilk to arach
+     pause 0.2
+     goto SPIDERSILK_1
+     
+TASK_COMPLETE:
+     math tasks add 1
+     echo
+     echo *** Completed Task %tasks
+     echo
+     goto MAIN_TASK
+     
+TASK_WAIT:
+     echo *** Out of Spidersilk.. waiting
+     pause 20
+     put get my spidersilk 
+     pause 0.5
+     pause 0.4
+     if !matchre("($righthand|$lefthand)", "spidersilk") then goto TASK_WAIT
+     goto SPIDERSILK_1
+     

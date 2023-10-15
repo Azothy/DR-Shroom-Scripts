@@ -8,17 +8,15 @@ var break 0
 var count %2
 LOOP:
 math break add 1
-pause 0.01
-pause 0.01
-pause 0.1
-pause 0.1
+pause 0.0001
+pause 0.0001
 send break my %1
-pause 0.01
+pause 0.001
 pause 0.1
 send stow left
-pause 0.1
+pause 0.01
 echo %break
-pause 0.1
+pause 0.001
 pause 0.1
 if %break > %count then goto DONE
 goto LOOP

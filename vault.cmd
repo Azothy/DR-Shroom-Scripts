@@ -1,29 +1,32 @@
 #################################################
 # VAULT script by Shroom of TF
-# Auto-enter vault and looks inside 
+# Auto-enters vault and looks on all the shelves
 # Waits for you to be done
 # Type "DONE" to auto-leave vault 
-# Pays your rent if needed
+# Pays your rent automatically if needed
 # Start inside any city you own a vault 
 ##############################################
+     echo
+     echo =================
+     echo ** VAULT SCRIPT START!
+     echo =================
+     echo
      action goto VAULT when The attendant bursts into the chamber
      if contains("$roomname", "Carousel Chamber") then goto VAULT.LOOK
      gosub automove vault
-     pause 0.4
-     pause 0.2
-     if contains("$roomname", "Carousel Desk") then put out
      pause 0.1
+     if contains("$roomname", "Carousel Desk") then put out
+     pause 0.001
      if contains("$roomobjs", "Carousel Square") then put go square
-     pause 0.1
-     pause 0.1
+     pause 0.001
      if contains("$roomname", "Carousel Desk") then put out
-     pause 0.1
+     pause 0.001
      if contains("$roomobjs", "vault") then put go vault
-     pause 0.1
-     pause 0.1
+     pause 0.001
+     pause 0.001
      put go door
-     pause 0.1
-     pause 0.1
+     pause 0.001
+     pause 0.001
      pause 0.1
 VAULT:
 1.ARCH:
@@ -50,20 +53,28 @@ NO.ARCH:
      goto 1.ARCH
 
 PAY.RENT:
-     echo ======================
+     echo
+     echo =================
      echo ** PAYING VAULT RENT
-     echo ======================
-     pause 0.2
+     echo =================
+     echo
+     pause 0.1
      gosub automove teller
      send with 8 gold
      pause 0.1
      pause 0.1
      pause 0.1
      gosub automove exchange
+     pause 0.001
+     pause 0.001
      put exchan all dok to kro
+     pause 0.2
+     pause 0.1
+     pause 0.001
      put exchan all lir to kro
+     pause 0.2
      pause 0.1
-     pause 0.1
+     pause 0.001
      if ("$zoneid" = "67") then gosub automove 138
      if ("$zoneid" = "116") then gosub automove 288
      if ("$zoneid" = "61") then gosub automove 169
@@ -75,48 +86,67 @@ PAY.RENT:
      if ("$zoneid" = "107") then gosub automove 219
      if ("$zoneid" = "90") then gosub automove 261
      if ("$zoneid" = "127") then gosub automove 532
+     pause 0.001
+     pause 0.001
+     pause 0.001
      put pay 5000
      pause 0.1
      pause 0.1
      move out
+     pause 0.001
      goto 1.ARCH
 
 VAULT.GO:
      put pull lever
-     pause 0.2
-     pause 0.2
-     send go door
-     pause 0.2
-     pause 0.2
      pause 0.1
+     pause 0.01
+     pause 0.001
+     pause 0.001
+     send go door
+     pause 0.1
+     pause 0.01
      send open vault
      pause 0.1
-     pause 0.1
-     echo =================================
+     pause 0.01
+     echo =========================
      echo ***   VAULT SCRIPT ACTIVE 
-     echo *** TYPE "DONE!" to LEAVE VAULT
-     echo =================================
+     echo *** TYPE "DONE" to LEAVE VAULT!
+     echo =========================
 VAULT.LOOK:
      send rummage vault
-     pause 0.2
-     pause 0.2
      pause 0.1
+     pause 0.01
+     pause 0.001
      send rumm on shelf
      pause 0.1
      pause 0.1
+     pause 0.001
      send rumm on second shelf
-     pause 0.1
+     pause 0.2
+     pause 0.001
      send rumm on hook
+     pause 0.1
+     pause 0.001
+     send rumm drawer
      pause 0.2
+     pause 0.001
+     send rumm second drawer
+     pause 0.1
+     pause 0.1
+     send rumm third drawer
      pause 0.2
-     echo =================================
+     pause 0.1
+     pause 0.1
+     echo
+     echo =========================
      echo ***   VAULT SCRIPT ACTIVE 
-     echo *** TYPE DONE! or done! to LEAVE VAULT
-     echo =================================
+     echo *** TYPE DONE or done to LEAVE VAULT
+     echo =========================
+     echo
      put #parse VAULT
-     matchre VAULT.LEAVE DONE\!
-     matchre VAULT.LEAVE done\!
-     matchwait 110
+     matchre VAULT.LEAVE DONE
+     matchre VAULT.LEAVE done
+     matchwait 120
      goto VAULT.LOOK
 
 VAULT.LEAVE:
@@ -124,22 +154,22 @@ VAULT.LEAVE:
      echo LEAVING VAULT!
      echo
      pause 0.1
-     pause 0.1
-     put close vault
-     pause 0.4
+     send close vault
      pause 0.2
+     pause 0.1
      put go door
-     pause 0.4
-     pause 0.3
+     pause 0.2
+     pause 0.001
      put go arch
      pause 0.5
-     pause 0.1
+     pause 0.001
      move out
      pause 0.3
-     pause 0.2
+     pause 0.001
      put out
      pause 0.2
-     pause 0.1
+     pause 0.001
+     pause 0.001
 VAULT.DONE:
      echo
      echo *** DONE WITH VAULT SCRIPT!

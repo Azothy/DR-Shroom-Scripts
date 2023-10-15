@@ -26,14 +26,56 @@
                # Log window to use
                put #tvar Log Log
                # Container variables
-               var container backpack
-               var boxstore duffel bag
-               var sheathcontainer haversack
+               var container lootsack
+               var boxstore bottomless bag
+               var sheathcontainer hip pouch
                var DEFAULT.CONTAINER %container
                var BOX.CONTAINER %boxstore
                var SHEATH  %sheathcontainer
           }
-     if "$charactername" = "Valgrind" then
+     if "$charactername" = "Healbitch" then
+          {
+               # Steal from XING or LETH?
+               var stealing LETH
+               # Log window to use
+               put #tvar Log Log
+               # Container variables
+               var container haversack
+               var boxstore backpack
+               var sheathcontainer hip pouch
+               var DEFAULT.CONTAINER %container
+               var BOX.CONTAINER %boxstore
+               var SHEATH  %sheathcontainer
+          }
+     if "$charactername" = "Fuku" then
+          {
+               # Steal from XING or LETH?
+               var stealing LETH
+               # Log window to use
+               put #tvar Log Log
+               # Container variables
+               var container haversack
+               var boxstore backpack
+               var sheathcontainer hip pouch
+               var DEFAULT.CONTAINER %container
+               var BOX.CONTAINER %boxstore
+               var SHEATH  %sheathcontainer
+          }
+     if "$charactername" = "Illuminati" then
+          {
+               # Steal from XING or LETH?
+               var stealing LETH
+               # Log window to use
+               put #tvar Log Log
+               # Container variables
+               var container haversack
+               var boxstore backpack
+               var sheathcontainer hip pouch
+               var DEFAULT.CONTAINER %container
+               var BOX.CONTAINER %boxstore
+               var SHEATH %sheathcontainer
+          }
+     if "$charactername" = "Hashish" then
           {
                # Steal from XING or LETH?
                var stealing LETH
@@ -41,8 +83,8 @@
                put #tvar Log Log
                # Container variables
                var container carryall
-               var boxstore haversack
-               var sheathcontainer duffel bag
+               var boxstore duffel bag
+               var sheathcontainer oilcloth bag
                var DEFAULT.CONTAINER %container
                var BOX.CONTAINER %boxstore
                var SHEATH  %sheathcontainer

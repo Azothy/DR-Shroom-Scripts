@@ -4,31 +4,40 @@ put #class rp on
 #put #class arrive off
 #put #class combat off
 #put #class joust off
-# Script to Travel for Genie3 #
-# Originally written by Chris/Achilles
-# Revitalized and Robustified by Shroom 
-var version 4.7
+# Script to Travel for Genie4 #
+# Originally written by Achilles
+# Revitalized and Robustified by Shroom
+var version 5.1.4
 # REQUIRES EXPTRACKER PLUGIN
-# Updated: 2/22/23
-
-# USAGE - .travel <location> <room number(optional)>  
-# .travel shard 40 - Travel to Shard then move to room 40
+# Updated: 10/15/23
+#
+# USAGE - .travel <location>
+#  OR   - .travel <location <room number>
+# .travel shard - Travel to Shard
+# .travel shard 40 - Travel to Shard - then move to ROOM 40.
+#
+# POWER TRAVEL SCRIPT - TRAVELS TO/FROM ALMOST ANYWHERE IN DR
+# THIS SCRIPT USES PLAT PORTALS TO TRAVEL BETWEEN CITIES IF YOU ARE PLATINUM
 #
 # VALID FINAL DESTINATIONS YOU CAN CHOOSE ARE AS FOLLOWS:
 #
 # Crossing | Arthe Dale | West Gate | Tiger Clan | Wolf Clan | Dokt | Knife Clan | Kaerna
-# Stone Clan | Caravansary | Dirge | Ushnish | Sorrow's | Beisswurms | Misenseor |Leucros 
+# Stone Clan | Caravansary | Dirge | Ushnish | Sorrow's | Beisswurms | Misenseor | Leucros
 # Vipers | Malodorous Buccas | Alfren's Ferry | Leth Deriel  | Ilaya Taipa | Acenemacra
 # Riverhaven | Rossmans | Langenfirth | El'Bains | Zaulfun | Therenborough
 # Fornsted | Zaulfung |  Throne City | Hvaral | Haizen | Oasis | Yeehar | Muspar'i
-# Shard | Horse Clan | Fayrin's Rest | Steelclaw Clan | Spire |Corik's Wall
+# Shard | Horse Clan | Fayrin's Rest | Steelclaw Clan | Spire | Corik's Wall
 # Ylono | Granite Gargoyles | Gondola | Bone Wolves | Germishdin | Fang Cove | Wyvern Mountain
-# Raven's Point | Ain Ghazal| Outer Hib | Inner Hib | Hibarnhvidar |Boar Clan
-# Aesry Surlaenis'a | Ratha | M'riss | Mer'Kresh | Hara'jaal | Taisgath        
+# Raven's Point | Ain Ghazal| Outer Hib | Inner Hib | Hibarnhvidar | Boar Clan
+# Aesry Surlaenis'a | Ratha | M'riss | Mer'Kresh | Hara'jaal | Taisgath
 #
-# If calling this script via another, you can use waitforre ^YOU ARRIVED\! to match the end of travel script ie; 
+# THIS SCRIPT PARSES " YOU ARRIVED! " (Without the quotes) when it's done
+# If calling this script via another, you can use: waitforre ^YOU ARRIVED\!
+# to match the end of travel script ie;
+#
 #  put .travel cross
 #  waitforre ^YOU ARRIVED\!
+#
 ##########################################
 #                                        #
 #       ADJUSTABLE VARIABLES             #
@@ -68,7 +77,8 @@ var version 4.7
 ############################################
 ##  RANKS TO SWIM THE SEGOLTHA RIVER      ##
 ##  TIGER CLAN TO STR OR VICA VERSA       ##
-## ~TOUGH~ ONE! DONT LOWER! ~550 IS SAFE  ##
+## ~TOUGH ONE!~ DONT LOWER UNLESS SURE!!  ##
+## SAFE: 550 | BUFFED/STRONG: ~525        ##
     var segoltha 550
 ##########################################
 ## RANKS TO CLIMB UNDERGONDOLA SHORTCUT ##
@@ -105,28 +115,43 @@ if ("$charactername") = ("$char10") then var shardcitizen no
 ####
 #### DONT TOUCH ANYTHING BELOW THIS LINE
 ###########################################
-# CHANGELOG - Latest Update: 2/22/23
+# CHANGELOG - Latest Update: 10/15/23
+#
+# - Added micro pauses to AUTOMOVE_RETURN - In attempt to fix intermittent problematic issue
+# - In some cases, AUTOMOVE would return TOO FAST after moving into a NEW MAP and automapper would still be registering the OLD zone id
+# - The script would think it was still on the OLD map and try firing a roomid for the old map, then automove would get confused by an invalid roomid
+# - So far this fix seems to be working well. But maybe a #mapper reset could be used in some instances
+#
+# - Robustified Travel to Rossman / Swimming Faldesu River
+#
+# - Added check for Athletics.Ranks at start of script
+#   - If not present should attempt to reset it and throw a message
+# - HEAVILY Robustified Random Movement Engine
+# - Added item checks for dark vision Sub (items that produce light)
+# - Speedups across many subs - Script should run a bit faster overall
+#
+# - Fixed travel issue from Shard to Stone Clan
 #
 # - Fixed issue in taking Thief tunnels into Shard
 # - Speedups in different parts of script
 # - Fixed several different bugs
 #
 # - Robustified Random Movement engine so script can recognize/escape from more obscure exits when first starting script in an unknown room
-# - Fixed bug when starting Travel from inside the Raven's Court 
+# - Fixed bug when starting Travel from inside the Raven's Court
 #
-# - Fixed several issues with PLAT PORTAL travel 
+# - Fixed several issues with PLAT PORTAL travel
 # - Specifically when travelling to Rossman and Mriss - that could cause an infinite portal loop
 # - Cleaned up echoes in several areas
 # - Fixed bugs in Random Movement engine
 #
 # - Cleaned up STOP_INVIS label - Added several more checks and removed unnecessary labelsS
-# - Speedups in several areas 
+# - Speedups in several areas
 #
 # - FIXED SHORTCUT TO MUSPARI THROUGH THE DESERT
 #
-# - ADDED LOGIC FOR ROSSMAN'S ROPE / BRIDGE 
-# - WILL NOW AUTO-DETECT WHETHER THE BRIDGE OR ROPE IS UP AND TAKE EITHER ONE 
-# ( SINCE THERE ARE STILL MAP DIFFERENCES BETWEEN TF / PRIME ) 
+# - ADDED LOGIC FOR ROSSMAN'S ROPE / BRIDGE
+# - WILL NOW AUTO-DETECT WHETHER THE BRIDGE OR ROPE IS UP AND TAKE EITHER ONE
+# ( SINCE THERE ARE STILL MAP DIFFERENCES BETWEEN TF / PRIME )
 #
 # - Overall Speedups to Script
 # - Better auto recovery from automapper fuckups
@@ -259,18 +284,38 @@ echo * Start: $zonename (Map: $zoneid | Room: $roomid)
 echo * Destination: %destination
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo
+if !def(Athletics.Ranks) then
+     {
+          echo
+          echo * Athletics.Ranks not set! Attempting to Auto-Fix...
+          echo * Do you have the EXPTracker Plugin installed??
+          echo
+          pause 0.5
+          put #tvar Athletics.Ranks 0
+          put exp 0
+          waitforre EXP HELP|Overall state
+          pause 0.1
+          pause 0.1
+     }
+if (!def(Athletics.Ranks) || ($Athletics.Ranks < 1)) then
+     {
+          echo
+          echo * Still not registering Athletics.Ranks!!! Make sure you have the EXPTracker Plugin!!
+          echo * Going for it anyway - But this will cause you to skip Athletics Shortcuts!
+          echo
+     }
 if !def(guild) then gosub INFO_CHECK
 if !def(circle) then gosub INFO_CHECK
 gosub BAG_CHECK
 gosub PREMIUM_CHECK
 # put #mapper reset
 # put #var save
-if matchre("$guild", "Necromancer") then
-     {
-          put perceive
-          pause 0.8
-          pause 0.2
-     }
+# if matchre("$guild", "Necromancer") then
+     # {
+          # put perceive
+          # pause 0.1
+          # pause 0.2
+     # }
 if ($hidden) then send unhide
 timer clear
 timer start
@@ -307,9 +352,12 @@ echo
 echo *** LET'S GO!!
 #DESTINATION
 #### SPECIAL ESCAPE SECTION FOR MAZES/HARD TO ESCAPE AREAS BY SHROOM
+#### THIS CHECKS IF WE ARE STARTING FROM A KNOWN MAZE / MESSED UP AREA THAT AUTOMAPPER GETS LOST IN
+#### THEN USES SPECIAL ESCAPE LOGIC TO GET TO A KNOWN LOCATION THAT AUTOMAPPER CAN USE
 if matchre("$roomname","The Raven's Court") then gosub AUTOMOVE 74
 if (("$zoneid" = "47") && ($Athletics.Ranks >= %muspari.shortcut) && !matchre("%destination", "\b(musp?a?r?i?)")) then gosub VELAKA_SHORTCUT
 if matchre("$roomname", "(Velaka, Slot Canyon|Yeehar's Graveyard|Heru Taipa)") then gosub AUTOMOVE 66
+if matchre("$roomname", "(Cavern of Glass|Aldauth's Lair)") then gosub ALDAUTH_ESCAPE
 if matchre("$roomname", "Ehhrsk Highway") then gosub EHHRSK_ESCAPE
 if (matchre("$roomname", "Zaulfung, Swamp") && matchre("$roomdesc", "Rancid mire")) then gosub ZAULFUNG_ESCAPE
 if matchre("$roomname", "Zaulfung, Trackless Swamp") then gosub ZAULFUNG_ESCAPE_2
@@ -339,6 +387,7 @@ if matchre("$roomname", "Velaka, Dunes") then gosub VELAKADUNES_ESCAPE
 ###################################################################################
 if matchre("$roomname", "Aboard the Mammoth") then gosub FERRYLOGIC
 if matchre("$roomname", "Gondola") then gosub FERRYLOGIC
+if matchre("$roomname", "\[\"Her Opulence\"\]|\[\"Hodierna's Grace\"\]|\[\"Kertigen's Honor\"\]|\[\"His Daring Exploit\"\]|\[\"Northern Pride\", Main Deck\]|\[\"Theren's Star\", Deck\]|\[The Evening Star\]|\[The Damaris\' Kiss\]|\[A Birch Skiff\]|\[A Highly Polished Skiff\]|\[\"The Desert Wind\"\]|\[\"The Suncatcher\"\]|\[\"The Riverhawk\"\]|\[\"Imperial Glory\"\]\"Hodierna's Grace\"|\"Her Opulence\"\]|\[The Galley Cercorim\]|\[The Jolas, Fore Deck\]|\[Aboard the Warship, Gondola\]|\[The Halasa Selhin, Main Deck\]|\[Aboard the Mammoth, Platform\]") then gosub FERRYLOGIC
 if (("$zoneid" = "0") || ("$roomid" = "0")) then
      {
           echo ### Unknown map or room id - Attempting to move in random direction to recover
@@ -354,6 +403,12 @@ if ("$zoneid" = "2d") then gosub AUTOMOVE temple
 if ("$zoneid" = "1j") then gosub AUTOMOVE cross
 if ("$zoneid" = "1l") then gosub AUTOMOVE cross
 if ("$zoneid" = "2a") then gosub AUTOMOVE cross
+#### IF IN FOREST GRYPHONS - TAKE THE EASIEST PATH OUT *Avoids Automapper getting stuck on a hard climb
+     if (("$zoneid" = "34") && ($roomid > 89) && ($roomid < 116)) then
+          {
+               gosub AUTOMOVE 90
+               gosub AUTOMOVE 49
+          }
 if (matchre("%destination", "\b(ratha|hara?j?a?a?l?|tais?g?a?t?h?)") && matchre("$zoneid", "\b(1|30|42|47|61|66|67|90|99|107|108|116)\b")) then
      {
           if (matchre("$game", "(?i)DRX") && (%portal = 1)) then
@@ -961,7 +1016,7 @@ if (("$zoneid" = "61") && matchre("%detour", "(leth|acen|taipa|LETH|ACEN|ratha|f
           goto ARRIVED
      }
 if ("$zoneid" = "61") then gosub AUTOMOVE 115
-if ("$zoneid" = "50") && matchre("%destination", "\b(knife?|wolf?|tige?r?|dirg?e?|arth?e?|kaer?n?a?|rive?r?|have?n?|ther?e?n?|lang?|raka?s?h?|musp?a?r?i?|zaul?f?u?n?g?|cross?i?n?g?)") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
+if ("$zoneid" = "50") && matchre("%destination", "\b(haizen|yeehar|oasis|hvaral|forns?t?e?d?|elbain|el'bain|alfren|rossm?a?n?|viper|leucro?|misens|beiss|sorrow|ushnish|caravan?s?a?r?y?|dokt|west|stone|knife|wolf|tiger|dirge|arthe|kaerna?|river|haven|riverhaven|theren|lang|throne|zaulfu?n?|rakash|muspar?i?|zaulfung|cross?|crossing)") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
 if ("$zoneid" = "50") then gosub SEGOLTHA_SOUTH
 if (("$zoneid" = "60") && ("%detour" = "alfren")) then
           {
@@ -981,7 +1036,11 @@ if (("$zoneid" = "60") && ("$guild" = "Thief")) then
                   }
           }
 if (("$zoneid" = "60") && ($Athletics.Ranks >= %segoltha)) then gosub AUTOMOVE 108
-if ("$zoneid" = "50") && matchre("%destination", "\b(knife|wolf|tiger|dirge|arthe|kaerna|haven|theren|lang|rakash|muspari|zaulfung|cross|crossing)") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
+# Crossing | Arthe Dale | West Gate | Tiger Clan | Wolf Clan | Dokt | Knife Clan | Kaerna
+# Stone Clan | Caravansary | Dirge | Ushnish | Sorrow's | Beisswurms | Misenseor |Leucros
+# Vipers | Malodorous Buccas | Alfren's Ferry | Leth Deriel  | Ilaya Taipa | Acenemacra
+# Riverhaven | Rossmans | Langenfirth | El'Bains | Zaulfun | Therenborough
+if ("$zoneid" = "50") && matchre("%destination", "\b(haizen|yeehar|oasis|hvaral|forns?t?e?d?|elbain|el'bain|alfren|rossm?a?n?|viper|leucro?|misens|beiss|sorrow|ushnish|caravan?s?a?r?y?|dokt|west|stone|knife|wolf|tiger|dirge|arthe|kaerna?|river|haven|riverhaven|theren|lang|throne|zaulfu?n?|rakash|muspar?i?|zaulfung|cross?|crossing)") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
 if ("$zoneid" = "50") then gosub SEGOLTHA_SOUTH
 if (("$zoneid" = "60") && ($Athletics.Ranks < %segoltha)) then
           {
@@ -1041,10 +1100,9 @@ if (("$zoneid" = "7") && matchre("%detour", "(arthe|dirge|kaerna|stone|misen|sor
              }
          if ("%detour" = "arthe") then gosub AUTOMOVE 535
          if ("%detour" = "kaerna") then gosub AUTOMOVE 352
-         if ("%detour" = "stone") then gosub AUTOMOVE 396
          if (("%detour" = "stone") && ("$zoneid" = "7")) then gosub AUTOMOVE 396
          if (("%detour" = "stone") && ("$zoneid" = "7")) then gosub AUTOMOVE 396
-         if ("%detour" = "beisswurms") then gosub AUTOMOVE 396
+         if (("%detour" = "beisswurms") && ("$zoneid" = "7")) then gosub AUTOMOVE 396
          if (("%detour" = "beisswurms") && ("$zoneid" = "7")) then gosub AUTOMOVE 396
          if ("%detour" = "fist") then gosub AUTOMOVE 253
          if ("%detour" = "misen") then gosub AUTOMOVE 437
@@ -1265,12 +1323,12 @@ if (matchre("$game", "(?i)DRX") && (%portal = 1)) then
      }
 if (("$zoneid" = "40") && ($Athletics.Ranks >= %rossmansouth)) then
      {
-          echo ** Athletics NOT high enough for Jantspyre - Taking Ferry!
+          echo ** Athletics high enough for Jantspyre - Taking shortcut!
           gosub AUTOMOVE 213
      }
 if (("$zoneid" = "40") && ($Athletics.Ranks < %rossmansouth)) then
           {
-              echo ** Athletics high enough for Jantspyre - Taking shortcut!
+              echo ** Athletics NOT high enough for Jantspyre - Taking Ferry!
               gosub INFO_CHECK
               if (%lirums < 140) then goto NOCOIN
               gosub AUTOMOVE 36
@@ -1367,7 +1425,7 @@ if ("$zoneid" = "1") then
               wait
               put #mapper reset
           }
-if ("$zoneid" = "50") && matchre("(knife|wolf|tiger|dirge|arthe|kaerna|haven|theren|lang|rakash|muspari|zaulfung|cross|crossing)", "%destination") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
+if ("$zoneid" = "50") && matchre("(haizen|yeehar|oasis|hvaral|forns?t?e?d?|elbain|el'bain|alfren|rossm?a?n?|viper|leucro?|misens|beiss|sorrow|ushnish|caravan?s?a?r?y?|dokt|west|stone|knife|wolf|tiger|dirge|arthe|kaerna?|river|haven|riverhaven|theren|lang|throne|zaulfu?n?|rakash|muspar?i?|zaulfung|cross?|crossing)", "%destination") && ($Athletics.Ranks > %segoltha) then gosub SEGOLTHA_NORTH
 if ("$zoneid" = "50") then gosub SEGOLTHA_SOUTH
 if ("$zoneid" = "1a") then gosub AUTOMOVE 23
 if (("$zoneid" = "67") && matchre("alfren", "%detour")) then
@@ -1870,7 +1928,7 @@ if (("$zoneid" = "60") && ("$guild" = "Thief")) then
 if (("$zoneid" = "60") && ($Athletics.Ranks >= %segoltha)) then gosub AUTOMOVE 108
 if (("$zoneid" = "60") && ($Athletics.Ranks < %segoltha)) then
           {
-              echo ** Athletics too low for Segoltha - Taking Ferry 
+              echo ** Athletics too low for Segoltha - Taking Ferry
               gosub INFO_CHECK
               if %kronars < 100 then goto NOCOIN
               gosub AUTOMOVE 42
@@ -1913,8 +1971,22 @@ if (("$zoneid" = "7") && ("%detour" = "caravansary")) then
               gosub AUTOMOVE caravan
               goto ARRIVED
           }
-if (("$zoneid" = "7") && ($Athletics.Ranks >= %faldesu)) then gosub AUTOMOVE 197
-if (("$zoneid" = "7") && ($Athletics.Ranks >= %faldesu)) then gosub AUTOMOVE 197
+if (("$zoneid" = "7") && ($Athletics.Ranks >= %faldesu)) then
+     {
+         gosub AUTOMOVE 197
+         pause 0.1
+         send #mapper reset
+         pause 0.001
+         pause 0.001
+     }
+if (("$zoneid" = "7") && ($Athletics.Ranks >= %faldesu)) then
+     {
+         gosub AUTOMOVE 197
+         pause 0.1
+         send #mapper reset
+         pause 0.001
+         pause 0.001
+     }
 if (("$zoneid" = "7") && ($Athletics.Ranks < %faldesu)) then
           {
               echo ** Athletics too low for Faldesu - Taking Ferry
@@ -1927,7 +1999,13 @@ if ("$zoneid" = "14c") then gosub FALDESU_NORTH
 if ("$zoneid" = "33a") then gosub AUTOMOVE 46
 if ("$zoneid" = "33") then gosub AUTOMOVE 1
 if (("$zoneid" = "31") && ("%detour" = "zaulfung")) then gosub AUTOMOVE 100
-if ("$zoneid" = "31") then gosub AUTOMOVE 1
+if ("$zoneid" = "31") then
+     {
+          gosub AUTOMOVE 1
+          pause 0.1
+          send #mapper reset
+          pause 0.0001
+     }
 if (("$zoneid" = "34a") && !matchre("%detour", "rossman")) then gosub AUTOMOVE forest
 if (("$zoneid" = "34") && matchre("%detour", "rossman")) then
           {
@@ -1951,7 +2029,7 @@ if (("$zoneid" = "34") && matchre("%detour", "(lang|theren|rakash|muspari|oasis|
           }
           gosub AUTOMOVE 137
      }
-if (("$zoneid" = "34") && matchre("%detour", "(haven|zaulfung)")) then
+if (("$zoneid" = "34") && matchre("%detour", "(haven|zaulfung|throne)")) then
           {
               if (($roomid > 120) && ($roomid < 153)) then
                     {
@@ -1979,7 +2057,9 @@ if (("$zoneid" = "47") && (matchre("$game", "(?i)DRX") && (%portal = 1) && (%por
 if (("$zoneid" = "47") && ($Athletics.Ranks >= %muspari.shortcut)) then gosub VELAKA_SHORTCUT
 if ("$zoneid" = "47") then
           {
-              echo ** Athletics too low for Muspari Shortcut - Taking Long Route
+              echo
+              echo ** Athletics too LOW for Muspari Shortcut - Taking Long Route
+              echo
               gosub AUTOMOVE 117
               gosub FERRYLOGIC
           }
@@ -2012,7 +2092,9 @@ if (("$zoneid" = "41") && matchre("%detour", "(muspari|fornsted|oasis)")) then
                }
               if matchre("%detour", "(muspari|oasis)") then
                   {
+                    echo
                     echo ** Athletics too low for Muspari Shortcut - Taking Long Route
+                    echo
                     gosub AUTOMOVE 91
                     gosub PASSPORT
                     gosub AUTOMOVE 160
@@ -2057,7 +2139,9 @@ if (("$zoneid" = "30") && matchre("%detour", "(rossman|lang|theren|rakash|muspar
           {
               if $Athletics.Ranks < %rossmannorth then
                   {
+                      echo
                       echo ** Athletics too low for Rossman Shortcut - Taking Ferry
+                      echo
                       gosub INFO_CHECK
                       if (%lirums < 140) then goto NOCOIN
                       gosub AUTOMOVE 99
@@ -2065,7 +2149,9 @@ if (("$zoneid" = "30") && matchre("%detour", "(rossman|lang|theren|rakash|muspar
                   }
               if $Athletics.Ranks >= %rossmannorth then
                   {
+                      echo
                       echo ** Athletics high enough for Jantspyre River - Taking Rossman's Shortcut!
+                      echo
                       gosub AUTOMOVE 174
                       gosub AUTOMOVE 29
                       gosub AUTOMOVE 48
@@ -2161,11 +2247,13 @@ if (("$zoneid" = "40") && matchre("%detour", "(?i)(lang|rakash|el'bain|mriss|mer
                       goto QITRAVEL
                   }
           }
-if (("$zoneid" = "40") && matchre("(haven|zaulfung|throne)", "%detour")) then
+if (("$zoneid" = "40") && matchre("%detour", "(?i)(haven|zaulfung|throne)")) then
           {
               if ($Athletics.Ranks >= %rossmansouth) then
                   {
+                      echo
                       echo ** Athletics high enough for Jantspyre River - Taking Rossman's Shortcut!
+                      echo
                       gosub AUTOMOVE 213
                       gosub AUTOMOVE 121
                       if matchre("$roomdesc", "pair of ropes tied to trees") then
@@ -2444,8 +2532,8 @@ HAIZEN_SHORTCUT_22:
      put go stone
      pause
 HAIZEN_SHORTCUT_4:
-     echo **** Trying to Navigate the stupid Velaka Desert... 
-     echo **** Looking for the "rocky trail" 
+     echo **** Trying to Navigate the stupid Velaka Desert...
+     echo **** Looking for the "rocky trail"
      if matchre("$roomobjs", "rocky trail") then goto HAIZEN_SHORTCUT_5
      gosub RANDOMWEIGHT west
      if matchre("$roomobjs", "rocky trail") then goto HAIZEN_SHORTCUT_5
@@ -3192,6 +3280,9 @@ FALDESU_NORTH:
     if ((!$northwest) && (!$northeast) && (!$north)) then
          {
               gosub Move climb stone bridge
+              pause 0.01
+              put #mapper reset
+              pause 0.001
               return
          }
     goto FALDESU_NORTH
@@ -3213,6 +3304,9 @@ FALDESU_SOUTH:
          {
               pause 0.1
               gosub Move climb stone bridge
+              pause 0.01
+              put #mapper reset
+              pause 0.001
               return
          }
     goto FALDESU_SOUTH
@@ -3348,6 +3442,7 @@ GONDOLAOUT:
   pause 0.2
   return
 #############################################################
+STOPINVIS:
 STOP_INVIS:
      delay 0.0001
      if ("$guild" = "Necromancer") then
@@ -3383,7 +3478,7 @@ STOP_INVIS:
           }
 return
 #######################################
-### STANDALONE CHECK TO MAKE SURE WE AREN'T IN A FERRY (USED FOR RANDOMMOVE SUB IF SCRIPT GETS LOST IN A ROOMID = 0) 
+### STANDALONE CHECK TO MAKE SURE WE AREN'T IN A FERRY (USED FOR RANDOMMOVE SUB IF SCRIPT GETS LOST IN A ROOMID = 0)
 FERRY_CHECK:
   delay 0.00001
   action var offtransport platform when a barge platform
@@ -3582,10 +3677,10 @@ OFFTHERIDE:
           put unhide
           pause 0.4
      }
-  if ("$guild" = "Necromancer") then
-     {
-          if (($spellROC = 0) || ($spellEOTB = 0)) then gosub NECRO_PREP
-     }
+  # if ("$guild" = "Necromancer") then
+     # {
+          # if (($spellROC = 0) || ($spellEOTB = 0)) then gosub NECRO_PREP
+     # }
   pause 0.1
   pause 0.1
   if matchre("$roomname", "Rocky Path") then
@@ -3726,14 +3821,14 @@ NOCOIN:
   put #parse NO COINS!
   echo
   echo #####################################
-  echo ### You don't have enough coins to travel - you vagrant!  
+  echo ### You don't have enough coins to travel - you vagrant!
   echo ### Trying to get some coins from the nearest bank!!!
   echo #####################################
   echo
   pause 0.4
   put wealth
   pause
-  if ($invisible = 1) then gosub stopinvis
+  if ($invisible = 1) then gosub STOP_INVIS
   if ("$zoneid" = "1") then
         {
             var currencyneeded kro
@@ -3744,7 +3839,7 @@ NOCOIN:
                }
             if (%kronars >= 120) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 120 copper
             wait
         }
@@ -3760,7 +3855,7 @@ NOCOIN:
                }
             if (%kronars >= 120) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 120 copper
             wait
         }
@@ -3774,7 +3869,7 @@ NOCOIN:
                }
             if (%lirums >= 140) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 140 copper
             wait
         }
@@ -3788,7 +3883,7 @@ NOCOIN:
                }
             if (%lirums >= 140) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 140 copper
             wait
         }
@@ -3803,7 +3898,7 @@ NOCOIN:
                }
             if (%lirums >= 200) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 200 copper
             wait
             pause 0.2
@@ -3824,7 +3919,7 @@ NOCOIN:
                }
             gosub AUTOMOVE teller
             if (%lirums >= %boarneeded) then goto COIN.CONTINUE
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             if matchre("%detour", "(mriss|merk|hara)") then
                 {
                     var currencyneeded qi
@@ -3845,7 +3940,7 @@ NOCOIN:
                }
             if (%dokoras > 120) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 120 copper
             wait
         }
@@ -3861,7 +3956,7 @@ NOCOIN:
                }
             if (%dokoras > %therencoin) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
 		  put withdraw %therencoin copper
             wait
         }
@@ -3875,7 +3970,7 @@ NOCOIN:
                }
             if (%dokoras > 120) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 120 copper
             wait
         }
@@ -3890,7 +3985,7 @@ NOCOIN:
                }
             if (%dokoras > 120) then goto COIN.CONTINUE
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 120 copper
             wait
         }
@@ -3898,7 +3993,7 @@ NOCOIN:
         {
             var currencyneeded aesry
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             if matchre("$game", "(?i)DR") then put withdraw 10 gold
             if matchre("$game", "(?i)DRF") then
                {
@@ -3916,7 +4011,7 @@ NOCOIN:
             gosub AUTOMOVE exchange
             gosub DOKORAS
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 300 copper
             wait
             gosub AUTOMOVE exchange
@@ -3931,19 +4026,19 @@ NOCOIN:
         {
             var currencyneeded aesryback
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 10 gold
         }
     if ("$zoneid" = "107") then
         {
             var currencyneeded lir
             gosub AUTOMOVE teller
-            if ($invisible = 1) then gosub stopinvis
+            if ($invisible = 1) then gosub STOP_INVIS
             put withdraw 140 copper
         }
     if ("$zoneid" = "108") then
         {
-            echo ## YOU ARE ON MRISS WITH NO COINS!  YOU NEED TO FIND A FRIEND FOR HELP! 
+            echo ## YOU ARE ON MRISS WITH NO COINS!  YOU NEED TO FIND A FRIEND FOR HELP!
             echo ## OR KILL SOME STUFF AND SELL HIDES / GEMS!
             exit
         }
@@ -4058,7 +4153,7 @@ INFO_CHECK:
      action var lirums $1;eval lirums replacere("%lirums", ",", "") when \(([0-9,]*) copper Lirums\)\.
      action var dokoras 0 when No Dokoras\.
      action var dokoras $1;eval dokoras replacere("%dokoras", ",", "") when \(([0-9,]*) copper Dokoras\)\.
-     delay 0.001
+     delay 0.0001
      send info;encumbrance
      waitforre ^\s*Encumbrance\s*\:
      pause 0.001
@@ -4072,7 +4167,7 @@ INFO_CHECK:
 #### THIS AUTO SETS MAIN.BAG / BACKUP.BAG / THIRD.BAG VARIABLES
 #### FOR STOWING ROUTINE ONLY - BACKUP CONTAINERS IN CASE DEFAULT "STOW" FAILS - THIS WILL CATCH ANY COMMON LARGE CONTAINERS
 #### ~ THIS SHOULD ONLY FIRE IF THE MOVE.STOW ROUTINE TRIGGERS AND DEFAULT STOW DOES NOT FULLY CLEAR HANDS ~
-#### THIS WAS MADE AS HAPPY MEDIUM - IS MUCH BETTER THAN USING HARDCODED VARIABLES 
+#### THIS WAS MADE AS HAPPY MEDIUM - IS MUCH BETTER THAN USING HARDCODED VARIABLES
 #### SETTING THE CONTAINERS AUTOMATICALLY MAKES IT EASY WITHOUT HAVING TO WORRY ABOUT USER VARIABLES / MULTI-CHARACTERS ETC..
 #### THIS SHOULD CATCH THE ~MAIN~ BAGS MOST PEOPLE HAVE AT LEAST ONE OR TWO OF
 BAG_CHECK:
@@ -4106,17 +4201,17 @@ BAG_CHECK:
      action var Shadows 1 when encompassing shadows
      action var Lootsack 1 when lootsack
      action var Satchel 1 when satchel
-     # echo *** Checking Containers..
+     echo * Quickly Checking Containers
      matchre BAG_PARSE INVENTORY
      put inv container
-     matchwait 3
+     matchwait 4
 BAG_PARSE:
-     var Bags Toolbelt|Hip.Pouch|Backpack|Haversack|Pack|Carryall|Rucksack|Duffel.Bag|Vortex|Eddy|Shadows|Lootsack|Satchel
+     var Bags Backpack|Haversack|Pack|Carryall|Rucksack|Duffel.Bag|Vortex|Eddy|Shadows|Toolbelt|Hip.Pouch|Lootsack|Satchel
      eval TotalBags count("%Bags", "|")
      var BagLoop 0
-     delay 0.001
-BAG_LOOP:
      delay 0.00001
+BAG_LOOP:
+     delay 0.000001
      var BAG %Bags(%BagLoop)
      if (%BagLoop > %TotalBags) then
           {
@@ -4195,7 +4290,7 @@ PREMIUM_TIME:
      return
 PREMIUM_SET:
      var premtime $1
-     pause 0.0001
+     delay 0.0001
      if (%premtime >= 6) then
           {
                var portal 1
@@ -4655,7 +4750,19 @@ REM.WEAR:
      wait
      pause 0.5
      RETURN
-######################################################################
+#############################################################################################
+#############################################################################################
+### ESCAPING MODULES (For Escaping from Areas where Automapper doesn't work/path properly)
+#############################################################################################
+#############################################################################################
+ALDAUTH_ESCAPE:
+     pause 0.0001
+     gosub AUTOMOVE 682
+     pause 0.01
+     send go door
+     pause 0.8
+     pause 0.6
+     return
 EHHRSK_ESCAPE:
      if (($roomid >= 734) && ($roomid <= 755)) then goto KRAHEI_ESCAPE_1
      if (($roomid >= 756) && ($roomid <= 770)) then goto KRAHEI_ESCAPE_2
@@ -4736,11 +4843,11 @@ ZAULFUNG_ESCAPE_2:
      echo ** ESCAPING FROM SWAMP TROLLS
      echo ======================
      if !$standing then put stand
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if ($up) then gosub MOVE up
      pause 0.1
      if ($roomid != 0) then return
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if ($up) then gosub MOVE up
      pause 0.1
      if ($roomid != 0) then return
@@ -4753,11 +4860,11 @@ ZAULFUNG_ESCAPE_3:
      echo ** ESCAPING FROM SWAMP TROLLS
      echo ======================
      if !$standing then put stand
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if ($up) then gosub MOVE up
      pause 0.1
      if ($roomid != 0) then return
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if ($up) then gosub MOVE up
      pause 0.1
      if ($roomid != 0) then return
@@ -4810,29 +4917,29 @@ DEADMAN_ESCAPE:
      echo ===================
      pause 0.3
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      if matchre("$roomdesc", "A cliff wall rises out of sight") then goto DEADMAN_ESCAPE_2
-     gosub TRUE_RANDOM_2
+     gosub TRUE_RANDOM
      goto DEADMAN_ESCAPE
 DEADMAN_ESCAPE_2:
      gosub RETREAT
@@ -4845,9 +4952,9 @@ DEADMAN_ESCAPE_2:
      pause 0.2
      if matchre("$roomname", "Deadman's Confide, Beach") then
           {
-               gosub TRUE_RANDOM_2
+               gosub TRUE_RANDOM
                pause 0.1
-               gosub TRUE_RANDOM_2
+               gosub TRUE_RANDOM
                pause 0.1
                goto DEADMAN_ESCAPE
           }
@@ -5263,220 +5370,107 @@ PUT:
      matchre WEBBED ^You can't do that while entangled in a web
      matchre STUNNED ^You are still stunned
      matchre PUT_UNTIE ^You should untie
-     matchre PUT_STOW ^You need a free hand|^Free one of your hands
+     matchre PUT_STOW ^You need a free hand|^Free one of your hands|^That will be hard with both your hands full\!
      matchre PUT_STAND ^You should stand up first\.|^Maybe you should stand up\.
      matchre WAIT ^\[Enter your command again if you want to\.\]
-     matchre RETURN_CLEAR You'?r?e? (?:hand|slip|put|get|.+ to|.+ fan|can't|leap|tug|quickly|dance|reverently|breathe|switch|deftly|swiftly|untie|sheathe|strap|slide|desire|raise|sling|pull|drum|trace|wear|tap|recall|press|hang|gesture|push|move|whisper|lean|tilt|cannot|mind|drop|drape|loosen|work|lob|spread|not|fill|will|now|slowly|quickly|spin|filter|need|shouldn't|pour|blow|twist|struggle|place|knock|toss|set|add|search|circle|fake|weave|shove|try|must|wave|sit|fail|turn|already|can\'t|glance|bend|swing|chop|bash|dodge|feint|draw|parry|carefully|quietly|sense|begin|rub|sprinkle|stop|combine|take|decide|insert|lift|retreat|load|fumble|exhale|yank|allow|have|are|wring|icesteel|scan|vigorously|adjust|bundle|ask|form|lose|remove|accept|pick|silently|realize|open|grab|fade|offer|tap|aren't|kneel|don\'t|close|let|find|attempt|tie|roll|attach|feel(?! fully rested)|read|reach|gingerly|come|effortlessly|corruption|count|secure|unload|briefly|zills|remain|release|shield) .*(?:\.|\!|\?)?
-     matchre RETURN_CLEAR ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says,
-     matchre RETURN_CLEAR ^The (?: clerk|teller|attendant|mortar|pestle|tongs|bowl|riffler|hammer|gem|book|page|lockpick|sconce|voice|waters|contours) .*(?:\.|\!|\?)?
-     matchre RETURN_CLEAR ^Quietly touching your lips with the tips of your fingers as you kneel, you make the Cleric's sign with your hand\.
-     matchre RETURN_CLEAR ^You sense that you are as pure of spirit as you can be, and you are ready for whatever rituals might face you\.
-     matchre RETURN_CLEAR ^You don't have a (.+) coin on you\!\s*The (.+) spider looks at you in forlorn disappointment\.|^The (.+) spider turns away
-     matchre RETURN_CLEAR ^It would be a shame|It's already open\!|^Brushing your fingers|There are already openings|Sensing your intent
-     matchre RETURN_CLEAR ^.?Roundtime\:?
-     matchre RETURN_CLEAR That will cost .* to repair\.\s*Just give it to me again if you want, and I'll have it ready in .*\.
-     matchre RETURN_CLEAR It will cost .* and take .* to repair .*\.\s*Just ask me again and I can get started\.
-     matchre RETURN_CLEAR Lucky for you\!\s*That isn't damaged\!|I will not repair something that isn't broken\.
-     matchre RETURN_CLEAR I'm sorry, but I don't work on those|There isn't a scratch on that, and I'm not one to rob you\.
-     matchre RETURN_CLEAR I don't work on those here\.|I don\'t repair those here|Please don't lose this ticket\!
-     matchre RETURN_CLEAR This is an exclusive item reserved for a certain subset of the population
-     matchre RETURN_CLEAR suddenly leaps toward you|and flies towards you|with a flick
-     matchre RETURN_CLEAR ^Please rephrase that command\.|^I could not find|^Perhaps you should|^I don\'t|^Weirdly,
-     matchre RETURN_CLEAR ^That (?:is|has) already|^(.+) what\?
-     matchre RETURN_CLEAR ^The .*(is|has|are|slides|fades)
-     matchre RETURN_CLEAR ^Obvious (?:exits|paths)
-     matchre RETURN_CLEAR \[You're|\[This is|too injured
-     matchre RETURN_CLEAR ^Moving|Brushing|Recalling|Unaware
-     matchre RETURN_CLEAR ^.*\[Praying for \d+ sec\.\]
-     matchre RETURN_CLEAR ^You cannot do that while engaged\!
-     matchre RETURN_CLEAR ^.+ is not in need|^That is closed\.
-     matchre RETURN_CLEAR ^This is a .* spell|The spell requires
-     matchre RETURN_CLEAR ^But (?:that|you|the)
-     matchre RETURN_CLEAR ^What (?:were you|is it)
-     matchre RETURN_CLEAR ^There (?:is|is not|isn't|doesn\'t)
-     matchre RETURN_CLEAR ^In the name of love\?|^Play on
-     matchre RETURN_CLEAR ^That (?:cannot|area|can't|won't|would)
-     matchre RETURN_CLEAR ^With a (?:keen|practiced)
-     matchre RETURN_CLEAR ^Some (?:polished|people|tarnished|.* zills)
-     matchre RETURN_CLEAR ^(\S+) has accepted
-     matchre RETURN_CLEAR ^Subservient type|^The shadows|^Close examination|^Try though
-     matchre RETURN_CLEAR ^USAGE\:|^Using your|^You.*analyze
-     matchre RETURN_CLEAR ^Allows a Moon Mage|^Smoking commands are
-     matchre RETURN_CLEAR ^A (?:slit|pair|shadow) .*(?:\.|\!|\?)?
-     matchre RETURN_CLEAR ^Your (?:actions|dance|nerves) .*(?:\.|\!|\?)?
-     matchre RETURN_CLEAR ^Having no further use for .*, you discard it\.
-     matchre RETURN_CLEAR ^After a moment, .*\.
-     matchre RETURN_CLEAR ^.* (?:is|are) not in need of cleaning\.
-     matchre RETURN_CLEAR ^The .* is not damaged enough to warrant repair\.
-     matchre RETURN_CLEAR \[Type INVENTORY HELP for more options\]|\[Use INVENTORY HELP for more options\.\]
-     matchre RETURN_CLEAR ^A vortex|^A chance for|^In a flash|^It is locked|^An aftershock
-     matchre RETURN_CLEAR ^In the .* you see .*\.
-     matchre RETURN_CLEAR .* (?:Dokoras|Kronars|Lirums)
-     matchre RETURN_CLEAR ^This spell cannot be targeted\.|^You cannot figure out how to do that\.S
-     matchre RETURN_CLEAR ^You will now store .* in your .*\.
-     matchre RETURN_CLEAR ^That tool does not seem suitable for that task\.
-     matchre RETURN_CLEAR ^There (isn\'t|doesn\'t seem to be) any more room in .*
-     matchre RETURN_CLEAR ^\[Ingredients can be added by using ASSEMBLE Ingredient1 WITH Ingredient2\]
-     matchre RETURN_CLEAR ^\s*LINK ALL CANCEL\s*- Breaks all links
-     matchre RETURN_CLEAR ^This ritual may only be performed on a corpse\.
-     matchre RETURN_CLEAR ^There is nothing else to face\!
-     matchre RETURN_CLEAR ^Stalking is an inherently stealthy endeavor, try being out of sight\.
-     matchre RETURN_CLEAR ^You're already stalking|^There aren't any
-     matchre RETURN_CLEAR ^You don't think you have enough focus to do that\.
-     matchre RETURN_CLEAR ^You have no idea how to cast that spell\.
-     matchre RETURN_CLEAR ^An offer|shakes (his|her) head
-     matchre RETURN_CLEAR ^Tie it off when it's empty\?
-     matchre RETURN_CLEAR ^But the merchant can't see you|are invisible
-     matchre RETURN_CLEAR Page|^As the world|^Obvious|^A ravenous energy
-     matchre RETURN_CLEAR ^In the|^The attendant|^That is already open\.|^Your inner
-     matchre RETURN_CLEAR ^(\S+) hands you|^Searching methodically|^But you haven\'t prepared a symbiosis\!
-     matchre RETURN_CLEAR ^Illustrations of complex,|^It is labeled|^Your nerves
-     matchre RETURN_CLEAR ^The lockpick|^Doing that|is not required to continue crafting
-     matchre RETURN_CLEAR ^Without (any|a|the)
+    matchre RETURN (You'?r?e?|As|With) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|corruption|count|combine|come|dance|decide|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slowly|spin|spread|sprinkle|start|stop|strap|struggle|swiftly|swing|switch|tap|take|the|though|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|you|zills) .*(?:\.|\!|\?)?
+     matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says,
+     matchre RETURN ^The(.*)?(clerk|teller|attendant|mortar|pestle|tongs|bowl|riffler|hammer|gem|book|page|lockpick|sconce|voice|waters|contours|person|is|has|are|slides|fades|hinges|spell|not)
+     matchre RETURN ^It('s)?(?:'s|a|and|the)?\s+?(?:would|will|is|a|already|dead|keen|practiced|graceful|stealthy|resounding|full|has)
+     matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime|\[Roundtime
+     matchre RETURN ^That('s)?\s+?(?:is|has|was|a|cannot|area|can't|won't|would|already|tool|will|cost|too)
+     matchre RETURN ^With(?: (a|and|the))?\s+?(?:keen|practiced|graceful|stealthy|resounding)
+     matchre RETURN ^This (is a .+ spell|is an exclusive|spell|ritual)
+     matchre RETURN ^The .*(is|has|are|slides|fades|hinges|spell|not|vines|antique|(.+) spider|pattern)
+     matchre RETURN ^There('s)?\s+?(?:is(n't)?|does(n't)?|already|no|not)
+     matchre RETURN ^But (?:that|you|you're|you've|the)
+     matchre RETURN ^Obvious (?:exits|paths)
+     matchre RETURN ^There's no room|any more room|no matter how you arrange|have all been used\.
+     matchre RETURN ^That's too heavy|too thick|too long|too wide|not designed to carry|cannot hold any more
+     matchre RETURN ^(You|I) can't|^Tie what\?|^You just can't|As you attempt to place your
+     matchre RETURN suddenly leaps toward you|and flies towards you|with a flick
+     matchre RETURN ^Brushing your fingers|^Sensing your intent|^Quietly touching your lips
+     matchre RETURN Lucky for you\!\s*That isn't damaged\!|I will not repair something that isn't broken\.
+     matchre RETURN I'm sorry, but I don't work on those|There isn't a scratch on that, and I'm not one to rob you\.
+     matchre RETURN I don't work on those here\.|I don't repair those here|Please don't lose this ticket\!
+     matchre RETURN ^Please rephrase that command\.|^I could not find|^Perhaps you should|^I don't|^Weirdly,|That can't
+     matchre RETURN \[You're|\[This is|too injured
+     matchre RETURN ^Moving|Brushing|Recalling|Unaware
+     matchre RETURN ^.*\[Praying for \d+ sec\.\]
+     matchre RETURN ^.+ is not in need|^That is closed\.
+     matchre RETURN ^What (?:were you|is it)
+     matchre RETURN ^In the name of love\?|^Play on|^(.+) what\?
+     matchre RETURN ^It's kind of wet out here\.
+     matchre RETURN ^Some (?:polished|people|tarnished|.* zills)
+     matchre RETURN ^(\S+) has accepted
+     matchre RETURN ^Subservient type|^The shadows|^Close examination|^Try though
+     matchre RETURN ^USAGE\:|^Using your|^You.*analyze
+     matchre RETURN ^Allows a Moon Mage|^Smoking commands are
+     matchre RETURN ^A (?:slit|pair|shadow) .*(?:\.|\!|\?)?
+     matchre RETURN ^Your (?:actions|dance|nerves) .*(?:\.|\!|\?)?
+     matchre RETURN ^Having no further use for .*, you discard it\.
+     matchre RETURN ^After a moment, .*\.
+     matchre RETURN ^.* (?:is|are) not in need of cleaning\.
+     matchre RETURN \[Type INVENTORY HELP for more options\]|\[Use INVENTORY HELP for more options\.\]
+     matchre RETURN ^A vortex|^A chance for|^In a flash|^It is locked|^An aftershock
+     matchre RETURN ^In the .* you see .*\.
+     matchre RETURN .* (?:Dokoras|Kronars|Lirums)
+     matchre RETURN ^You will now store .* in your .*\.
+     matchre RETURN ^\[Ingredients can be added by using ASSEMBLE Ingredient1 WITH Ingredient2\]
+     matchre RETURN ^\s\*LINK ALL CANCEL\s\*- Breaks all links
+     matchre RETURN ^Stalking is an inherently stealthy endeavor, try being out of sight\.
+     matchre RETURN ^You're already stalking|^There aren't any
+     matchre RETURN ^An offer|shakes (his|her) head
+     matchre RETURN ^Tie it off when it's empty\?
+     matchre RETURN ^But the merchant can't see you|are invisible
+     matchre RETURN Page|^As the world|^Obvious|^A ravenous energy
+     matchre RETURN ^In the|^The attendant|^That is already open\.|^Your inner
+     matchre RETURN ^(.+) hands you|^Searching methodically|^But you haven't prepared a symbiosis\!
+     matchre RETURN ^Illustrations of complex,|^It is labeled|^Your nerves
+     matchre RETURN ^The lockpick|^Doing that|is not required to continue crafting
+     matchre RETURN ^Without (any|a|the)|^Wouldn't (it|that|you)
+     matchre RETURN ^Weirdly, you can't manage
+     matchre RETURN ^Hold hands with whom\?
+     matchre RETURN ^Something in the area interferes
+     matchre RETURN ^With a .+ to your voice,
+     matchre RETURN ^Turning your focus solemnly inward
+     matchre RETURN ^Slow, rich tones form a somber introduction
+     matchre RETURN ^Images of streaking stars falling from the heavens
+     matchre RETURN ^With .* movements you prepare your body for the .* spell\.
+     matchre RETURN ^A strong wind swirls around you as you prepare the .* spell\.
+     matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime
+     matchre RETURN ^Shadow and light collide wildly around you as you prepare the .* spell\.
+     matchre RETURN ^The wailing of lost souls accompanies your preparations of the .* spell\.
+     matchre RETURN ^A soft breeze surrounds your body as you confidently prepare the .* spell\.
+     matchre RETURN ^Light withdraws from around you as you speak arcane words for the .* spell\.
+     matchre RETURN ^Tiny tendrils of lightning jolt between your hands as you prepare the .* spell\.
+     matchre RETURN ^Low, hummed tones form a soft backdrop for the opening notes of the .* enchante\.
+     matchre RETURN ^Heatless orange flames blaze between your fingertips as you prepare the .* spell\.
+     matchre RETURN ^Throwing your head back, you release a savage roar and growl words for the .* spell\.
+     matchre RETURN ^Entering a trance-like state, your hands begin to tremble as you prepare the .* spell\.
+     matchre RETURN ^Glowing geometric patterns arc between your upturned palms as you prepare the .* spell\.
+     matchre RETURN ^Focusing intently, you slice seven straight lines through the air as you invoke the .* spell.\.
+     matchre RETURN ^Accompanied with a flash of light, you clap your hands sharply together in preparation of the .* spell\.
+     matchre RETURN ^Icy blue frost crackles up your arms with the ferocity of a blizzard as you begin to prepare the .* spell\!
+     matchre RETURN ^A radiant glow wreathes your hands as you weave lines of light into the complicated pattern of the .* spell\.
+     matchre RETURN ^Kaleidoscopic ribbons of light swirl between your outstretched hands, coalescing into a spectral wildling spider\.
+     matchre RETURN ^Darkly gleaming motes of sanguine light swirl briefly about your fingertips as you gesture while uttering the .* spell\.
+     matchre RETURN ^As you begin to solemnly intone the .* spell a blue glow swirls about forming a nimbus that surrounds your entire being\.
+     matchre RETURN ^As you slam your fists together and inhale sharply, a glowing outline begins to form and a matrix of blue and white motes surround you\.
+     matchre RETURN ^In one fluid motion, you bring your palms close together and a fiery crimson mist begins to burn within them as you prepare the .* spell\.
+     matchre RETURN ^The first gentle notes of .* waft from you with delicate ease, riddled with low tones that gradually give way to a higher\-pitched theme\.
+     matchre RETURN ^Droplets of water coalesce around your fingertips as your arms undulate like gracefully flowing river currents to form the pattern of the .* spell\.
+     matchre RETURN ^Inhaling deeply, you adopt a cyclical rhythm in your breaths to reflect the ebb and flow of the natural world and steel yourself to prepare the .* spell\.
+     matchre RETURN ^Calmly reaching out with one hand, a silvery-blue beam of light descends from the sky to fill your upturned palm with radiance as you prepare the .* spell\.
+     matchre RETURN ^Turning your head slightly and gazing directly ahead with a calculating stare, tiny sparks of crystalline light flash around your eyes as you prepare the .* spell\.
+     matchre RETURN ^You take up a handful of dirt in your palm to prepare the .* spell\.  As you whisper arcane words, you gently blow the dust away and watch as it becomes swirling motes of glittering light that veil your hands in a pale aura\.
      send %putaction
      matchwait 20
      put #echo >Log Crimson *** MISSING MATCH IN PUT! (%scriptname.cmd) ***
      put #echo >Log Crimson Command = %putaction
      put #log $datetime MISSING MATCH IN PUT! Command = %putaction (%scriptname.cmd)
      return
-######################################################################
-## Movement
-MOVE:
-     delay 0.0001
-     var Direction $0
-     var movefailCounter 0
-     var randomloop 0
-     var lastmoved %Direction
-     pause 0.01
-MOVE_RESUME:
-     matchre MOVE_RETRY ^\.\.\.wait|^Sorry, you may only type|^Please wait\.|You are still stunned\.
-     matchre MOVE_RESUME ^You make your way up the .*\.\s*Partway up, you make the mistake of looking down\.\s*Struck by vertigo, you cling to the .* for a few moments, then slowly climb back down\.
-     matchre MOVE_RESUME ^You pick your way up the .*, but reach a point where your footing is questionable\.\s*Reluctantly, you climb back down\.
-     matchre MOVE_RESUME ^You approach the .*, but the steepness is intimidating\.
-     matchre MOVE_RESUME ^You struggle
-     matchre MOVE_RESUME ^You blunder
-     matchre MOVE_RESUME ^You slap
-     matchre MOVE_RESUME ^You work
-     matchre MOVE_RESUME make much headway
-     matchre MOVE_RESUME ^You flounder around in the water\.
-     matchre MOVE_RETREAT ^You are engaged to .*\!
-     matchre MOVE_RETREAT ^You can't do that while engaged\!
-     matchre MOVE_STAND ^You start up the .*, but slip after a few feet and fall to the ground\!\s*You are unharmed but feel foolish\.
-     matchre MOVE_STAND ^Running heedlessly over the rough terrain, you trip over an exposed root and land face first in the dirt\.
-     matchre MOVE_STAND ^You can\'t do that while lying down\.
-     matchre MOVE_STAND ^You can\'t do that while sitting\!
-     matchre MOVE_STAND ^You can\'t do that while kneeling\!
-     matchre MOVE_STAND ^You must be standing to do that\.
-     matchre MOVE_STAND ^You don\'t seem
-     matchre MOVE_STAND ^You must stand first\.
-     matchre MOVE_STAND ^Stand up first.
-     matchre MOVE_DIG ^You make no progress in the mud -- mostly just shifting of your weight from one side to the other\.
-     matchre MOVE_DIG ^You find yourself stuck in the mud, unable to move much at all after your pathetic attempts\.
-     matchre MOVE_DIG ^You struggle forward, managing a few steps before ultimately falling short of your goal\.
-     matchre MOVE_DIG ^Like a blind, lame duck, you wallow in the mud in a feeble attempt at forward motion\.
-     matchre MOVE_DIG ^The mud holds you tightly, preventing you from making much headway\.
-     matchre MOVE_DIG ^You fall into the mud with a loud \*SPLUT\*\.
-     matchre MOVE_FAIL_BAIL ^You can't go there
-     matchre MOVE_FAILED ^Noticing your attempt
-     matchre MOVE_FAILED ^I could not find what you were referring to\.
-     matchre MOVE_FAILED ^What were you referring to\?
-     matchre MOVE_RETURN ^It's pitch dark
-     matchre MOVE_RETURN ^Obvious
-     send %Direction
-     matchwait 15
-     goto MOVE_RETURN
-MOVE_RETRY:
-     pause
-     echo *** Retrying....
-     pause 0.5
-     goto MOVE_RESUME
-MOVE_STAND:
-     pause 0.1
-     matchre MOVE_STAND ^\.\.\.wait|^Sorry,|^Please wait\.
-     matchre MOVE_STAND ^You are overburdened and cannot manage to stand\.
-     matchre MOVE_STAND ^The weight
-     matchre MOVE_STAND ^You try
-     matchre MOVE_STAND ^You don\'t
-     matchre MOVE_RETREAT ^You are already standing\.
-     matchre MOVE_RETREAT ^You stand(?:\s*back)? up\.
-     matchre MOVE_RETREAT ^You stand up\.
-     send stand
-     matchwait 15
-     goto MOVE_STAND
-MOVE_RETREAT:
-     pause 0.1
-     if ($invisible = 1) then gosub STOP_INVIS
-     matchre MOVE_RETREAT ^\.\.\.wait|^Sorry,|^Please wait\.
-     matchre MOVE_RETREAT ^You retreat back to pole range\.
-     matchre MOVE_RETREAT ^You stop advancing
-     matchre MOVE_RETREAT ^You try to back away
-     matchre MOVE_STAND ^You must stand first\.
-     matchre MOVE_RESUME ^You retreat from combat\.
-     matchre MOVE_RESUME ^You are already as far away as you can get\!
-     send retreat
-     matchwait 10
-     goto MOVE_RETREAT
-MOVE_DIG:
-     pause 0.1
-     matchre MOVE_DIG ^\.\.\.wait|^Sorry,|^Please wait\.
-     matchre MOVE_DIG ^You struggle to dig off the thick mud caked around your legs\.
-     matchre MOVE_STAND ^You manage to dig enough mud away from your legs to assist your movements\.
-     matchre MOVE_DIG_STAND ^Maybe you can reach better that way, but you'll need to stand up for that to really do you any good\.
-     matchre MOVE_RESUME ^You will have to kneel
-     send dig
-     matchwait 10
-     goto MOVE_DIG
-MOVE_DIG_STAND:
-     pause 0.1
-     matchre MOVE_DIG_STAND ^\.\.\.wait|^Sorry,|^Please wait\.
-     matchre MOVE_DIG_STAND ^The weight
-     matchre MOVE_DIG_STAND ^You try
-     matchre MOVE_DIG_STAND ^You are overburdened and cannot manage to stand\.
-     matchre MOVE_DIG ^You stand(?:\s*back)? up\.
-     matchre MOVE_DIG ^You are already standing\.
-     send stand
-     matchwait 10
-     goto MOVE_DIG_STAND
-MOVE_FAILED:
-     var moved 0
-     math movefailCounter add 1
-     if (%movefailCounter > 3) then goto MOVE_FAIL_BAIL
-     pause 0.5
-     put look
-     pause 0.4
-     goto MOVE_RESUME
-MOVE_FAIL_BAIL:
-     put #echo
-     # put #echo >$Log Crimson *** MOVE FAILED. ***
-     ## put #echo Crimson *** MOVE FAILED.  ***
-     return
-MOVE_RETURN:
-     var moved 1
-     pause 0.001
-     pause 0.001
-     return
 
-STAND:
-     delay 0.0001
-     var LOCATION STAND_1
-     STAND_1:
-     matchre WAIT ^\.\.\.wait|^Sorry,
-     matchre WAIT ^.?Roundtime\:?
-     matchre WAIT ^The weight of all your possessions prevents you from standing\.
-     matchre WAIT ^You are overburdened and cannot manage to stand\.
-     matchre STUNNED ^You are still stunned
-     matchre WEBBED ^You can't do that while entangled in a web
-     matchre IMMOBILE ^You don't seem to be able to move to do that
-     matchre STAND_RETURN ^You stand (?:back )?up\.
-     matchre STAND_RETURN ^You stand up in the water
-     matchre STAND_RETURN ^You are already standing\.
-     send stand
-     matchwait
-     STAND_RETURN:
-     pause 0.1
-     pause 0.1
-     if (!$standing) then goto STAND
-     return
 #####################################################################################
 #######################################################################
 #### ENTERING GATE OF SOULS AREA / TEMPLE OF USHNISH MAZE ZONES
@@ -5590,16 +5584,17 @@ USHNISH_GO_ZONE3:
      return
 #####################################################################################################
 #####################################################################################################
+# PREMIERE LIGHT SOURCE CHECK BY SHROOM
+# USES ANY KNOWN GUILD SKILLS/SPELLS TO ATTEMPT TO ACTIVATE DARK VISION
+# IF STILL NOT ACTIVE - WILL CHECK FOR ITEMS THAT GIVE LIGHT (STARGLASS/LANTERN/GOGGLES) etc.
 #####################################################################################################
-#####################################################################################################
-LIGHT_SOURCE:
 LIGHT_SOURCE:
      delay 0.0001
      echo
-     echo ~~~~~~~~~~~~~~~~
-     echo * NEED A LIGHT SOURCE
+     echo ~~~~~~~~~~~~~~~~~~~~~
+     echo * DARK ROOM - NEED A LIGHT SOURCE
      echo * Checking for DARKVISION
-     echo ~~~~~~~~~~~~~~~~
+     echo ~~~~~~~~~~~~~~~~~~~~~
      echo
      delay 0.0001
      delay 0.0001
@@ -5618,6 +5613,17 @@ LIGHT_SOURCE:
                echo * THIEF - Khri Sight
                gosub PUT khri sight
                pause 0.2
+          }
+     if (("$guild" = "Bard") && ($circle > 10)) then
+          {
+               send release cyclic
+               pause 0.4
+               pause 0.1
+               put prep EYE 5
+               pause 16
+               put cast
+               pause
+               pause 0.5
           }
 LIGHT_SOURCE_1:
      if ("$guild" = "Cleric") then
@@ -5659,15 +5665,266 @@ LIGHT_SOURCE_2:
                pause 0.5
           }
 LIGHT_SOURCE_3:
-     if ("$guild" = "Paladin") then put glyph light
-     pause 0.1
-     ### ADD ADDITIONAL CHECKS HERE LATER FOR GOGGLES / GAEZTHEN ETC
+     if ("$guild" = "Paladin") then
+          {
+               send glyph light
+               pause 0.8
+               pause 0.2
+          }
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+     ### ADDITIONAL CHECKS HERE FOR GOGGLES / GAEZTHEN
+     goto GOGGLE_CHECK
      return
+
+### WE REACH THIS SUB IF WE HAVE NO GUILD SKILL FOR DARK VISION
+### NOW WE CHECK FOR ITEMS THAT GIVE DARK VISION
+### CHECK FOR NIGHTVISION GOGGLES
+GOGGLE_CHECK:
+GOGGLE_YES:
+     delay 0.0001
+     gosub PUT GET my goggle
+     pause 0.8
+     pause 0.3
+     if !matchre("$righthand $lefthand", "goggle") then goto STARGLASS_CHECK
+     matchre GOGGLE_YES \s*\.\.\.wait|^Sorry,|^Please wait\.|^You are still stunned
+     matchre GOGGLE_STOW remains inert|^You rub|^What
+     matchre GOGGLE_STOW ^Your tactile sense
+     put rub my goggle
+     matchwait 5
+GOGGLE_STOW:
+     pause 0.0001
+     gosub stowing
+     pause 0.0001
+     if matchre("$righthand $lefthand", "goggle") then gosub stowing
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+### CHECK FOR A STARGLASS
+STARGLASS_CHECK:
+     gosub stowing
+     pause 0.0001
+     gosub PUT GET my starglass
+     pause 0.5
+     pause 0.3
+     if !matchre("$righthand $lefthand", "(?i)starglass") then goto GAETHZEN_CHECK
+     gosub PUT CHARGE starglass 20
+     pause 0.8
+     pause 0.5
+     gosub PUT CHARGE starglass 20
+     pause 0.8
+     pause 0.5
+     put rub my starglass
+     pause 0.2
+     pause 0.0001
+     gosub PUT WEAR my starglass
+     pause 0.3
+     gosub stowing
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+### CHECK FOR A GAETHZEN LANTERN
+GAETHZEN_CHECK:
+     var FullCharge 0
+     gosub stowing
+     gosub RETREAT
+     pause 0.0001
+     gosub PUT GET gaethzen lantern
+     pause 0.7
+     pause 0.3
+     if !matchre("$righthand $lefthand", "(?i)lantern") then goto LANTERN_CHECK
+     echo
+     echo ~~~~~~~~~~~~~~
+     echo * CHARGING GAETHZEN
+     echo ~~~~~~~~~~~~~~
+     echo
+     action var FullCharge 1 when ^The .+ is already holding as much power as you could possibly charge it with\.
+     gosub PUT CHARGE lantern 25
+     pause 2
+     if (%FullCharge = 1) then goto GAETHZEN_2
+     gosub PUT CHARGE lantern 25
+     pause 2
+     if (%FullCharge = 1) then goto GAETHZEN_2
+     gosub PUT CHARGE lantern 15
+     pause 2
+     if (%FullCharge = 1) then goto GAETHZEN_2
+     gosub PUT CHARGE lantern 10
+     pause 2
+GAETHZEN_2:
+     gosub PUT focus my lantern
+     pause 0.2
+     gosub PUT rub my lantern
+     pause 0.5
+     put wear my lantern
+     pause 0.2
+     pause 0.0001
+     action remove ^The .+ is already holding as much power as you could possibly charge it with\.
+     gosub stowing
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+### CHECK HERE FOR A NORMAL OIL LANTERN
+LANTERN_CHECK:
+     var TriedOil 0
+     gosub stowing
+     pause 0.0001
+     gosub PUT GET my lantern
+     pause 0.7
+     pause 0.3
+     if !matchre("$righthand $lefthand", "(?i)lantern") then goto TORCH_CHECK
+LANTERN_DROP:
+     gosub PUT drop my lantern
+     pause 0.0001
+     gosub PUT GET my flint
+     gosub PUT GET my knife
+     pause 0.1
+     if (!matchre("$righthand $lefthand", "flint") && !matchre("$righthand $lefthand", "knife")) then
+          {
+               echo * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
+               put #echo >Log #FF3E00 * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
+               gosub stowing
+               goto GAETHZEN_YES
+          }
+LANTERN_LIGHT:
+     pause 0.0001
+     pause 0.0001
+     pause 0.0001
+     matchre LANTERN_LIGHT \s*\.\.\.wait|^Sorry,|^Please wait\.|^You are still stunned
+     matchre LIT_LANTERN manage to get a flame going
+     matchre REFUEL_IT But the flames fail to catch hold and they sputter out immediately\.
+     put light lantern with my flint
+     matchwait 5
+     goto LANTERN_LIGHT
+REFUEL_IT:
+     if (%TriedOil = 1) then goto LANTERN_DONE
+     pause 0.1
+     gosub stowing
+     pause 0.0001
+     gosub PUT GET lantern
+     gosub PUT GET lamp oil
+     pause 0.0001
+     put pour oil in lantern
+     pause 0.3
+     pause 0.0001
+     var TriedOil 1
+     goto LANTERN_DROP
+LIT_LANTERN:
+     pause 0.0001
+     echo * LANTERN LIT!
+     pause 0.0001
+     pause 0.0001
+     gosub stowing
+     gosub PUT GET lantern
+     pause 0.0001
+     put wear lantern
+     pause 0.2
+LANTERN_DONE:
+     gosub stowing
+     pause 0.0001
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+### CHECK FOR A TORCH
+TORCH_CHECK:
+     gosub stowing
+     echo
+     echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     echo * ATTEMPTING LAST RESORT FOR LIGHT CHECK!
+     echo * FLINT / TORCH / KNIFE
+     echo * CONSIDER ~NOT~ HUNTING IN A DARK AREA...
+     echo * THE FUCK FUCKERY OF ALL DR....
+     echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     echo
+     pause 0.5
+     pause 0.0001
+     # if (%HaveLighter = 1) then
+          # {
+               # gosub PUT GET my %Lighter.Name
+               # pause 0.1
+               # pause 0.0001
+               # if !matchre("$righthand", "(?i)%Lighter.Name") then
+                    # {
+                         # echo * LIGHTER NOT FOUND! - TURNING LIGHTER OFF
+                         # var HaveLighter 0
+                         # goto TORCH_FLINT
+                    # }
+               # gosub PUT GET my torch
+               # pause 0.0001
+               # pause 0.0001
+               # if !matchre("$righthand $lefthand", "(?i)torch") then goto NO_DARKVISION
+               # gosub PUT point %Lighter.Name at torch
+               # pause 0.0001
+               # pause 0.0001
+               # gosub STOWIT %Lighter.Name
+               # gosub DARK_CHECK
+               # if (%darkroom = 0) then goto YES_DARKVISION
+          # }
+TORCH_FLINT:
+     if !matchre("$righthand $lefthand", "(?i)torch") then gosub PUT GET my torch
+     pause 0.5
+     pause 0.3
+     if !matchre("$righthand $lefthand", "(?i)torch") then goto NO_DARKVISION
+     gosub PUT drop my torch
+     pause 0.0001
+     gosub PUT GET my flint
+     gosub PUT GET my carving knife
+     pause 0.7
+     pause 0.2
+     if !matchre("$righthand $lefthand", "(?i)knife") then
+          {
+               gosub PUT GET my knife
+               pause 0.7
+               pause 0.5
+               if !matchre("$righthand $lefthand", "(?i)knife") then gosub PUT remove my knife
+               pause 0.5
+          }
+     if !matchre("$righthand $lefthand", "(?i)knife") then
+          {
+               gosub PUT GET my blade
+               pause 0.7
+               pause 0.5
+          }
+     if (!matchre("$righthand $lefthand", "flint") && !matchre("$righthand $lefthand", "(knife|blade)")) then
+          {
+               echo * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
+               put #echo >Log #FF3E00 * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
+               gosub stowing
+               goto NO_DARKVISION
+          }
+     pause 0.0001
+     gosub PUT light torch with my flint
+     pause 0.0001
+     gosub stowing
+     gosub PUT GET torch
+     pause 0.1
+     gosub DARK_CHECK
+     if (%darkroom = 0) then goto YES_DARKVISION
+     goto NO_DARKVISION
+# DARK VISION RETURNS
+YES_DARKVISION:
+     echo
+     echo ~~~~~~~~~~~~~
+     echo * DARK VISION ACTIVATED!
+     echo ~~~~~~~~~~~~~
+     echo
+     var darkroom 0
+     return
+NO_DARKVISION:
+     echo
+     echo ~~~~~~~~~~~~~~~~~~~~~~~~~
+     echo * NO DARK VISION SKILL FOUND!
+     echo * AND MISSING FLINT/TORCH/LANTERN
+     echo * STUCK IN THE DARK! HAHA..
+     echo * Get a torch/flint at least...
+     echo ~~~~~~~~~~~~~~~~~~~~~~~~~
+     echo
+     put #echo >Log Red ** NO DARKVISION/TORCH/LIGHTER FOUND!
+     put #echo >Log Red ** CONSIDER ~NOT~ HUNTING IN DARK AREAS
+     var darkroom 1
+     gosub stowing
+     return
+#### DARK CHECK - CHECK TO MAKE SURE IF WE ARE IN A PITCH DARK ROOM OR ROOM
 DARK_CHECK:
 DARK_CHECK_1:
      var darkroom 1
      matchre DARK_CHECK_1 \s*\.\.\.wait|^Sorry,|^Please wait\.|^You are still stunned
-     matchre DARK_YES pitch dark|pitch black
+     matchre DARK_YES ^It's pitch dark and you can't see a thing\!|pitch black in here
      matchre LIGHT_YES Obvious|I|What|You
      put look
      matchwait 5
@@ -5681,7 +5938,221 @@ LIGHT_YES:
      var darkroom 0
      var darkTime $gametime
      return
+#########################################################################################################################################
+#########################################################################################################################################
+#### AUTOMOVEMENT - TRAVEL ROUTINES
+#########################################################################################################################################
+#########################################################################################################################################
+##################################################
+#### AUTOMOVE
+AUTOMOVE:
+     # action var exit $1;var webtype $2;goto websarestupid when ^As you approach (?:an?|the)\b.*? ((?:[\w'-]+) [\w'-]+|[\w'-]+), you become tangled up in the.*? \b(metallic|spidersilk|phantasmal|dew-covered|shadowy nightweaver silk)\b webbing
+     # action goto ABYSS_ESCAPE when ^With lightning speed, something large and arachnid bursts from below, dragging you into a web-filled, subterranean gloom!
+     delay 0.00001
+     action (moving) on
+     var Moving 0
+     var randomloop 0
+     var Destination $0
+     var automovefailCounter 0
+     if ($hidden = 1) then gosub UNHIDE
+     if ($standing = 0) then gosub AUTOMOVE_STAND
+     if ($roomid = 0) then gosub RANDOMMOVE
+     if ("$roomid" = "%Destination") then return
+AUTOMOVE_GO:
+     delay 0.00001
+     matchre AUTOMOVE_FAILED ^(?:AUTOMAPPER )?MOVE(?:MENT)? FAILED
+     matchre AUTOMOVE_RETURN ^YOU HAVE ARRIVED(?:\!)?
+     matchre AUTOMOVE_RETURN ^SHOP CLOSED(?:\!)?
+     matchre AUTOMOVE_FAIL_BAIL ^DESTINATION NOT FOUND
+     matchre AUTOMOVE_FAILED ^You don't seem
+     put #goto %Destination
+     matchwait 3
+     if (%Moving = 0) then goto AUTOMOVE_FAILED
+     matchre AUTOMOVE_FAILED ^(?:AUTOMAPPER )?MOVE(?:MENT)? FAILED
+     matchre AUTOMOVE_RETURN ^YOU HAVE ARRIVED(?:\!)?
+     matchre AUTOMOVE_RETURN ^SHOP CLOSED(?:\!)?
+     matchre AUTOMOVE_FAIL_BAIL ^DESTINATION NOT FOUND
+     matchwait 180
+     goto AUTOMOVE_FAILED
+AUTOMOVE_STAND:
+     delay 0.00001
+     if ($standing = 1) then goto AUTOMOVE_RETURN
+     matchre AUTOMOVE_STAND ^\.\.\.wait|^Sorry,|^You are still stunned\.
+     matchre AUTOMOVE_STAND ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime
+     matchre AUTOMOVE_STAND ^The weight of all your possessions prevents you from standing\.
+     matchre AUTOMOVE_STAND ^You are still stunned\.
+     matchre AUTOMOVE_RETURN ^You stand(?:\s*back)? up\.
+     matchre AUTOMOVE_RETURN ^You are already standing
+     send stand
+     matchwait 20
+     goto AUTOMOVE_STAND
+AUTOMOVE_FAILED:
+     delay 0.00001
+     # put #script abort automapper
+     pause 0.00001
+     math automovefailCounter add 1
+     if (%automovefailCounter > 5) then goto AUTOMOVE_FAIL_BAIL
+     if (%automovefailCounter > 1) then send #mapper reset
+     pause 0.01
+     if ($roomid = 0) || (%automovefailCounter > 2) then gosub RANDOMMOVE
+     goto AUTOMOVE_GO
+AUTOMOVE_FAIL_BAIL:
+     action (moving) off
+     put #echo
+     put #echo >Log Crimson *** AUTOMOVE FAILED. ***
+     put #echo >Log Destination: %Destination
+     put #echo Crimson *** AUTOMOVE FAILED.  ***
+     put #echo Crimson Destination: %Destination
+     put #echo
+AUTOMOVE_RETURN:
+     pause 0.00001
+     var randomloop 0
+     var automovefailCounter 0
+     action (moving) off
+     ### MICRO PAUSES ADDED HERE - TO AVOID TRIPUPS WITH MAP/ZONEID CHANGES 
+     ### SOMETIMES IT WOULD RETURN TOO FAST AND AUTOMAPPER WOULD STILL REGISTER THE OLD MAP
+     ### PERHAPS #MAPPER RESET COULD WORK, BUT COULD NOT THINK OF A FLUID WAY TO ADD THAT WASN'T SPAMMING CONSTANTLY
+     ### THIS JUST ADDS A *SLIGHT* PAUSE AFTER EVERY "GOSUB AUTOMOVE" WHICH SHOULD GIVE ENOUGH TIME 
+     ### FOR AUTOMAPPER TO REGISTER ANY ZONE ID CHANGES - BUT NOT REALLY INTERFERE WITH THE SPEED MUCH 
+     pause 0.001
+     pause 0.01
+     pause 0.01
+     return
+ABYSS_ESCAPE:
+     echo * OH SHIT
+     goto INIT
+################################
+# MOVE SINGLE
+################################
+MOVE:
+     delay 0.00001
+     var Direction $0
+     var movefailCounter 0
+     var moveRetreat 0
+     var randomloop 0
+     var lastmoved %Direction
+MOVE_RESUME:
+     matchre MOVE_RETRY ^\.\.\.wait|^Sorry, you may only type|^Please wait\.|You are still stunned\.
+     matchre MOVE_RETURN_CHECK ^You can't (swim|move|climb) in that direction\.
+     matchre MOVE_RESUME ^You make your way up the .*\.\s*Partway up, you make the mistake of looking down\.\s*Struck by vertigo, you cling to the .* for a few moments, then slowly climb back down\.
+     matchre MOVE_RESUME ^You pick your way up the .*, but reach a point where your footing is questionable\.\s*Reluctantly, you climb back down\.
+     matchre MOVE_RESUME ^You approach the .*, but the steepness is intimidating\.
+     matchre MOVE_RESUME ^You struggle
+     matchre MOVE_RESUME ^You blunder
+     matchre MOVE_RESUME ^You slap
+     matchre MOVE_RESUME ^You work
+     matchre MOVE_RESUME make much headway
+     matchre MOVE_RESUME ^You flounder around in the water\.
+     matchre MOVE_RETREAT ^You are engaged to .*\!
+     matchre MOVE_RETREAT ^You can't do that while engaged\!
+     matchre MOVE_STAND ^You start up the .*, but slip after a few feet and fall to the ground\!\s*You are unharmed but feel foolish\.
+     matchre MOVE_STAND ^Running heedlessly over the rough terrain, you trip over an exposed root and land face first in the dirt\.
+     matchre MOVE_STAND ^You can't do that while lying down\.
+     matchre MOVE_STAND ^You can't do that while sitting\!
+     matchre MOVE_STAND ^You can't do that while kneeling\!
+     matchre MOVE_STAND ^You must be standing to do that\.
+     matchre MOVE_STAND ^You don't seem
+     matchre MOVE_STAND ^You must stand first\.
+     matchre MOVE_STAND ^Stand up first.
+     matchre MOVE_DIG ^You make no progress in the mud \-\- mostly just shifting of your weight from one side to the other\.
+     matchre MOVE_DIG ^You find yourself stuck in the mud, unable to move much at all after your pathetic attempts\.
+     matchre MOVE_DIG ^You struggle forward, managing a few steps before ultimately falling short of your goal\.
+     matchre MOVE_DIG ^Like a blind, lame duck, you wallow in the mud in a feeble attempt at forward motion\.
+     matchre MOVE_DIG ^The mud holds you tightly, preventing you from making much headway\.
+     matchre MOVE_DIG ^You fall into the mud with a loud \*SPLUT\*\.
+     matchre MOVE_FAIL_BAIL ^You can't go there
+     matchre MOVE_FAILED ^Noticing your attempt
+     matchre MOVE_FAILED ^I could not find what you were referring to\.
+     matchre MOVE_FAILED ^What were you referring to\?
+     matchre MOVE_RETURN ^It's pitch dark
+     matchre MOVE_RETURN ^Obvious
+     send %Direction
+     matchwait 8
+     goto MOVE_RETURN
+MOVE_RETRY:
+     pause
+     goto MOVE_RESUME
+MOVE_STAND:
+     delay 0.00001
+     matchre MOVE_STAND ^\.\.\.wait|^Sorry,|^You are still stunned\.
+     matchre MOVE_STAND ^You are overburdened and cannot manage to stand\.
+     matchre MOVE_STAND ^The weight
+     matchre MOVE_STAND ^You try
+     matchre MOVE_STAND ^You don't
+     matchre MOVE_RETREAT ^You are already standing\.
+     matchre MOVE_RETREAT ^You stand(?:\s*back)? up\.
+     matchre MOVE_RETREAT ^You stand up\.
+     send stand
+     matchwait 8
+     goto MOVE_STAND
+MOVE_RETREAT:
+     delay 0.00001
+     math moveRetreat add 1
+     if (%moveRetreat > 4) then
+          {
+               send search
+               pause 0.5
+               pause 0.3
+               var moveRetreat 0
+          }
+     if ($invisible = 1) then gosub STOP_INVIS
+     matchre MOVE_RETREAT ^\.\.\.wait|^Sorry,|^You are still stunned\.
+     matchre MOVE_RETREAT ^You retreat back to pole range\.
+     matchre MOVE_RETREAT ^You stop advancing
+     matchre MOVE_RETREAT ^You try to back away
+     matchre MOVE_STAND ^You must stand first\.
+     matchre MOVE_RESUME ^You retreat from combat\.
+     matchre MOVE_RESUME ^You are already as far away as you can get\!
+     send retreat
+     matchwait 10
+     goto MOVE_RETREAT
+MOVE_DIG:
+     delay 0.00001
+     matchre MOVE_DIG ^\.\.\.wait|^Sorry,|^You are still stunned\.
+     matchre MOVE_DIG ^You struggle to dig off the thick mud caked around your legs\.
+     matchre MOVE_STAND ^You manage to dig enough mud away from your legs to assist your movements\.
+     matchre MOVE_DIG_STAND ^Maybe you can reach better that way, but you'll need to stand up for that to really do you any good\.
+     matchre MOVE_RESUME ^You will have to kneel
+     send dig
+     matchwait 10
+     goto MOVE_DIG
+MOVE_DIG_STAND:
+     delay 0.00001
+     matchre MOVE_DIG_STAND ^\.\.\.wait|^Sorry,|^You are still stunned\.
+     matchre MOVE_DIG_STAND ^The weight
+     matchre MOVE_DIG_STAND ^You try
+     matchre MOVE_DIG_STAND ^You are overburdened and cannot manage to stand\.
+     matchre MOVE_DIG ^You stand(?:\s*back)? up\.
+     matchre MOVE_DIG ^You are already standing\.
+     send stand
+     matchwait 10
+     goto MOVE_DIG_STAND
+MOVE_FAILED:
+     var moved 0
+     math movefailCounter add 1
+     if (%movefailCounter > 3) then goto MOVE_FAIL_BAIL
+     pause 0.5
+     put look
+     delay 0.4
+     goto MOVE_RESUME
+MOVE_FAIL_BAIL:
+     put #echo
+     # put #echo >$Log Crimson *** MOVE FAILED. ***
+     put #echo Crimson *** MOVE FAILED.  ***
+     put #echo
+     return
+MOVE_RETURN_CHECK:
+     put look
+     delay 0.001
+MOVE_RETURN:
+     var moved 1
+     var randomloop 0
+     delay 0.00001
+     unvar moveloop
+     unvar movefailCounter
+     return
 FIND_MYSELF:
+### OLD RANDOM MOVEMENT SUB - NO LONGER USED (MAINLY FOR POSTERITY)
 MOVERANDOM:
 moveRandomDirection:
      var moveloop 0
@@ -5772,12 +6243,13 @@ moveRandomDirection:
                gosub MOVE climb step
                return
           }
-     if matchre("$roomobjs $roomdesc","\b(exit|curtain|arch|door|gate|hole|hatch|trapdoor|path|animal trail|tunnel|portal)\b") then
+     if matchre("$roomobjs $roomdesc","\b(exit|curtain|arch|door|gate|hole|hatch|trapdoor|path|animal trail|tunnel|portal|docks)\b") then
           {
                gosub MOVE go $1
                return
           }
      if (matchre("$roomobjs $roomdesc","narrow hole") && ("%lastmoved" != "go hole")) then gosub MOVE go hole
+     if (matchre("$roomobjs $roomdesc","bank docks") && ("%lastmoved" != "go dock")) then gosub MOVE go dock
      if (matchre("$roomobjs $roomdesc","\bcrevice") && ("%lastmoved" != "go crevice")) then gosub MOVE go crevice
      if (%moved = 1) then return
      if (matchre("$roomobjs $roomdesc","\bgate\b") && ("%lastmoved" != "go gate")) then gosub MOVE go gate
@@ -5792,6 +6264,7 @@ moveRandomDirection:
      if (matchre("$roomobjs $roomdesc","\barchway") && ("%lastmoved" != "go archway")) then gosub MOVE go archway
      if (matchre("$roomobjs $roomdesc","\bexit\b") && ("%lastmoved" != "go exit")) then gosub MOVE go exit
      if (matchre("$roomobjs $roomdesc","\bpath\b") && ("%lastmoved" != "go path")) then gosub MOVE go path
+     if (matchre("$roomobjs $roomdesc","\bledge\b") && ("%lastmoved" != "go ledge")) then gosub MOVE go ledge
      if (%moved = 1) then return
      if (matchre("$roomobjs $roomdesc","\btrapdoor\b") && ("%lastmoved" != "go trapdoor")) then gosub MOVE go trapdoor
      if (matchre("$roomobjs $roomdesc","\bcurtain\b") && ("%lastmoved" != "go curtain")) then gosub MOVE go curtain
@@ -5850,20 +6323,25 @@ moveRandomDirection:
           }
      goto moveRandomDirection_2
 ###################################################################################
-### RANDOM MOVEMENT ENGINE BY SHROOM
-### GO IN RANDOM DIRECTIONS AND DON'T BACKTRACK FROM LAST MOVED DIRECTION IF POSSIBLE
-### IF IT CANNOT FIND A DIRECTION, WILL TAKE ANY POSSIBLE EXIT IT CAN SEE
-### WILL MOVE IN RANDOM DIRECTIONS IF IT CANNOT SEE ANY ROOM EXITS (PITCH BLACK)
+### NEW RANDOM MOVEMENT ENGINE BY SHROOM
+### ATTEMPTS TO MOVE UNTIL AUTOMAPPER REGISTERS POSITION
+### THIS IS NORMALLY CALLED WHEN AUTOMAPPER GETS LOST OR ROOMID = 0
+### ALSO USED TO NAVIGATE THROUGH MAZE AREAS
+### CAN BE USED AS A STANDALONE SUB
+### ATTEMPTS RANDOM DIRECTIONS AND DOESN'T BACKTRACK FROM LAST KNOWN DIRECTION IF POSSIBLE
+### IF IT CANNOT FIND A OBVIOUS ROOM EXIT AFTER SEVERAL LOOPS - WILL TRY ~ANY POSSIBLE EXIT~ IT CAN FIND
+### WILL MOVE IN TRUE RANDOM DIRECTIONS IF IT CANNOT SEE ANY ROOM EXITS (PITCH BLACK)
 ###################################################################################
 RANDOMMOVE:
-     delay 0.0001
+     delay 0.00001
      var moved 0
      var moveloop 0
 RANDOMMOVE_1:
      math moveloop add 1
      math randomloop add 1
-     if (%randomloop = 1) then gosub DARK_CHECK
+     if (%randomloop = 1) then gosub DARK_CHECK_1
      if !($standing) then gosub STAND
+## IF WE'VE DONE 20/40 LOOPS, DO A QUICK LOOK AND MAKE SURE NOT ON A FERRY
      if matchre("%moveloop", "\b(20|40)\b") then
           {
                echo * CANNOT FIND A ROOM EXIT??!
@@ -5871,19 +6349,14 @@ RANDOMMOVE_1:
                pause 0.4
                gosub FERRY_CHECK
           }
-     ### TRY A LIGHT SOURCE IF ROOM IS BLACK AND THEN TRY RANDOM DIRECTIONS
-     if (%moveloop > 15) then
+### TRY A LIGHT SOURCE IF ROOM IS PITCH BLACK AND THEN TRY TRUE RANDOM DIRECTIONS
+     if (%moveloop > 25) then
           {
                if matchre("$roomobjs $roomdesc","pitch black") then gosub LIGHT_SOURCE
                var lastmoved null
                gosub TRUE_RANDOM
           }
-     if (%moveloop > 30) then
-          {
-               if matchre("$roomobjs $roomdesc","pitch black") then gosub LIGHT_SOURCE
-               var lastmoved null
-               gosub TRUE_RANDOM
-          }
+### IF WE'VE DONE 50+ LOOPS - DO ALL CHECKS - LIGHT SOURCE/FERRY CHECK AND RESET BACK TO 0
      if (%moveloop > 50) then
           {
                echo ~~~~~~~~~~~~~~~~~~~
@@ -5904,6 +6377,14 @@ RANDOMMOVE_1:
                var moveloop 0
                return
           }
+### MOVE INTO TRUE RANDOM MODE
+     if (%moveloop > 55) then
+          {
+               if matchre("$roomobjs $roomdesc","pitch black") then gosub LIGHT_SOURCE
+               var lastmoved null
+               gosub TRUE_RANDOM
+          }
+### HERE BEGINS CONDITIONAL CHECKS FOR VERY SPECIFIC ROOMS AND HOW TO *TRY* AND HANDLE THEM
      if matchre("$roomname", "\[Skeletal Claw\]") then
           {
                echo ~~~~~~~~~~~~~~~~~~~~~
@@ -5917,6 +6398,7 @@ RANDOMMOVE_1:
      if (matchre("$roomname", "Deadman's Confide, Beach") || matchre("$roomobjs","thick fog") || matchre("$roomexits","thick fog")) then gosub TRUE_RANDOM
      if matchre("$roomname","Smavold's Toggery") then gosub MOVE go door
      if matchre("$roomname","Temple Hill Manor, Grounds") then gosub MOVE go gate
+     if matchre("$roomname","(Ylono's Repairs|Catrox's Forge|Unspiek's Repair Shop|Kamze's Repair|Storage Shed)") then gosub MOVE out
      if matchre("$roomname","Darkling Wood, Ironwood Tree") then gosub MOVE climb pine branches
      if matchre("$roomname","Darkling Wood, Pine Tree") then gosub MOVE climb white pine
      if (%moved = 1) then return
@@ -5925,34 +6407,102 @@ RANDOMMOVE_1:
      if matchre("$roomobjs","the garden") then gosub MOVE go garden
      if matchre("$roomobjs","underside of the Bridge of Rooks") then gosub MOVE climb bridge
      if (%moved = 1) then return
+### IF WE HAVE DONE 10 LOOPS WITH NO MATCHES - LOOK FOR AND TRY SOME OF THE MOST COMMON NON-CARDINAL EXITS
      if (%moveloop > 10) then
           {
-          if (matchre("$roomobjs $roomdesc","\barchway") && ("%lastmoved" != "go archway")) then gosub MOVE go archway
-          if matchre("$roomobjs","stone wall") then gosub MOVE climb niche
+          if matchre("$roomobjs","stone wall") then gosub MOVE climb wall
           if matchre("$roomobjs","narrow ledge") then gosub MOVE climb ledge
           if matchre("$roomobjs","craggy niche") then gosub MOVE climb niche
           if matchre("$roomobjs","double door") then gosub MOVE go door
           if matchre("$roomobjs","staircase") then gosub MOVE climb stair
           if matchre("$roomobjs","the exit") then gosub MOVE go exit
+          if matchre("$roomobjs","\bdocks?") then gosub MOVE go dock
           if matchre("$roomobjs","\bdoor\b") then gosub MOVE go door
+          if matchre("$roomobjs","\bledge\b") then gosub MOVE go ledge
+          if matchre("$roomobjs","\barch\b") then gosub MOVE go arch
+          if matchre("$roomobjs","\bgate\b") then gosub MOVE go gate
+          if matchre("$roomobjs","\btrapdoor\b") then gosub MOVE go trapdoor
+          if matchre("$roomobjs","\bcrevice\b") then gosub MOVE go crevice
+          if matchre("$roomobjs","\bcurtain\b") then gosub MOVE go curtain
+          if matchre("$roomobjs","\bportal\b") then gosub MOVE go portal
+          if matchre("$roomobjs","\btrail\b") then gosub MOVE go trail
+          if matchre("$roomobjs","\bpath\b") then gosub MOVE go path
+          if matchre("$roomobjs","\bhole\b") then gosub MOVE go hole
           }
      if (%moved = 1) then return
+### HERE BEGINS THE TRUE NORMAL CARDINAL CHECKS - HIT A RANDOM NUMBER THEN CHECK IF IT MATCHES A ROOM EXIT
+### AS LONG AS THE ROOM EXIT IS VALID AND IS NOT THE OPPOSITE OF OUR LAST DIRECTION - THEN TAKE IT
      random 1 11
      if ((%r = 1) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
      if ((%r = 2) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
      if ((%r = 3) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
-     if (%moved = 1) then return
      if ((%r = 4) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
      if ((%r = 5) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
      if ((%r = 6) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
      if ((%r = 7) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
-     if (%moved = 1) then return
      if ((%r = 8) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
      if (%r = 9) && ($out) then gosub MOVE out
      if ((%r = 10) && ($up) && ("%lastmoved" != "up")) then gosub MOVE up
      if ((%r = 11) && ($down) && ("%lastmoved" != "down")) then gosub MOVE down
      if (%moved = 1) then return
-     ### IF DONE 13 LOOPS WITH NO MATCH THEN CHECK FOR ANY OBVIOUS ROOM EXIT (AS LONG AS THAT WASN'T OUR LAST MOVE)
+### 2ND LOOP RANDOMIZED - SAME AS THE FIRST CHECK BUT THE DIRECTIONS HAVE BEEN SWITCHED UP
+     if ((%r = 1) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if ((%r = 2) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if ((%r = 3) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if ((%r = 4) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if ((%r = 5) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if ((%r = 6) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 7) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if (%r = 8) && ($out) then gosub MOVE out
+     if ((%r = 9) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 10) && ($down) && ("%lastmoved" != "up")) then gosub MOVE down
+     if ((%r = 11) && ($up) && ("%lastmoved" != "down")) then gosub MOVE up
+     if (%moved = 1) then return
+### 3RD LOOP - NOW WE JUST HARD CHECK FOR ANY OBVIOUS EXIT IN THE SAME NUMBER
+### AS LONG AS IT WASN'T OPPOSITE OUR LAST DIRECTION
+     random 1 4
+     if ((%r = 1) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if ((%r = 1) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 1) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if ((%r = 1) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if ((%r = 1) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if (%moved = 1) then return
+     if ((%r = 1) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 1) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if ((%r = 1) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if (%moved = 1) then return
+     if ((%r = 2) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if ((%r = 2) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 2) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if ((%r = 2) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if (%moved = 1) then return
+     if ((%r = 2) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if ((%r = 2) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 2) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if ((%r = 2) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if (%moved = 1) then return
+     if ((%r = 3) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if ((%r = 3) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if ((%r = 3) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 3) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if ((%r = 3) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if (%moved = 1) then return
+     if ((%r = 3) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 3) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if ((%r = 3) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if (%moved = 1) then return
+     if ((%r = 4) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if ((%r = 4) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 4) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if ((%r = 4) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if (%moved = 1) then return
+     if ((%r = 4) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if ((%r = 4) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 4) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if ((%r = 4) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if (%moved = 1) then return
+### THIS IS THE MAJOR CHECK FAILOVER
+### IF DONE 13 LOOPS WITH NO MATCH THEN CHECK FOR ~ANY POSSIBLE OBVIOUS ROOM EXIT~ (AS LONG AS THAT WASN'T OUR LAST MOVE)
      if (%moveloop > 13) then
           {
                if ($out) then gosub MOVE out
@@ -5970,10 +6520,26 @@ RANDOMMOVE_1:
                if (($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
                if (%moved = 1) then return
                if (matchre("$roomobjs $roomdesc","narrow hole") && ("%lastmoved" != "go hole")) then gosub MOVE go hole
+               if (matchre("$roomobjs $roomdesc","large hole") && ("%lastmoved" != "go hole")) then gosub MOVE go hole
                if (matchre("$roomobjs $roomdesc","\bcrevice") && ("%lastmoved" != "go crevice")) then gosub MOVE go crevice
+               if (matchre("$roomobjs $roomdesc","\bdocks") && ("%lastmoved" != "go dock")) then gosub MOVE go dock
                if (%moved = 1) then return
+               if (matchre("$roomobjs $roomdesc","\bpath\b") && ("%lastmoved" != "go path")) then gosub MOVE go path
+               if (matchre("$roomobjs $roomdesc","\btrail\b") && ("%lastmoved" != "go trail")) then gosub MOVE go trail
+               if (matchre("$roomobjs $roomdesc","\bpanel\b") && ("%lastmoved" != "go panel")) then gosub MOVE go panel
+               if (matchre("$roomobjs $roomdesc","\btent flap\b") && ("%lastmoved" != "go flap")) then gosub MOVE go flap
+               if (%moved = 1) then return
+               if matchre("$roomname","(Ylono's Repairs|Catrox's Forge|Unspiek's Repair Shop|Kamze's Repair|Storage Shed)") then gosub MOVE out
+               if (matchre("$roomobjs $roomdesc","\bdoor") && ("%lastmoved" != "go door")) then gosub MOVE go door
+               if (matchre("$roomobjs $roomdesc","double door") && ("%lastmoved" != "go door")) then gosub MOVE go door
+               if (matchre("$roomobjs $roomdesc","\btrapdoor\b") && ("%lastmoved" != "go trapdoor")) then gosub MOVE go trapdoor
+               if (matchre("$roomobjs $roomdesc","\bcurtain\b") && ("%lastmoved" != "go curtain")) then gosub MOVE go curtain
+               if (%moved = 1) then return
+               if (matchre("$roomobjs $roomdesc","\bnarrow track\b") && ("%lastmoved" != "go track")) then gosub MOVE go track
+               if (matchre("$roomobjs $roomdesc","\blava field\b") && ("%lastmoved" != "go lava field")) then gosub MOVE go lava field
                if (matchre("$roomobjs $roomdesc","\bgate\b") && ("%lastmoved" != "go gate")) then gosub MOVE go gate
                if (matchre("$roomobjs $roomdesc","\barch\b") && ("%lastmoved" != "go arch")) then gosub MOVE go arch
+               if (matchre("$roomobjs $roomdesc","\bexit\b") && ("%lastmoved" != "go exit")) then gosub MOVE go exit
                if (%moved = 1) then return
                if (matchre("$roomexits","\bforward") && ("%lastmoved" != "forward")) then gosub MOVE forward
                if (matchre("$roomexits","\baft\b") && ("%lastmoved" != "aft")) then gosub MOVE aft
@@ -5981,29 +6547,17 @@ RANDOMMOVE_1:
                if (matchre("$roomexits","\bstarboard") && ("%lastmoved" != "starboard")) then gosub MOVE starboard
                if (matchre("$roomexits","\bport\b") && ("%lastmoved" != "port")) then gosub MOVE port
                if (%moved = 1) then return
-               if (matchre("$roomobjs $roomdesc","\barchway") && ("%lastmoved" != "go archway")) then gosub MOVE go archway
-               if (matchre("$roomobjs $roomdesc","\bexit\b") && ("%lastmoved" != "go exit")) then gosub MOVE go exit
-               if (matchre("$roomobjs $roomdesc","\bpath\b") && ("%lastmoved" != "go path")) then gosub MOVE go path
-               if (%moved = 1) then return
-               if (matchre("$roomobjs $roomdesc","\btrapdoor\b") && ("%lastmoved" != "go trapdoor")) then gosub MOVE go trapdoor
-               if (matchre("$roomobjs $roomdesc","\bcurtain\b") && ("%lastmoved" != "go curtain")) then gosub MOVE go curtain
-               if (matchre("$roomobjs $roomdesc","\bdoor") && ("%lastmoved" != "go door")) then gosub MOVE go door
-               if (matchre("$roomobjs $roomdesc","double door") && ("%lastmoved" != "go door")) then gosub MOVE go door
-               if (%moved = 1) then return
+               if (matchre("$roomobjs $roomdesc","\bledge\b") && ("%lastmoved" != "go ledge")) then gosub MOVE go ledge
                if (matchre("$roomobjs $roomdesc","\bportal\b") && ("%lastmoved" != "go portal")) then gosub MOVE go portal
                if (matchre("$roomobjs $roomdesc","\btunnel\b") && ("%lastmoved" != "go tunnel")) then gosub MOVE go tunnel
+               if (%moved = 1) then return
                if (matchre("$roomobjs $roomdesc","\bjagged crack\b") && ("%lastmoved" != "go crack")) then gosub MOVE go crack
                if (matchre("$roomobjs $roomdesc","\bthe street\b") && ("%lastmoved" != "go street")) then gosub MOVE go street
                if (matchre("$roomobjs $roomdesc","(?i)\ba gate\b") && ("%lastmoved" != "go gate")) then gosub MOVE go gate
                if (%moved = 1) then return
                if (matchre("$roomobjs $roomdesc","\b(stairs|staircase|stairway)\b") && ("%lastmoved" != "climb stair")) then gosub MOVE climb stair
                if (matchre("$roomobjs $roomdesc","\bsteps\b") && ("%lastmoved" != "climb step")) then gosub MOVE climb step
-               if (matchre("$roomobjs $roomdesc","\btrail\b") && ("%lastmoved" != "go trail")) then gosub MOVE go trail
                if (%moved = 1) then return
-               if (matchre("$roomobjs $roomdesc","\bpanel\b") && ("%lastmoved" != "go panel")) then gosub MOVE go panel
-               if (matchre("$roomobjs $roomdesc","\btent flap\b") && ("%lastmoved" != "go flap")) then gosub MOVE go flap
-               if (matchre("$roomobjs $roomdesc","\bnarrow track\b") && ("%lastmoved" != "go track")) then gosub MOVE go track
-               if (matchre("$roomobjs $roomdesc","\blava field\b") && ("%lastmoved" != "go lava field")) then gosub MOVE go lava field
           }
      if (%moved = 0) then goto RANDOMMOVE_1
      # if ($roomid = 0) then goto RANDOMMOVE
@@ -6024,11 +6578,6 @@ RANDOMMOVE_CARDINAL:
                if matchre("$roomobjs $roomdesc","pitch black") then gosub LIGHT_SOURCE
                pause 0.2
                gosub TRUE_RANDOM
-               return
-          }
-     if (matchre("$roomobjs $roomdesc","\barchway") && ("%lastmoved" != "go archway")) then
-          {
-               gosub MOVE go archway
                return
           }
      if matchre("$roomname", "Deadman's Confide, Beach") || (matchre("$roomobjs","thick fog") || matchre("$roomexits","thick fog")) then
@@ -6056,21 +6605,36 @@ RANDOMMOVE_CARDINAL:
                gosub MOVE climb ladder
                return
           }
-     random 1 11
+     if matchre("$roomobjs","bank docks") then
+          {
+               gosub MOVE go dock
+               return
+          }
      if (%moved = 1) then return
+     random 1 11
      if ((%r = 1) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
      if ((%r = 2) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
      if ((%r = 3) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
-     if (%moved = 1) then return
      if ((%r = 4) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
      if ((%r = 5) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
      if ((%r = 6) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
      if ((%r = 7) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
-     if (%moved = 1) then return
      if ((%r = 8) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
      if (%r = 9) && ($out) then gosub MOVE out
      if ((%r = 10) && ($up) && ("%lastmoved" != "up")) then gosub MOVE up
      if ((%r = 11) && ($down) && ("%lastmoved" != "down")) then gosub MOVE down
+     if (%moved = 1) then return
+     if ((%r = 1) && ($southwest) && ("%lastmoved" != "northeast")) then gosub MOVE southwest
+     if ((%r = 2) && ($west) && ("%lastmoved" != "east")) then gosub MOVE west
+     if ((%r = 3) && ($south) && ("%lastmoved" != "north")) then gosub MOVE south
+     if ((%r = 4) && ($southeast) && ("%lastmoved" != "northwest")) then gosub MOVE southeast
+     if ((%r = 5) && ($east) && ("%lastmoved" != "west")) then gosub MOVE east
+     if ((%r = 6) && ($northeast) && ("%lastmoved" != "southwest")) then gosub MOVE northeast
+     if ((%r = 7) && ($northwest) && ("%lastmoved" != "southeast")) then gosub MOVE northwest
+     if (%r = 8) && ($out) then gosub MOVE out
+     if ((%r = 9) && ($north) && ("%lastmoved" != "south")) then gosub MOVE north
+     if ((%r = 10) && ($down) && ("%lastmoved" != "up")) then gosub MOVE down
+     if ((%r = 11) && ($up) && ("%lastmoved" != "down")) then gosub MOVE up
      if (%moved = 1) then return
      if (%moved = 0) then goto RANDOMMOVE_CARDINAL
      # if ($roomid = 0) then goto RANDOMMOVE
@@ -6170,8 +6734,9 @@ TRUE_RANDOM:
      if (%r = 6) then gosub MOVE s
      if (%r = 7) then gosub MOVE sw
      if (%r = 8) then gosub MOVE w
-     if (%moved = 0) then goto TRUE_RANDOM
+     if (%moved = 1) then return
      if (matchre("$roomobjs $roomdesc","\bexit\b") && ("%lastmoved" != "go exit")) then gosub MOVE go exit
+     if (matchre("$roomobjs $roomdesc","\bdocks\b") && ("%lastmoved" != "go dock")) then gosub MOVE go dock
      if (matchre("$roomobjs $roomdesc","\bpath\b") && ("%lastmoved" != "go path")) then gosub MOVE go path
      if (matchre("$roomobjs $roomdesc","\btrapdoor\b") && ("%lastmoved" != "go trapdoor")) then gosub MOVE go trapdoor
      if (matchre("$roomobjs $roomdesc","\bcurtain\b") && ("%lastmoved" != "go path")) then gosub MOVE go curtain
@@ -6261,208 +6826,26 @@ RANDOMSOUTH:
      var lastmoved null
 RANDOMSOUTH_RETURN:
      return
-
-
-RANDOMWEIGHT:
-     var weight $1
-     var randomweight
-     if %weight then var randomweight %randomweight|%weight
-     if $north%weight then var randomweight %randomweight|north%weight
-     if $south%weight then var randomweight %randomweight|south%weight
-     eval randomweightcount count("%randomweight", "|")
-RANDOMWEIGHT_2:
-     if ("%randomweight" = "") then return
-     random 1 %randomweightcount
-     gosub MOVE %randomweight(%r)
-     return
-RANDOMEAST:
-     if (($east) && ("%lastmoved" != "west")) then
-          {
-               gosub MOVE east
-               return
-          }
-     if (($northeast) && ("%lastmoved" != "southwest")) then
-          {
-               gosub MOVE northeast
-               return
-          }
-     if (($southeast) && ("%lastmoved" != "northwest")) then
-          {
-               gosub MOVE southeast
-               return
-          }
-     if (($north) && ("%lastmoved" != "south")) then
-          {
-               gosub MOVE north
-               return
-          }
-     if (($northwest) && ("%lastmoved" != "southeast")) then
-          {
-               gosub MOVE northwest
-               return
-          }
-     if (($west) && ("%lastmoved" != "east")) then
-          {
-               gosub MOVE west
-               return
-          }
-     return
-RANDOMWEST:
-     if (($west) && ("%lastmoved" != "east")) then
-          {
-               gosub MOVE west
-               return
-          }
-     if (($northwest) && ("%lastmoved" != "southeast")) then
-          {
-               gosub MOVE northwest
-               return
-          }
-     if (($southwest) && ("%lastmoved" != "northeast")) then
-          {
-               gosub MOVE southwest
-               return
-          }
-     if (($north) && ("%lastmoved" != "south")) then
-          {
-               gosub MOVE north
-               return
-          }
-     if (($northeast) && ("%lastmoved" != "southwest")) then
-          {
-               gosub MOVE northeast
-               return
-          }
-     if (($east) && ("%lastmoved" != "west")) then
-          {
-               gosub MOVE east
-               return
-          }
-     return
-RANDOMNORTH:
-     if (($north) && ("%lastmoved" != "south")) then
-          {
-               gosub MOVE north
-               return
-          }
-     if (($northeast) && ("%lastmoved" != "southwest")) then
-          {
-               gosub MOVE northeast
-               return
-          }
-     if (($northwest) && ("%lastmoved" != "southeast")) then
-          {
-               gosub MOVE northwest
-               return
-          }
-     if (($west) && ("%lastmoved" != "east")) then
-          {
-               gosub MOVE west
-               return
-          }
-     if (($east) && ("%lastmoved" != "west")) then
-          {
-               gosub MOVE east
-               return
-          }
-     return
-RANDOMSOUTH:
-     if (($south) && ("%lastmoved" != "north")) then
-          {
-               gosub MOVE south
-               return
-          }
-     if (($southeast) && ("%lastmoved" != "northwest")) then
-          {
-               gosub MOVE southeast
-               return
-          }
-     if (($southwest) && ("%lastmoved" != "northeast")) then
-          {
-               gosub MOVE southwest
-               return
-          }
-     if (($east) && ("%lastmoved" != "west")) then
-          {
-               gosub MOVE east
-               return
-          }
-     if (($west) && ("%lastmoved" != "east")) then
-          {
-               gosub MOVE west
-               return
-          }
-     return
 ###########################################################
-AUTOMOVE:
+STAND:
      delay 0.0001
-     action (moving) on
-     var Moving 0
-     var randomloop 0
-     var Destination $0
-     var automovefailCounter 0
-     if ($hidden = 1) then
-          {
-               send unhide
-               pause 0.5
-          }
-     if ($standing = 0) then gosub AUTOMOVE_STAND
-     if ($roomid = 0) then gosub RANDOMMOVE
-     if ("$roomid" = "%Destination") then return
-AUTOMOVE_GO:
-     pause 0.0001
-     matchre AUTOMOVE_FAILED ^(?:AUTOMAPPER )?MOVE(?:MENT)? FAILED
-     matchre AUTOMOVE_RETURN ^YOU HAVE ARRIVED(?:\!)?
-     matchre AUTOMOVE_RETURN ^SHOP CLOSED(?:\!)?
-     matchre AUTOMOVE_FAIL_BAIL ^DESTINATION NOT FOUND
-     matchre AUTOMOVE_FAILED ^You don\'t seem
-     put #goto %Destination
-     matchwait 4
-     if (%Moving = 0) then goto AUTOMOVE_FAILED
-     matchre AUTOMOVE_FAILED ^(?:AUTOMAPPER )?MOVE(?:MENT)? FAILED
-     matchre AUTOMOVE_RETURN ^YOU HAVE ARRIVED(?:\!)?
-     matchre AUTOMOVE_RETURN ^SHOP CLOSED(?:\!)?
-     matchre AUTOMOVE_FAIL_BAIL ^DESTINATION NOT FOUND
-     matchwait 160
-     goto AUTOMOVE_FAILED
-AUTOMOVE_STAND:
-     pause 0.1
-     if ($standing = 1) then goto AUTOMOVE_RETURN
-     matchre AUTOMOVE_STAND ^\.\.\.wait|^Sorry,|^Please wait\.
-     matchre AUTOMOVE_STAND ^.?Roundtime\:?
-     matchre AUTOMOVE_STAND ^The weight of all your possessions prevents you from standing\.
-     matchre AUTOMOVE_STAND ^You are still stunned\.
-     matchre AUTOMOVE_RETURN ^You stand(?:\s*back)? up\.
-     matchre AUTOMOVE_RETURN ^You are already standing
+     var LOCATION STAND_1
+     STAND_1:
+     matchre WAIT ^\.\.\.wait|^Sorry,
+     matchre WAIT ^.?Roundtime\:?
+     matchre WAIT ^The weight of all your possessions prevents you from standing\.
+     matchre WAIT ^You are overburdened and cannot manage to stand\.
+     matchre STUNNED ^You are still stunned
+     matchre WEBBED ^You can't do that while entangled in a web
+     matchre IMMOBILE ^You don't seem to be able to move to do that
+     matchre STAND_RETURN ^You stand (?:back )?up\.
+     matchre STAND_RETURN ^You stand up in the water
+     matchre STAND_RETURN ^You are already standing\.
      send stand
-     matchwait 20
-     goto AUTOMOVE_STAND
-AUTOMOVE_FAILED:
+     matchwait
+STAND_RETURN:
      pause 0.1
-     # put #script abort automapper
-     pause 0.2
-     math automovefailCounter add 1
-     if (%automovefailCounter > 3) then goto AUTOMOVE_FAIL_BAIL
-     send #mapper reset
-     pause 0.1
-     put look
-     pause 0.5
-     pause 0.2
-     if ($roomid = 0) || (%automovefailCounter > 2) then gosub RANDOMMOVE
-     goto AUTOMOVE_GO
-AUTOMOVE_FAIL_BAIL:
-     action (moving) off
-     put #echo
-     put #echo >Log Crimson *** AUTOMOVE FAILED. ***
-     put #echo >Log Destination: %Destination
-     put #echo Crimson *** AUTOMOVE FAILED.  ***
-     put #echo Crimson Destination: %Destination
-     put #echo
-     return
-AUTOMOVE_RETURN:
-     action (moving) off
-     pause 0.1
-     pause 0.2
+     if (!$standing) then goto STAND
      return
 ###########################################################
 STAND_RET:
@@ -6474,7 +6857,7 @@ RETREAT_PAUSE:
 RETREAT:
      var retreatLoop 0
 1RETREAT:
-     pause 0.1
+     delay 0.00001
      math retreatLoop add 1
      var LOCATION RETREAT
      if (%retreatLoop > 5) then goto RETREAT_RETURN
@@ -6498,7 +6881,7 @@ RETREAT:
      put #echo >Log Crimson *** MISSING MATCH IN RETREAT! (ubercombat.cmd) ***
      put #log $datetime MISSING MATCH IN RETREAT (ubercombat.cmd)
 2RETREAT:
-     pause 0.1
+     delay 0.00001
      var LOCATION 2RETREAT
      math retreatLoop add 1
      if ($standing = 0) then gosub STAND
@@ -6634,10 +7017,7 @@ CALMED:
 RETURN_CLEAR:
      delay 0.0001
      put #queue clear
-     pause 0.0001
-     pause 0.0001
      return
 RETURN:
      delay 0.0001
-     pause 0.001
      return

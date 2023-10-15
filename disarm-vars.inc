@@ -9,13 +9,13 @@
 ## IF ONLY ONE CHARACTER THEN JUST SET CHARACTER1. REST CAN BE NULL
 ## EVERY CHARACTER THAT USES THIS SCRIPT MUST BE SETUP IN HERE
 var CHARACTER1 Shroom
-var CHARACTER2 Alucios
-var CHARACTER3 Valgrind
-var CHARACTER4 Hvinir
+var CHARACTER2 Acidbath
+var CHARACTER3 Arioth
+var CHARACTER4 Healbot
 var CHARACTER5 Raidboss
 var CHARACTER6 Illuminati
 var CHARACTER7 Hashish
-var CHARACTER8 NULL
+var CHARACTER8 Fuku
 var CHARACTER9 NULL
 var CHARACTER10 NULL
 var CHARACTER11 NULL
@@ -110,9 +110,9 @@ if ("$charactername" = "%CHARACTER2") then
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
      var container1 backpack
-     var container2 haversack
-     var container3 duffel.bag
-     var sheath bag
+     var container2 lootsack
+     var container3 leather bag
+     var sheath war belt
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -124,7 +124,7 @@ if ("$charactername" = "%CHARACTER2") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container leather pouch
+     var gempouch.container thigh bag
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?
@@ -165,7 +165,7 @@ if ("$charactername" = "%CHARACTER2") then
      #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
      #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
      #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
-     var baseline_difficulty -1
+     var baseline_difficulty 0
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
@@ -535,10 +535,10 @@ if ("$charactername" = "%CHARACTER8") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 bag
-     var container2 lootsack
-     var container3 pannier
-     var sheath harness
+     var container1 carryall
+     var container2 haversack
+     var container3 scavenger's pack
+     var sheath saddlebag
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -550,7 +550,7 @@ if ("$charactername" = "%CHARACTER8") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container thigh.pouch
+     var gempouch.container saddlebag
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?

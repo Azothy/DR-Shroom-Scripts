@@ -108,7 +108,7 @@ CARVELOCK2:
      matchre End.Master proudly glance down at a master's|It would be better
      match Broken snap
      match Carvelock2 Wait
-     put carve my lock with my car knife
+     put carve my lock with my carv knife
      matchwait
 
 BROKEN:
@@ -126,9 +126,12 @@ End.Master:
      echo
      echo **** CARVED A MASTER
      echo
-     pause 0.1
-     pause 0.1
-     put put lock in %container1
+     pause 0.3
+     pause 0.5
+     pause 0.0001
+     pause 0.0001
+     pause 0.0001
+     send put lock in %container1
      goto Finish
 
 End.GM:
@@ -136,9 +139,10 @@ End.GM:
      echo
      echo **** CARVED A GRANDMASTER!
      echo
-     pause 0.1
-     pause 0.1
-     put put lock in %container2
+     pause 0.3
+     pause 0.5
+     pause 0.0001
+     send put lock in %container2
      goto Finish
 
 FINISH:
@@ -201,8 +205,8 @@ FINISHED:
      put #echo >Log Lime **** %masters Masters / %grandmasters Grandmasters
      if ("$game" = "DRF") then
           {
-               put chatt ** LockpickBot: Lockpicks restocked on shelf! - Carved %keyblanks
-               put chatt ** %masters Masters - %grandmasters GMs
+               put chatt * LOCKPICK BOT: Restocked picks on shelf!
+               put chatt * Carved %keyblanks / %masters Masters - %grandmasters GMs
           }
      pause 0.5
      exit
@@ -211,9 +215,9 @@ ABORT:
 echo
 echo *** CONTAINER IS OUT OF ROOM!!! MAKE SOME ROOM!
 echo
-     if ("$game" = "DRF") then
+     if (("$game" = "DRF") && ("%keyblanks" > "0")) then
           {
-               put chatt ** LockpickBot: Lockpicks restocked on shelf! - Carved %keyblanks
-               put chatt ** %masters Masters - %grandmasters GMs
+               put chatt * LOCKPICK BOT: Restocked picks on shelf!
+               put chatt * Carved %keyblanks / %masters Masters - %grandmasters GMs
           }
 exit

@@ -21,7 +21,7 @@ if_1 then goto Loop
 exit
 
 Loop:
-     pause 0.001
+     pause 0.00001
      matchre Loop ^\.\.\.wait|^Sorry\,
      matchre DONE ^What were|^I could
      matchre PUT ^You get
@@ -30,10 +30,9 @@ Loop:
      goto DONE
 
 PUT:
-     pause 0.001
      put put %1 in %3
      pause 0.001
-     pause 0.1
+     pause 0.001
      goto Loop
 
 DONE:

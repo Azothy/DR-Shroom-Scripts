@@ -1,8 +1,0 @@
-#action goto COMBAT.TIMER when STARTING COMBAT
-
-WAIT.FOR.TRIGGER:
-pause 5500
-
-COMBAT.TIMER:
-put #parse COMBAT TIMEOUT
-exit

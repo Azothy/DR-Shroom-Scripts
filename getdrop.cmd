@@ -37,7 +37,7 @@ GetDropLoop:
 pause 0.0001
 matchre GetDropLoop ^\.\.\.wait|^Sorry\,
 matchre GetDropLoop2 ^What were|^I could not
-matchre DROP ^You get|You carefully
+matchre DROP ^You get|^You carefully
 matchre DROP ^You are already
 matchre GetDropLoop2 ^But that is
 put get my %item
@@ -58,11 +58,11 @@ DROP:
 if ("%dumpster" != "null") then
      {
           put put my %item in %dumpster
-          pause 0.1
+          pause 0.01
           goto GetDropLoop
      }
-if contains("$righthand","(grass|vine|rope)") then put drop my $righthand
-if contains("$lefthand","(grass|vine|rope)") then put drop my $lefthand
+if !matchre("$righthand","Empty") then put drop my $righthand
+if !matchre("$lefthand","Empty") then put drop my $lefthand
 if contains("$righthand|$lefthand","%item") then put drop my %item
 goto GetDropLoop
 
