@@ -221,30 +221,30 @@ ORDER:
      put #log $datetime MISSING MATCH IN ORDER! (utility.inc)
      return
 PUT:
-     delay 0.00001
      var putaction $0
      var LOCATION PUT_1
      PUT_1:
-     matchre PUT_1 ^\.\.\.wait|^Sorry\,|^You are still stunned\.
+     matchre PUT_1 ^\.\.\.wait|^Sorry,|^You are still stunned\.
      matchre IMMOBILE ^You don't seem to be able to move to do that
      matchre WEBBED ^You can't do that while entangled in a web
      matchre STUNNED ^You are still stunned
-     matchre RETURN_HEAL ^You can't pick that up with your hands that damaged\.|^Both your hands are missing\!
+     matchre RETURN ^You can't pick that up with your hands that damaged\.|^Both your hands are missing\!
      matchre PUT_UNTIE ^You should untie
      matchre PUT_ROLL_IT ^You should roll it up
-     matchre PUT_STOW ^You need a free hand|^Free one of your hands
+     matchre PUT_STOW ^You need a free hand|^Free one of your hands|^That will be hard with both your hands full\!
      matchre PUT_STAND ^You should stand up first\.|^Maybe you should stand up\.
      matchre WAIT ^\[Enter your command again if you want to\.\]
-     matchre RETURN (You'?r?e?|As|With) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|corruption|count|combine|come|dance|decide|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slowly|spin|spread|sprinkle|start|stop|strap|struggle|swiftly|swing|switch|tap|take|the|though|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|you|zills) .*(?:\.|\!|\?)?
-     matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says\,
+     matchre RETURN (^You'?r?e?|^As|^With|^Using).*(?:\.|\!|\?)?
+     matchre RETURN (You'?r?e?|As|With|Using) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|corruption|count|combine|come|dance|decide|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slow|slowly|spin|spread|sprinkle|start|stop|strap|struggle|swiftly|swing|switch|tap|take|the|though|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|you|zills) .*(?:\.|\!|\?)?
+     matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says,
      matchre RETURN ^The(.*)?(clerk|teller|attendant|mortar|pestle|tongs|bowl|riffler|hammer|gem|book|page|lockpick|sconce|voice|waters|contours|person|is|has|are|slides|fades|hinges|spell|not)
-     matchre RETURN ^It(\'s)?(?:'s|a|and|the)?\s+?(?:would|will|is|a|already|dead|keen|practiced|graceful|stealthy|resounding|full|has)
+     matchre RETURN ^It('s)?(?:'s|a|and|the)?\s+?(?:would|will|is|a|already|dead|keen|practiced|graceful|stealthy|resounding|full|has)
      matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime|\[Roundtime
-     matchre RETURN ^That(\'s)?\s+?(?:is|has|was|a|cannot|area|can't|won't|would|already|tool|will|cost|too)
+     matchre RETURN ^That('s)?\s+?(?:is|has|was|a|cannot|area|can't|won't|would|already|tool|will|cost|too)
      matchre RETURN ^With(?: (a|and|the))?\s+?(?:keen|practiced|graceful|stealthy|resounding)
      matchre RETURN ^This (is a .+ spell|is an exclusive|spell|ritual)
-     matchre RETURN ^The .*(is|has|are|slides|fades|hinges|spell|not|vines|antique|(.+) spider)
-     matchre RETURN ^There(\'s)?\s+?(?:is(n\'t)?|does(n\'t)?|already|no|not)
+     matchre RETURN ^The .*(is|has|are|slides|fades|hinges|spell|not|vines|antique|(.+) spider|pattern)
+     matchre RETURN ^There('s)?\s+?(?:is(n't)?|does(n't)?|already|no|not)
      matchre RETURN ^But (?:that|you|you're|you've|the)
      matchre RETURN ^Obvious (?:exits|paths)
      matchre RETURN ^There's no room|any more room|no matter how you arrange|have all been used\.
@@ -253,9 +253,9 @@ PUT:
      matchre RETURN suddenly leaps toward you|and flies towards you|with a flick
      matchre RETURN ^Brushing your fingers|^Sensing your intent|^Quietly touching your lips
      matchre RETURN Lucky for you\!\s*That isn't damaged\!|I will not repair something that isn't broken\.
-     matchre RETURN I'm sorry\, but I don't work on those|There isn't a scratch on that\, and I'm not one to rob you\.
-     matchre RETURN I don't work on those here\.|I don\'t repair those here|Please don't lose this ticket\!
-     matchre RETURN ^Please rephrase that command\.|^I could not find|^Perhaps you should|^I don\'t|^Weirdly\,|That can't
+     matchre RETURN I'm sorry, but I don't work on those|There isn't a scratch on that, and I'm not one to rob you\.
+     matchre RETURN I don't work on those here\.|I don't repair those here|Please don't lose this ticket\!
+     matchre RETURN ^Please rephrase that command\.|^I could not find|^Perhaps you should|^I don't|^Weirdly,|That can't
      matchre RETURN \[You're|\[This is|too injured
      matchre RETURN ^Moving|Brushing|Recalling|Unaware
      matchre RETURN ^.*\[Praying for \d+ sec\.\]
@@ -270,8 +270,8 @@ PUT:
      matchre RETURN ^Allows a Moon Mage|^Smoking commands are
      matchre RETURN ^A (?:slit|pair|shadow) .*(?:\.|\!|\?)?
      matchre RETURN ^Your (?:actions|dance|nerves) .*(?:\.|\!|\?)?
-     matchre RETURN ^Having no further use for .*\, you discard it\.
-     matchre RETURN ^After a moment\, .*\.
+     matchre RETURN ^Having no further use for .*, you discard it\.
+     matchre RETURN ^After a moment, .*\.
      matchre RETURN ^.* (?:is|are) not in need of cleaning\.
      matchre RETURN \[Type INVENTORY HELP for more options\]|\[Use INVENTORY HELP for more options\.\]
      matchre RETURN ^A vortex|^A chance for|^In a flash|^It is locked|^An aftershock
@@ -279,25 +279,26 @@ PUT:
      matchre RETURN .* (?:Dokoras|Kronars|Lirums)
      matchre RETURN ^You will now store .* in your .*\.
      matchre RETURN ^\[Ingredients can be added by using ASSEMBLE Ingredient1 WITH Ingredient2\]
-     matchre RETURN ^\s*LINK ALL CANCEL\s*\- Breaks all links
-     matchre RETURN ^Stalking is an inherently stealthy endeavor\, try being out of sight\.
+     matchre RETURN ^\s\*LINK ALL CANCEL\s\*- Breaks all links
+     matchre RETURN ^Stalking is an inherently stealthy endeavor, try being out of sight\.
      matchre RETURN ^You're already stalking|^There aren't any
      matchre RETURN ^An offer|shakes (his|her) head
      matchre RETURN ^Tie it off when it's empty\?
      matchre RETURN ^But the merchant can't see you|are invisible
      matchre RETURN Page|^As the world|^Obvious|^A ravenous energy
      matchre RETURN ^In the|^The attendant|^That is already open\.|^Your inner
-     matchre RETURN ^(.+) hands you|^Searching methodically|^But you haven\'t prepared a symbiosis\!
-     matchre RETURN ^Illustrations of complex\,|^It is labeled|^Your nerves
+     matchre RETURN ^(.+) hands you|^Searching methodically|^But you haven't prepared a symbiosis\!
+     matchre RETURN ^Illustrations of complex,|^It is labeled|^Your nerves
      matchre RETURN ^The lockpick|^Doing that|is not required to continue crafting
-     matchre RETURN ^Without (any|a|the)
+     matchre RETURN ^Without (any|a|the)|^Wouldn't (it|that|you)
      matchre RETURN ^Weirdly, you can't manage
      matchre RETURN ^Hold hands with whom\?
      matchre RETURN ^Something in the area interferes
-     matchre RETURN ^With a .+ to your voice\,
+     matchre RETURN ^With a .+ to your voice,
      matchre RETURN ^Turning your focus solemnly inward
      matchre RETURN ^Slow, rich tones form a somber introduction
      matchre RETURN ^Images of streaking stars falling from the heavens
+     matchre RETURN ^Strangely, you don't feel like fighting right now\.
      matchre RETURN ^With .* movements you prepare your body for the .* spell\.
      matchre RETURN ^A strong wind swirls around you as you prepare the .* spell\.
      matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime
@@ -328,7 +329,7 @@ PUT:
      matchre RETURN ^You take up a handful of dirt in your palm to prepare the .* spell\.  As you whisper arcane words, you gently blow the dust away and watch as it becomes swirling motes of glittering light that veil your hands in a pale aura\.
      send %putaction
      matchwait 20
-     echo *** MISSING MATCH IN PUT! ***
+     echo * MISSING MATCH IN PUT! ***
      put #echo >Log Crimson *** MISSING MATCH IN PUT! (%scriptname.cmd) ***
      put #echo >Log Crimson Command = %putaction
      put #log $datetime MISSING MATCH IN PUT! Command = %putaction (%scriptname.cmd)
@@ -466,6 +467,36 @@ GET:
      matchre RETURN ^Without (any|a)|Brushing
      matchre RETURN suddenly leaps toward you|and flies towards you|with a flick
      send get %todo
+     matchwait 20
+     put #echo >Log Crimson  *** MISSING MATCH IN GET! (ubercombat.cmd) ***
+     put #echo >Log Crimson  Get = %todo
+     put #log $datetime MISSING MATCH IN GET (ubercombat.cmd)
+     return
+GET2:
+     delay 0.0001
+     pause 0.1
+     var LOCATION GET3
+     GET3:
+     if ($standing = 0) then gosub STAND
+     pause 0.1
+     matchre WAIT ^\.\.\.wait|^Sorry\,|^Please wait\.
+     matchre WAIT ^You struggle with .* great weight but can't quite lift it\!
+     matchre IMMOBILE ^You don't seem to be able to move to do that
+     matchre WEBBED ^You can't do that while entangled in a web
+     matchre STUNNED ^You are still stunned
+     matchre HOLD_1 ^But that is already in your inventory\.
+     matchre RETURN ^Get what\?|Brushing
+     matchre RETURN ^You carefully remove .* from the bundle\.
+     matchre RETURN ^I could not find what you were referring to\.
+     matchre RETURN ^What were you referring to\?
+     matchre RETURN ^What do you want
+     matchre UNTIE_IT ^You should untie
+     matchre RETURN You'?r?e? (?:hand|slip|put|get|.* to|can't|might|quickly|switch|deftly|swiftly|untie|sheathe|strap|slide|desire|raise|sling|pull|drum|trace|wear|tap|recall|press|hang|gesture|push|move|whisper|lean|tilt|cannot|mind|drop|drape|loosen|work|lob|spread|not|fill|will|now|slowly|quickly|spin|filter|need|shouldn't|pour|blow|twist|struggle|place|knock|toss|set|add|search|circle|fake|weave|shove|try|must|wave|sit|fail|turn|already|can\'t|glance|bend|swing|chop|bash|dodge|feint|draw|parry|carefully|quietly|sense|begin|rub|sprinkle|stop|combine|take|decide|insert|lift|retreat|load|fumble|exhale|yank|allow|have|are|wring|icesteel|scan|vigorously|adjust|bundle|ask|form|lose|remove|accept|pick|silently|realize|open|grab|fade|offer|aren't|kneel|don\'t|close|let|find|attempt|tie|roll|attach|feel(?! fully (rested|prepared))|read|reach|gingerly|come|corruption|count|secure|unload|remain|release|shield) .*(?:\.|\!|\?)?
+     matchre RETURN ^As best it can\, .* moves in your direction\.
+     matchre RETURN ^The .* (is|are|slides)
+     matchre RETURN ^Without (any|a)|Brushing
+     matchre RETURN suddenly leaps toward you|and flies towards you|with a flick
+     send get %todo from my portal
      matchwait 20
      put #echo >Log Crimson  *** MISSING MATCH IN GET! (ubercombat.cmd) ***
      put #echo >Log Crimson  Get = %todo

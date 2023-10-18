@@ -1,11 +1,11 @@
 # Climbing Shard by Shroom
-# Start anywhere inside/around Shard
+# Start script anywhere inside/around Shard
 #debug 5
 ## USER VARIABLES
 ## Set weapons to wield for more difficult climbing
 var weapon1 sabre
 var weapon2 nightstick
-## Play Zills while climbing?
+## Play Zills while climbing? yes or no
 var zills yes
 ## MAX NUMBER OF CLIMBING LOOPS TO DO REGARDLESS OF MINDSTATE
 var maxLoops 12
@@ -13,9 +13,9 @@ var maxLoops 12
 ########################
 var LOOP 0
 counter set 0
-ECHO
-ECHO *** START ANYWHERE INSIDE OR AROUND SHARD
-ECHO 
+echo
+echo *** START ANYWHERE INSIDE OR AROUND SHARD
+echo 
 ## Add weapons here to make climbing harder for higher ranks
 if ($Athletics.Ranks > 700) then send get %weapon1
 pause 0.3
@@ -30,8 +30,11 @@ if ($Athletics.Ranks > 1000) then
      echo *** Going to train climbing outside the west gate on Wyvern Peak 
      goto WESTGATE.TRAINING
      }
-if ($Athletics.Ranks <= 700) then
+if ($Athletics.Ranks < 600) then
     {
+     echo
+     echo * Athletics Under 600 - Checking for a rope!
+     echo
 	if !contains("$righthandnoun $lefthandnoun", "rope") then
           {
           pause 0.001
@@ -59,10 +62,10 @@ Start:
 var location Undergondola
 if $Athletics.LearningRate >= 29 then goto DONE
 if (%c >= %maxLoops) then goto DONE
-ECHO
-ECHO *** STARTING CLIMBING SESSION %c ***
-ECHO
 counter add 1
+echo
+echo *** STARTING CLIMBING SESSION %c ***
+echo
 if "$guild" = "Thief" then 
      {
           send khri start focus flight
@@ -85,14 +88,26 @@ if "$guild" = "Moon Mage" then
           pause 14
           send cast
      }
-if tounder("%zills" = "yes") then send play $song
+if tounder("%zills" = "yes") then
+     {
+          gosub PERFORMANCE
+          send play $SONG
+     }
 pause 0.3
-if ($Athletics.Ranks < 220) then goto SHARD.WALLS
 SHARD.TO.UNDER:
+if !matchre("$zoneid","\b(65|67|66|68|69)\b") then goto ERROR
+if ($Athletics.Ranks < 220) then goto SHARD.WALLS
+if $zoneid = 65 then gosub automove shard
 if $zoneid = 68 then gosub automove shard
 if $zoneid = 69 then gosub automove north
 if $zoneid = 67 then gosub automove east
 if $zoneid = 66 then gosub automove waterfall
+pause 0.1
+if $zoneid = 68 then gosub automove shard
+if $zoneid = 69 then gosub automove north
+if $zoneid = 67 then gosub automove east
+if $zoneid = 66 then gosub automove waterfall
+pause 0.1
 BEGIN:
 UNDER.TO.PRACTICE:
 if $Athletics.Ranks < 240 then 
@@ -109,9 +124,9 @@ gosub automove 26
 pause 0.5
 if ($Athletics.Ranks < 450) && ($Athletics.Ranks > 190) then 
      {
-     ECHO 
-     ECHO **** PRACTICING CLIMBING
-     ECHO 
+     echo 
+     echo * PRACTICING CLIMBING
+     echo 
      put climb practice wall
      goto PRACTICE.LOOP
      }
@@ -129,6 +144,10 @@ pause 0.1
 TO.RESET:
 gosub automove 2
 pause 0.5
+echo
+echo * COLLECTING 2X 
+echo * WAITING FOR CLIMB COOLDOWN
+echo
 pause 0.1
 if ("$lefthand" != "Empty") 750 then 
      {
@@ -163,6 +182,9 @@ var LOOP 0
 if $Athletics.Ranks < 500 then 
  	{
           gosub automove 26
+          echo 
+          echo * PRACTICING CLIMBING
+          echo 
 		put climb practice wall
           goto PRACTICE.LOOP2
      }
@@ -170,6 +192,9 @@ var LOOP 0
 if $Athletics.Ranks > 500 then gosub automove 43
 if $Athletics.Ranks < 520 then 
 	{
+          echo 
+          echo * PRACTICING CLIMBING
+          echo 
 		put climb practice ledge
           goto PRACTICE.LOOP3
      }
@@ -191,6 +216,9 @@ pause
 pause 
 if $Athletics.Ranks < 700 then 
 	{
+          echo 
+          echo * PRACTICING CLIMBING
+          echo 
 		put climb practice branch
 		goto PRACTICE.LOOP4
 	}
@@ -275,15 +303,16 @@ SHARD.WALLS:
 var location Shard Walls
 counter add 1
 echo
-echo *** STARTING CLIMBING SESSION %c ***
+echo * STARTING CLIMBING SESSION %c *
 echo
 if ($Athletics.LearningRate >= 29) then goto DONE
+if $zoneid = 65 then gosub automove shard
 if $zoneid = 68 then gosub automove shard
 if $zoneid = 69 then gosub automove north
 if $zoneid = 66 then gosub automove portal
 if $zoneid = 67 then gosub automove east
 if $zoneid = 66 then gosub automove portal
-if tounder("%zills" = "yes") then send play $song
+if matchre("%zills",  "(?i)(YES|ON)") then send play $SONG
 pause 0.3
      put app wall quick
      pause 0.5
@@ -293,7 +322,7 @@ pause 0.3
      pause 0.5
      put climb embra
      pause 0.5
-     if !matchre("$roonname" "East Battlements") then goto SHARD.WALLS.2
+     if !matchre("$roomname" "East Battlements") then goto SHARD.WALLS.2
      pause 0.2
      put south
      pause 0.5
@@ -302,7 +331,7 @@ pause 0.3
 SHARD.WALLS.2:
 if $zoneid = 67 then gosub automove east
 if $zoneid = 66 then gosub automove 70
-if tounder("%zills" = "yes") then send play $song
+if matchre("%zills",  "(?i)(YES|ON)") then send play $SONG
 pause 0.3
      put app wall quick
      pause 0.5
@@ -312,7 +341,7 @@ pause 0.3
      pause 0.5
      put climb embra
      pause 0.5
-     if !matchre("$roonname" "North Battlements") then goto SHARD.WALLS.3
+     if !matchre("$roomname" "North Battlements") then goto SHARD.WALLS.3
      pause 0.2
      put south
      pause 0.5
@@ -321,8 +350,8 @@ pause 0.3
 SHARD.WALLS.3:
 if $zoneid = 67 then gosub automove east
 if $zoneid = 66 then gosub automove west
-if $zoneid = 69 then gosub automove west
-if tounder("%zills" = "yes") then send play $song
+if $zoneid = 69 then gosub automove 10
+if matchre("%zills",  "(?i)(YES|ON)") then send play $SONG
 pause 0.2
      put app wall quick
      pause 0.5
@@ -332,7 +361,7 @@ pause 0.2
      pause 0.5
      put climb embra
      pause 0.5
-     if !matchre("$roonname" "West Battlements") then goto SHARD.WALLS.4
+     if !matchre("$roomname" "West Battlements") then goto SHARD.WALLS.4
      pause 0.2
      put south
      pause 0.5
@@ -361,7 +390,7 @@ WESTGATE.TRAINING:
           # pause 1
           # pause
           # }
-     if tounder("%zills" = "yes") then send play $song
+     if matchre("%zills",  "(?i)(YES|ON)") then send play $SONG
      pause 0.3
      if $zoneid = 65 then gosub automove shard
      if $zoneid = 67 then gosub automove east
@@ -415,7 +444,7 @@ AUTOMOVE:
      pause 0.001
 	pause 0.001
      var Destination $0
-     if ("%guild" = "Necromancer") then gosub EOTB
+     # if (("$guild" = "Necromancer") && ($invisible = 0)) then gosub EOTB
      if !$standing then gosub STAND
      if $roomid = %Destination then RETURN
 AUTOMOVE_GO:
@@ -516,3 +545,38 @@ put #parse CLIMBING DONE
 put #parse DONE CLIMBING
 put #parse CLIMBING LOCKED
 exit
+
+EOTB:
+put stop play
+pause 0.5
+put prep EOTB
+pause 12
+put cast
+return
+
+ERROR:
+echo
+echo *** ERROR! MUST START SCRIPT NEAR/IN SHARD
+echo
+exit
+
+PERFORMANCE:
+if ($Performance.Ranks < 39) then put #var SONG SCALES
+if ($Performance.Ranks >= 39) && ($Performance.Ranks < 49) then put #var SONG ARPEGGIOS
+if ($Performance.Ranks >= 49) && ($Performance.Ranks < 58) then put #var SONG DITTY
+if ($Performance.Ranks >= 58) && ($Performance.Ranks < 69) then put #var SONG BALLAD
+if ($Performance.Ranks >= 69) && ($Performance.Ranks < 79) then put #var SONG WALTZ
+if ($Performance.Ranks >= 79) && ($Performance.Ranks < 99) then put #var SONG MARCH
+if ($Performance.Ranks >= 99) && ($Performance.Ranks < 115) then put #var SONG JIG
+if ($Performance.Ranks >= 115) && ($Performance.Ranks < 125) then put #var SONG LAMENT
+if ($Performance.Ranks >= 125) && ($Performance.Ranks < 179) then put #var SONG HYMN
+if ($Performance.Ranks >= 179) && ($Performance.Ranks < 219) then put #var SONG POLKA
+if ($Performance.Ranks >= 219) && ($Performance.Ranks < 249) then put #var SONG REEL
+if ($Performance.Ranks >= 249) && ($Performance.Ranks < 299) then put #var SONG SERENADE
+if ($Performance.Ranks >= 299) && ($Performance.Ranks < 349) then put #var SONG PSALM
+if ($Performance.Ranks >= 349) && ($Performance.Ranks < 449) then put #var SONG TANGO
+if ($Performance.Ranks >= 449) && ($Performance.Ranks < 474) then put #var SONG BOLERO
+if ($Performance.Ranks >= 474) && ($Performance.Ranks < 524) then put #var SONG NOCTURNE
+if ($Performance.Ranks >= 524) && ($Performance.Ranks < 549) then put #var SONG REQUIEM
+if ($Performance.Ranks >= 549) then put #var SONG CONCERTO
+return

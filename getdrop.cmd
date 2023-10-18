@@ -1,19 +1,21 @@
 
 #debug 10
 #######################################
-## GET-DROP SCRIPT BY SHROOM
-## GETS ALL OF X ITEM AND DUMPS/DROPS IT
-## WILL USE ANY TRASH CONTAINERS IT SEES
+## GET-DROP BY SHROOM
+## GET ALL OF X ITEM AND DUMPS/DROPS IT
+## WILL USE ANY TRASH CONTAINERS IT SEES IN ROOM
+## OR ELSE IT WILL JUST DROP IT ON THE FLOOR
 ## USAGE: .getdrop <item> 
 ######################################
 var dumpster null
 ECHO
 ECHO ** SYNTAX IS .getdrop <item>
-ECHO ** .getdrop marauder.blade
-ECHO ** .getdrop treasure.map
-ECHO ** .getdrop shield
+ECHO ** .getdrop marauder blade
+ECHO ** .getdrop treasure map
+ECHO ** .getdrop shield 
+ECHO ** etc....
 ECHO
-var item %1
+var item %0
 if matchre("$roomobjs", "(bucket of viscous gloop|waste bucket|a bucket|metal bucket|iron bucket)") then var dumpster bucket
 if matchre("$roomobjs", "(disposal bin|waste bin|firewood bin|azurite bin)") then var dumpster bin
 if matchre("$roomname", "^\[Garden Rooftop, Medical Pavilion\]") then var dumpster gutter
@@ -29,7 +31,7 @@ if matchre("$roomobjs", "an oak crate") then var dumpster crate
 if matchre("$roomobjs", "a small hole") then var dumpster hole
 if matchre("$roomobjs", "gelapod") then var dumpster gelapod
 if matchre("$roomobjs", "ivory urn") then var dumpster urn
-if_1 then goto GetDropLoop
+if_0 then goto GetDropLoop
 echo *** ABORT! DID NOT SPECIFY A VARIABLE!
 exit
 

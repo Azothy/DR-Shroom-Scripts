@@ -1,13 +1,19 @@
 #### PELIC's Favor Script - Mouse Select Version.
-#### EXP TRACKER PLUGIN REQUIRED!
-#### UPDATED MAPS REQUIRED!
+#### SHROOM UPDATE - ADDS SUPPORT FOR SHARD!
+####
+#### AUTOMATICALLY COLLECTS AND FILLS FAVOR ORBS 
+#### UNTIL YOU REACH THE DESIRED AMOUNT
+####
+#### - EXP TRACKER PLUGIN REQUIRED
+#### - UPDATED MAPS REQUIRED
+####
 #### Changed from Climbing to Collecting, per suggestion from Worril.
 #### Changed foraging location to a Ranger-friendly room, per suggestion from Stephinroth.
 #### Added Fix for hugging orb with no exp from Dasffion
 #### Fixed missing COLLECT sub.  (Thanks, Taz)
 #### Added Aspect name to orb interactions to avoid issues with Osrel Meraud Orbs and Clerics (Thanks for the bug report, enki)
 #### Updated room number, as noted in Genie thread.
-#### Last Edited: 21 June, 2022
+#### Last Edited: Oct 17, 2023
 ABSOLUTE_TOP:
      # debuglevel 5
      delay 0.0001
@@ -16,9 +22,13 @@ ABSOLUTE_TOP:
      action put #tvar Favors $1 when ^\s*Favors\s*\:\s*(\d+)
      action put #tvar Favors $1 when ^You currently have (\d+) favors with the gods\.
      var Recover 0
+     if_1 then goto %1
      gosub EMPTY_HANDS
      if ("$zoneid" = "1") then goto INIT
      if ("$zoneid" = "2a") then goto INIT
+     if ("$zoneid" = "67") then goto INIT
+     if ("$zoneid" = "69") then goto INIT
+     if ("$zoneid" = "66") then goto INIT
      goto INVALID_LOCATION
 INIT:
 SELECT:
@@ -151,8 +161,76 @@ FAVOR.CHECK:
      put #statusbar 5 Current Favors : $Favors
      if ($Favors >= $Count) then var Recover 1
      if (%Recover) then goto RECOVERED
+     if (("$zoneid" = "67") && ("$roomid" = "426")) then gosub AUTOMOVE 86
      if ("$zoneid" = "2a") then goto RES.CRECHE.TO.FAVORS
      if ("$zoneid" = "1") then goto CROSSING.TO.FAVORS
+     if ("$zoneid" = "67") then goto SHARD
+     if ("$zoneid" = "66") then goto SHARDEAST
+     if ("$zoneid" = "69") then goto SHARDWEST
+     goto INVALID_LOCATION
+SHARD:
+     if ("$zoneid" = "67") then gosub AUTOMOVE east
+     pause 0.4
+SHARDEAST:
+     if ("$zoneid" = "67") then gosub AUTOMOVE east
+     pause 0.1
+     if ("$zoneid" = "66") then gosub AUTOMOVE 217
+     pause 0.5
+SHARDWEST:
+     if ("$zoneid" = "66") then gosub AUTOMOVE 217
+     pause 0.1
+     if ("$zoneid" = "69") then gosub AUTOMOVE 6
+     pause 0.5
+SEARCH:
+     pause 0.5
+     matchre FOUND.IT You find a narrow path
+     matchre SEARCH You don't find anything 
+     put search
+     matchwait 5
+     goto SEARCH
+FOUND.IT:
+     pause 0.5
+     move go path
+     pause
+     move w
+     move w
+     move w
+     move w
+     move w
+     pause 0.5
+     put lie
+     send look brush
+     pause
+     send go open
+     waitforre Wyvern Mountain|you crawl out of the passage
+     pause 0.5
+     if ($standing = 0) then gosub STAND
+ARCH:
+     pause 0.1
+     if ($standing = 0) then gosub STAND
+     pause 0.3
+     #matchre NEXT Obvious exits: down	
+     #matchre ARCH Obvious exits: none
+     put go white arch
+     pause 0.5
+     pause 0.3
+     if $down then goto SHARD.NEXT
+     else goto ARCH
+SHARD.NEXT:
+     pause 0.1
+     pause 0.5
+     put down
+     pause 0.5
+     matchre NEXT2 Six carved columns of pale marble|Wyvern Mountain, Dragon Shrine
+     matchre ARCH Wyvern Mountain, Cavern
+     put look
+     matchwait
+NEXT2:
+     move go dais
+     pause 0.5
+     goto ORB.INIT
+     
+     
 RES.CRECHE.TO.FAVORS:
      delay 0.0001
      gosub AUTOMOVE crossing
@@ -180,25 +258,27 @@ PRAY:
 DECLARE:
      pause 0.0001
      matchre DECLARE ^\.\.\.wait|^Sorry\,
-     matchre STAND.FOR.ORB ^The voice speaks to you again saying\, \"If .* be your god\, .*\, rise and seek your favor\.  If this be not correct\, then declare your god again\.
+     matchre STAND.FOR.ORB ^The voice speaks to you again saying
      send say $Aspect
      matchwait
+     ###"
 STAND.FOR.ORB:
      pause 0.0001
      matchre STAND.FOR.ORB ^\.\.\.wait|^Sorry\,
      matchre GET.ORB.INIT ^\[Siergelde, Labyrinth\]
+     matchre GET.ORB.INIT ^\[Wyvern Mountain, Black Altar\]
      send stand
      matchwait
 GET.ORB.INIT:
      pause 0.0001
      matchre GET.ORB.INIT ^\.\.\.wait|^Sorry\,
-     matchre BEGIN.PUZZLE ^You get a glowing .* orb from atop an altar made of gleaming alabaster trimmed with onyx\.
+     matchre BEGIN.PUZZLE ^You get a glowing .* orb
      send get $Aspect orb on altar
      matchwait
 BEGIN.PUZZLE:
      pause 0.0001
      matchre BEGIN.PUZZLE ^\.\.\.wait|^Sorry\,
-     matchre LOOK ^You step through the luminous arch, and are instantly bathed in a soft, white glow\.
+     matchre LOOK ^You step through the .* arch, and are instantly bathed in a soft, white glow\.
      matchre LOOK ^What were you referring to\?
      matchre LOOK ^I could not find what you were referring to\.
      send go arch
@@ -215,6 +295,7 @@ PUZZLE:
      matchre TINDERS You also see some tinders, several candles, a granite font and a granite altar\.
      matchre VASE You also see a vase on top of the altar\.
      matchre NEXT ^\[Siergelde, Stone Grotto\]
+     matchre NEXT ^\[Wyvern Mountain, Raised Dais\]
      send %Command
      matchwait 1
 LOOK:
@@ -265,14 +346,55 @@ VASE:
      goto PUZZLE
 FAVORS.TO.CROSSING:
      delay 0.0001
+     if ("$zoneid" = "69") then goto FAVORS.TO.SHARD
      gosub AUTOMOVE crossing
      gosub AUTOMOVE 337
      goto ORB.PREP.BEGIN
+
+FAVORS.TO.SHARD:
+     move down
+     move up
+SHARD.ARCH.RETURN:
+     pause 0.2
+     if matchre("$roomname", "Wyvern Trail, Clearing") then goto FAVOR.SHARD.RETURN.2
+     if matchre("$roomobjs", "low opening") then goto FAVOR.SHARD.RETURN
+     pause 0.4
+     matchre FAVOR.SHARD.RETURN a low opening
+     matchre SHARD.ARCH.RETURN Obvious exits|Obvious paths
+     put go white arch
+     matchwait 20
+     goto SHARD.ARCH.RETURN
+FAVOR.SHARD.RETURN:
+     pause 0.5
+     send lie
+     pause 0.5
+     matchre FAVOR.SHARD.RETURN.2 After a seemingly interminible length of time, you crawl out of the passage into
+     matchre FAVOR.SHARD.RETURN.2 Wyvern Trail, Clearing|Tangled brush surrounds a small clearing
+     matchre SHARD.ARCH.RETURN You also see a black arch and a white arch
+     send go open
+     matchwait 80
+     goto SHARD.ARCH.RETURN
+FAVOR.SHARD.RETURN.2:
+     if ($standing = 0) then gosub STAND
+     pause 0.5
+     if ($standing = 0) then gosub STAND
+     pause 0.3
+     put go trail
+     pause 0.5
+     pause 0.5
+     gosub AUTOMOVE North
+     pause 0.5
+     gosub AUTOMOVE campfire
+     goto ORB.PREP.BEGIN
 GO.FORAGE:
      delay 0.0001
-     if ("$roomid" = "337") then goto MAIN
-     if ("$zoneid" != "1") then gosub AUTOMOVE crossing
-     gosub AUTOMOVE 337
+     if (("$zoneid" = "1") && ("$roomid" = "337")) then goto MAIN
+     if (("$zoneid" = "66") && ("$roomid" = "637")) then goto MAIN
+     if matchre("$zoneid", "(2a|4)") then gosub AUTOMOVE crossing
+     if matchre("$zoneid", "69") then gosub AUTOMOVE north
+     if matchre("$zoneid", "67") then gosub AUTOMOVE east
+     if ("$zoneid" = "1") then gosub AUTOMOVE 337
+     if ("$zoneid" = "66") then gosub AUTOMOVE 637
 MAIN:
      pause 0.0001
      gosub COLLECT $collectitem
@@ -313,8 +435,21 @@ ORB.PREPPED:
      echo *** DEPOSITING ORB. ***
      echo ***********************
      delay 0.3
+     if matchre("$zoneid", "(66|67|69)") then goto ORB.PREPPED.SHARD
      gosub AUTOMOVE temple
      gosub AUTOMOVE favor altar
+     goto PUT.ORB
+ORB.PREPPED.SHARD:
+     if ("$zoneid" = "68") then gosub AUTOMOVE egate
+     if ("$zoneid" = "69") then gosub AUTOMOVE north
+     pause 0.1
+     if ("$zoneid" = "66") then gosub AUTOMOVE east
+     pause 0.2
+SHARD.TO.TEMPLE:
+     gosub AUTOMOVE 86
+     pause 0.5
+     gosub AUTOMOVE depart
+     goto PUT.ORB
 PUT.ORB:
      pause 0.0001
      matchre PUT.ORB ^\.\.\.wait|^Sorry\,
@@ -344,7 +479,7 @@ RECOVERED:
 INVALID_LOCATION:
      delay 0.3
      echo *********************************************************
-     echo *** PLEASE START THIS SCRIPT ANYWHERE IN THE CROSSING ***
+     echo *** PLEASE START THIS SCRIPT IN THE CROSSING OR SHARD ***
      echo *********************************************************
      delay 0.3
      put #script abort %scriptname
@@ -721,5 +856,7 @@ AUTOMOVE_FAIL_BAIL:
      put #echo
      exit
 AUTOMOVE_RETURN:
+     pause 0.1
+     pause 0.1
      return
 #### END AUTOMAPPER MOVEMENT SUBS
