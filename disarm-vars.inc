@@ -63,7 +63,7 @@ if ("$charactername" = "%CHARACTER1") then
      # WHERE DO YOU STORE EXTRA LOCKPICKS FOR RESTOCKING YOUR LOCKPICK RING/CASE? (IF ANY - Not necessary to set)
      var pickstorage goldenweave belt
      # MAGIC SKELETON KEY? (ON or OFF) - ONLY FOR USE WITH A MAGIC LOCKPICKING SKELETON KEY
-     var skeleton.key ON
+     var skeleton.key OFF
      #### DO YOU WANT TO PUT YOUR ARMOR BACK ON AT THE END? (IF IT TOOK ANY OFF FIRST?)
      var wear.armor ON
      #### DO YOU WANT TO USE THE AUTO-HEALER IF YOU GET HURT?? (ON or OFF) 

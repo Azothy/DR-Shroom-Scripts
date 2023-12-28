@@ -1,8 +1,8 @@
 #debuglevel 5
 ################################################################################################################################
 ################################################################################################################################
-# Smart Disarm Script v14.4 - by Shroom
-# UPDATE - 10/7/23
+# Smart Disarm Script v14.7 - by Shroom
+# UPDATE - 11/14/23
 #
 # Specialized for thieves, works for anyone
 # - Auto Disarms and Picks / Loots all your boxes
@@ -294,7 +294,7 @@ var total_difficulty 0
 ### -5 = TRAP IS LAUGHABLE, YOU DONT CARE IF YOU BLOW IT 
 ### 5+ = TRAP IS DANGEROUS! BE VERY CAREFUL!
 ### THE MOST DANGEROUS TRAPS ARE AT THE TOP AND HAVE A HIGH DEFAULT DIFFICULTY
-     if ("%trap_type" = "concussion") then var trap_difficulty 12
+     if ("%trap_type" = "concussion") then var trap_difficulty 10
      if ("%trap_type" = "shrapnel") then var trap_difficulty 10
      if ("%trap_type" = "disease") then var trap_difficulty 10
      if ("%trap_type" = "teleport") then var trap_difficulty 9
@@ -309,19 +309,19 @@ var total_difficulty 0
      if ("%trap_type" = "scythe") then var trap_difficulty 5
      if ("%trap_type" = "shocker") then var trap_difficulty 4
      if ("%trap_type" = "poison_local") then var trap_difficulty 4
-     if ("%trap_type" = "poison_nerve") then var trap_difficulty 4
-     if ("%trap_type" = "curse") then var trap_difficulty 3
-     if ("%trap_type" = "poison_bolt") then var trap_difficulty 3
-     if ("%trap_type" = "bolt") then var trap_difficulty 2
-     if ("%trap_type" = "cyanide") then var trap_difficulty 2
+     if ("%trap_type" = "poison_nerve") then var trap_difficulty 3
+     if ("%trap_type" = "curse") then var trap_difficulty 2
+     if ("%trap_type" = "poison_bolt") then var trap_difficulty 2
+     if ("%trap_type" = "bolt") then var trap_difficulty 1
+     if ("%trap_type" = "cyanide") then var trap_difficulty 1
      if ("%trap_type" = "frog") then var trap_difficulty 0
      if ("%trap_type" = "flea") then var trap_difficulty -1
      if ("%trap_type" = "shadowling") then var trap_difficulty -2
-     if ("%trap_type" = "bouncer") then var trap_difficulty -3
+     if ("%trap_type" = "bouncer") then var trap_difficulty -2
+     if ("%trap_type" = "mime") then var trap_difficulty -2
      if ("%trap_type" = "laughing") then var trap_difficulty -3
      if ("%trap_type" = "sleeper") then var trap_difficulty -3
      if ("%trap_type" = "mana_sucker") then var trap_difficulty -3
-     if ("%trap_type" = "mime") then var trap_difficulty -3
      if matchre("$guild", "%MAGICUSER") then
           {
           if ("%trap_type" = "mana_sucker") then var trap_difficulty 5
@@ -340,7 +340,9 @@ var total_difficulty 0
      evalmath total_difficulty (%total_difficulty + %baseline_difficulty)
      evalmath total_difficulty (%total_difficulty + %trap_difficulty)
      evalmath total_difficulty (%total_difficulty + %app_difficulty)
-     if (%total_difficulty < -10) then var mode blind
+     if (%total_difficulty < -12) then var mode blind
+     if (%total_difficulty = -12) then var mode blind
+     if (%total_difficulty = -11) then var mode quick
      if (%total_difficulty = -10) then var mode quick
      if (%total_difficulty = -9) then var mode quick
      if (%total_difficulty = -8) then var mode quick
@@ -350,7 +352,7 @@ var total_difficulty 0
      if (%total_difficulty = -4) then var mode quick
      if (%total_difficulty = -3) then var mode quick
      if (%total_difficulty = -2) then var mode quick
-     if (%total_difficulty = -1) then var mode quick
+     if (%total_difficulty = -1) then var mode normal
      if (%total_difficulty = 0) then var mode normal
      if (%total_difficulty = 1) then var mode normal
      if (%total_difficulty = 2) then var mode normal
@@ -358,8 +360,8 @@ var total_difficulty 0
      if (%total_difficulty = 4) then var mode normal
      if (%total_difficulty = 5) then var mode normal
      if (%total_difficulty = 6) then var mode normal
-     if (%total_difficulty = 7) then var mode normal
-     if (%total_difficulty = 8) then var mode normal
+     if (%total_difficulty = 7) then var mode careful
+     if (%total_difficulty = 8) then var mode careful
      if (%total_difficulty = 9) then var mode careful
      if (%total_difficulty = 10) then var mode careful
      if (%total_difficulty = 11) then var mode careful
@@ -369,7 +371,7 @@ var total_difficulty 0
      if (%total_difficulty = 15) then var mode careful
      if (%total_difficulty = 16) then var mode careful
      if (%total_difficulty = 17) then var mode careful
-     if (%total_difficulty = 18) then var mode toss
+     if (%total_difficulty = 18) then var mode careful
      if (%total_difficulty = 19) then var mode toss
      if (%total_difficulty = 20) then var mode toss
      if (%total_difficulty = 21) then var mode toss
@@ -495,9 +497,19 @@ KEY_CHECK:
      matchre KEY_CHECK ^You can't do that while entangled in a web
      matchre KEY_CHECK ^You are still stunned
      matchre KEY_CHECK ^You don't seem to be able to move to do that
-     matchre KEY_CHECK_2 ^What were you|^I could not
+     matchre KEY_CHECK_ALT ^What were you|^I could not
      matchre HAVE_KEY ^You tap
      put tap my skeleton key
+     matchwait 5
+     goto initial_Check
+KEY_CHECK_ALT:
+     matchre KEY_CHECK ^\.\.\.wait|^Sorry\,|^You are still stunned\.
+     matchre KEY_CHECK ^You can't do that while entangled in a web
+     matchre KEY_CHECK ^You are still stunned
+     matchre KEY_CHECK ^You don't seem to be able to move to do that
+     matchre KEY_CHECK_2 ^What were you|^I could not
+     matchre HAVE_KEY ^You tap
+     put tap my skeleton key in my portal
      matchwait 5
      goto initial_Check
 KEY_CHECK_2:
@@ -506,8 +518,18 @@ KEY_CHECK_2:
      matchre KEY_CHECK ^You are still stunned
      matchre KEY_CHECK ^You don't seem to be able to move to do that
      matchre initial_Check ^What were you|^I could not
-     matchre HAVE_KEY_2 ^You tap
+     matchre KEY_CHECK_2_ALT ^You tap
      put tap my gais key
+     matchwait 5
+     goto initial_Check
+KEY_CHECK_2_ALT:
+     matchre KEY_CHECK ^\.\.\.wait|^Sorry\,|^You are still stunned\.
+     matchre KEY_CHECK ^You can't do that while entangled in a web
+     matchre KEY_CHECK ^You are still stunned
+     matchre KEY_CHECK ^You don't seem to be able to move to do that
+     matchre initial_Check ^What were you|^I could not
+     matchre HAVE_KEY_2 ^You tap
+     put tap my gais key in my portal
      matchwait 5
      goto initial_Check
 HAVE_KEY:
@@ -568,14 +590,14 @@ hand_Check:
 armor_Check1:
      pause 0.0001
      pause 0.00001
-     matchre remove_Armor \bhelm|((?<=field|fluted|full|half|war|battle|lamellar|Imperial|kiralan|blue|blackened|jousting|silver|white|lunated|sniper's|icesteel|goffered|fluted|polished) (\bplate\b)(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|steel plate(?! armor| gauntlets| gloves| greaves| helm| mask))|(?<=field|assassin's|chain|leather|bone|quilted|reed|black|plate|combat|body|clay|lamellar|hide|steel|mail|pale|polished|shadow|Suit of|suit|woven|yeehar-hide|kidskin|gladiatorial|sniper|sniper's|battle|tomiek|glaes|pale|ceremonial|sinuous|trimmed|carapace|Zaulguum-skin|coral|dark|violet|ridged) (\barmor\b)|armet(?! helm)|abyssium skull|gauntlet|gloves|(?!pavise)shield|claw guards|kimono|odaj|(?<!ka'hurst )mail gloves|platemail legs|trousers|parry stick|leggings|handwraps|gown|\bhat\b|hand claws|boots|armguard|jacket|goggle|armwraps|footwraps|aegis|torso|buckler|\bhood\b|\bcowl\b|\bheater(?! shield)|\bpavise(?! shield)|scutum|sipar|\btarge\b|aventail|backplate|balaclava|barbute|bascinet|breastplate|\bcap\b|longcoat|legwraps|\bcoat\b|\bcowl|cuirass|fauld|greaves|hauberk|\bhood\b|jerkin|leathers|lorica|mantle|(?<!crimson leather )\bmask\b|morion|pants|handguards|bodysuit|robe|sallet|(?<!fighting )shirt|sleeves|ticivara|tabard|tasset|thorakes|\blid\b|vambraces|vest|caftan|collar|coif|mitt|steel mail(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|darkened mail|galea|velnhliwa|bamarhliwa|shalhliwa|tunic|chausses|carapace(?! armor)
+     matchre remove_Armor \bhelm|((?<=field|fluted|full|half|war|battle|lamellar|Imperial|kiralan|blue|blackened|jousting|silver|white|lunated|sniper's|icesteel|goffered|fluted|polished) (\bplate\b)(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|(?>ice)steel plate(?! armor| gauntlets| gloves| greaves| helm| mask))|(?<=field|assassin's|chain|leather|bone|quilted|reed|black|plate|combat|body|clay|lamellar|hide|steel|mail|pale|polished|shadow|Suit of|suit|woven|yeehar-hide|kidskin|gladiatorial|sniper|sniper's|battle|tomiek|glaes|pale|ceremonial|sinuous|trimmed|carapace|Zaulguum-skin|coral|dark|violet|ridged) (\barmor\b)|armet(?! helm)|abyssium skull|gauntlet|gloves|(?!pavise)shield|claw guards|kimono|odaj|(?<!ka'hurst )mail gloves|platemail legs|trousers|parry stick|leggings|handwraps|gown|\bhat\b|hand claws|boots|armguard|jacket|goggle|armwraps|footwraps|aegis|torso|buckler|\bhood\b|\bcowl\b|\bheater(?! shield)|\bpavise(?! shield)|scutum|sipar|\btarge\b|aventail|backplate|balaclava|barbute|bascinet|breastplate|\bcap\b|longcoat|legwraps|\bcoat\b|\bcowl|cuirass|fauld|greaves|hauberk|\bhood\b|jerkin|leathers|lorica|mantle|(?<!crimson leather )\bmask\b|morion|pants|handguards|bodysuit|robe|sallet|(?<!fighting )shirt|sleeves|ticivara|tabard|tasset|thorakes|\blid\b|vambraces|vest|caftan|collar|coif|mitt|steel mail(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|darkened mail|gais lotus|galea|velnhliwa|bamarhliwa|shalhliwa|tunic|chausses|carapace(?! armor)
      matchre armor_None You have nothing of that sort|You are wearing nothing of that sort|You aren't wearing anything
      put inv armor
 	matchwait 3
 armor_Checking:
      pause 0.0001
      matchre armor_Checking ^\.\.\.wait|^Sorry\,|^I could not|^Please rephrase
-     matchre remove_Armor \bhelm|((?<=field|fluted|full|half|war|battle|lamellar|Imperial|kiralan|blue|blackened|jousting|silver|white|lunated|sniper's|icesteel|goffered|fluted|polished) (\bplate\b)(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|steel plate(?! armor| gauntlets| gloves| greaves| helm| mask))|(?<=field|assassin's|chain|leather|bone|quilted|reed|black|plate|combat|body|clay|lamellar|hide|steel|mail|pale|polished|shadow|Suit of|suit|woven|yeehar-hide|kidskin|gladiatorial|sniper|sniper's|battle|tomiek|glaes|pale|ceremonial|sinuous|trimmed|carapace|Zaulguum-skin|coral|dark|violet|ridged) (\barmor\b)|armet(?! helm)|abyssium skull|gauntlet|gloves|(?!pavise)shield|claw guards|kimono|odaj|(?<!ka'hurst )mail gloves|platemail legs|trousers|parry stick|leggings|handwraps|gown|\bhat\b|hand claws|boots|armguard|jacket|goggle|armwraps|footwraps|aegis|torso|buckler|\bhood\b|\bcowl\b|\bheater(?! shield)|\bpavise(?! shield)|scutum|sipar|\btarge\b|aventail|backplate|balaclava|barbute|bascinet|breastplate|\bcap\b|longcoat|legwraps|\bcoat\b|\bcowl|cuirass|fauld|greaves|hauberk|\bhood\b|jerkin|leathers|lorica|mantle|(?<!crimson leather )\bmask\b|morion|pants|handguards|bodysuit|robe|sallet|(?<!fighting )shirt|sleeves|ticivara|tabard|tasset|thorakes|\blid\b|vambraces|vest|caftan|collar|coif|mitt|steel mail(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|darkened mail|galea|velnhliwa|bamarhliwa|shalhliwa|tunic|chausses|carapace(?! armor)
+     matchre remove_Armor \bhelm|((?<=field|fluted|full|half|war|battle|lamellar|Imperial|kiralan|blue|blackened|jousting|silver|white|lunated|sniper's|icesteel|goffered|fluted|polished) (\bplate\b)(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|(?>ice)steel plate(?! armor| gauntlets| gloves| greaves| helm| mask))|(?<=field|assassin's|chain|leather|bone|quilted|reed|black|plate|combat|body|clay|lamellar|hide|steel|mail|pale|polished|shadow|Suit of|suit|woven|yeehar-hide|kidskin|gladiatorial|sniper|sniper's|battle|tomiek|glaes|pale|ceremonial|sinuous|trimmed|carapace|Zaulguum-skin|coral|dark|violet|ridged) (\barmor\b)|armet(?! helm)|abyssium skull|gauntlet|gloves|(?!pavise)shield|claw guards|kimono|odaj|(?<!ka'hurst )mail gloves|platemail legs|trousers|parry stick|leggings|handwraps|gown|\bhat\b|hand claws|boots|armguard|jacket|goggle|armwraps|footwraps|aegis|torso|buckler|\bhood\b|\bcowl\b|\bheater(?! shield)|\bpavise(?! shield)|scutum|sipar|\btarge\b|aventail|backplate|balaclava|barbute|bascinet|breastplate|\bcap\b|longcoat|legwraps|\bcoat\b|\bcowl|cuirass|fauld|greaves|hauberk|\bhood\b|jerkin|leathers|lorica|mantle|(?<!crimson leather )\bmask\b|morion|pants|handguards|bodysuit|robe|sallet|(?<!fighting )shirt|sleeves|ticivara|tabard|tasset|thorakes|\blid\b|vambraces|vest|caftan|collar|coif|mitt|steel mail(?! armor| gauntlets| gloves| greaves| helm| mask| balaclava| shirt)|darkened mail|gais lotus|galea|velnhliwa|bamarhliwa|shalhliwa|tunic|chausses|carapace(?! armor)
      matchre Armor_Complete You have nothing of that sort|You are wearing nothing of that sort|You aren't wearing anything
      put inv armor
 	matchwait 4
@@ -857,7 +879,7 @@ main:
                  pause 0.1
                  if (!$standing) then gosub stand
 		}
-	if (matchre("$lefthand", "Empty") && matchre("$righthand", "Empty")) then gosub container_Check
+	if (matchre("$lefthand", "Empty") && !matchre("$righthand", "%box_types")) then gosub container_Check
 	if ("$lefthand" = "Empty") then
 		{
 			send swap
@@ -1032,7 +1054,7 @@ container_BagCheck:
      matchre container_BagCheckAlt Assuming you mean a swirling eddy|You'll need to be holding
      matchre container_BagCheck2 Encumbrance
      matchre RETURN There's nothing inside 
-	send inv my %container;-0.5 encum
+	send inv my %container;-0.2 encum
 	matchwait 6
      echo
      echo *** NO BOX FOUND
@@ -1045,14 +1067,16 @@ container_BagCheck2:
      matchre container_BagCheckAlt Assuming you mean a swirling eddy|You'll need to be holding
 	matchre RETURN Encumbrance
      matchre RETURN ^You rummage through .+ but there is nothing
-	send rummage in my %container;-0.5 enc
+	send rummage in my %container;-0.2 encum
 	matchwait 6
      echo
      echo *** NO BOX FOUND
      echo
 container_BagCheckAlt:
      var container eddy
-     pause 0.00001
+     pause 0.2
+     pause 0.5
+     pause 0.2
      matchre container_BagCheckAlt ^\.\.\.wait|^Sorry,
      matchre get_For_Disarm %box_types
 	matchre RETURN Encumbrance
@@ -1238,21 +1262,28 @@ disarmIt_Cont:
      if (("%trap_type" = "concussion") && ("%total_difficulty" > "15")) then goto toss_Box
      if (("%trap_type" = "shrapnel") && ("%total_difficulty" > "15")) then goto toss_Box
 	if ((%disarm.count > 1) && ("%mode" = "quick")) then var mode normal
-	if ((%disarm.count > 1) && ("%mode" = "blind")) then var mode quick
+	if ((%disarm.count > 1) && ("%mode" = "blind")) then var mode normal
+	if ((%disarm.count > 2) && matchre("%mode", "(blind|quick|normal)")) then var mode careful
      if (%disarm.count > 3) then var mode careful
-     if matchre("%trap_type", "(concussion|disease|reaper|shrapnel|gas|lightning|poison_bolt|shocker|naphtha_soaker|poison_nerve|teleport)") then
+     if (matchre("%trap_type", "(concussion|disease|reaper|shrapnel|gas|lightning|poison_bolt|shocker|naphtha_soaker|poison_nerve|teleport)") && ("%mode" != "careful")) then
           {
-               if ((%total_difficulty > 5) || (("$roomplayers" != "") && (%total_difficulty > 3) && ($charactername != "Shroom")) || (("$roomplayers" != "") && (%total_difficulty > 6) && ($charactername = "Shroom"))) then
+               if ((%total_difficulty > 5) || (("$roomplayers" != "") && (%total_difficulty > 3) && ($charactername != "Shroom")) || (("$roomplayers" != "") && (%total_difficulty > 6))) then
                     {
-                         echo ##################
-                         echo *** Dangerous Trap!!
-                         if ("$roomplayers" != "") then echo *** (OTHER PLAYERS IN THE ROOM)
-                         echo *** Using CAREFUL mode
-                         echo ##################
+                         echo #############
+                         echo * Dangerous Trap!!
+                         if ("$roomplayers" != "") then echo * (AND OTHER PLAYERS IN THE ROOM!)
+                         echo * USING CAREFUL MODE!!
+                         echo #############
                          var mode careful
                          pause 0.3
                     }
           }
+     pause 0.0001
+     echo
+     echo * Disarm Mode: %mode
+     echo
+     pause 0.001
+     pause 0.001
 	matchre disarmIt_Cont ^\.\.\.wait|^Sorry\,|^I could not|^Please rephrase
 	matchre weapon hinders your attempt|knuckles|handwraps|hand claws
 	matchre disarmIt_Cont ^\.\.\.wait|^Sorry\,|^I could not|^Please rephrase|^You are still stunned
@@ -1960,6 +1991,7 @@ exp_Check1:
 	echo * Boxes popped: %BOXES
 	echo ===============
      echo
+     gosub stowing
      pause 0.1
      #END BOX COUNTER
 	##################

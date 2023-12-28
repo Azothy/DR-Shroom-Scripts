@@ -1,9 +1,17 @@
 # automapper.cmd
-var autoversion 8.2023-10-06
+var autoversion 8.2023-12-27
 # use '.automapper help' from the command line for variables and more
 # debug 5 is for outlander; genie debuglevel 10
 # debuglevel 10
 # debug 5
+
+#2023-12-15
+# Hanryu
+#   added handling to ACTION.MAPPER.ON for running a script in each room
+#   essentially removes the fall-thru matchwait timeout if $automapper.UserWalkAction contains a . or a #
+
+#2023-12-3
+# Shroom - Fixed bug in Bag Check
 
 #2023-10-6
 # Shroom
@@ -1785,7 +1793,8 @@ ACTION.MAPPER.ON:
   matchre ACTION.FAIL ^There isn't any more room|^You just can't get the .+ to fit|^Where are you|^What were you|^You can't|^You begin to get up and \*\*SMACK\!\*\*
   matchre ACTION.STOW.UNLOAD ^You should unload
   put %action
-  matchwait 2
+  if matchre("%action", "^\.|#") then matchwait
+  else matchwait 2
   if (%actionloop > 2) then goto ACTION.FAIL
   if (%typeahead.max = 0) then goto ACTION.MAPPER.ON
   else goto ACTION.RETURN
@@ -1853,10 +1862,10 @@ BAG.PARSE:
   var Bags Toolbelt|Hip.Pouch|Backpack|Haversack|Pack|Carryall|Rucksack|Duffel.Bag|Vortex|Eddy|Shadows|Brambles
   eval TotalBags count("%Bags", "|")
   var BagLoop 0
-  delay %infiniteLoopProtection
+  delay 0.000001
 BAG.LOOP:
-  delay %infiniteLoopProtection
-  var BAG %Bags[%BagLoop]
+  delay 0.000001
+  var BAG %Bags(%BagLoop)
   if (%BagLoop > %TotalBags) then
     {
     put #echo %color <~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
