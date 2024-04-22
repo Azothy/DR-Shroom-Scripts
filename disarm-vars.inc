@@ -1,4 +1,4 @@
-# version 1.1
+# version 1.2
 
 #################################################################
 ## REQUIRED VARIABLES FOR SHROOM'S SMART DISARM SCRIPT
@@ -11,7 +11,7 @@
 var CHARACTER1 Shroom
 var CHARACTER2 Acidbath
 var CHARACTER3 Arioth
-var CHARACTER4 Healbot
+var CHARACTER4 Healbitch
 var CHARACTER5 Raidboss
 var CHARACTER6 Illuminati
 var CHARACTER7 Hashish
@@ -83,6 +83,9 @@ if ("$charactername" = "%CHARACTER1") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -154,6 +157,9 @@ if ("$charactername" = "%CHARACTER2") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -225,6 +231,9 @@ if ("$charactername" = "%CHARACTER3") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -251,10 +260,10 @@ if ("$charactername" = "%CHARACTER4") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 carryall
-     var container2 duffel.bag
-     var container3 oil.bag
-     var sheath harness
+     var container1 haversack
+     var container2 backpack
+     var container3 portal
+     var sheath handbag
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -266,7 +275,7 @@ if ("$charactername" = "%CHARACTER4") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container satin.pouch
+     var gempouch.container carryall
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?
@@ -274,7 +283,7 @@ if ("$charactername" = "%CHARACTER4") then
      #### ARE YOU USING A LOCKPICK RING or LOCKPICK CASE? (ON or OFF) (Auto-Detects if case or ring)
      var lockpick.ring ON
      # WHERE DO YOU STORE EXTRA LOCKPICKS FOR RESTOCKING YOUR LOCKPICK RING/CASE? (IF ANY - Not necessary to set)
-     var pickstorage bag
+     var pickstorage backpack
      # MAGIC SKELETON KEY? (ON or OFF) - ONLY FOR USE WITH A MAGIC LOCKPICKING SKELETON KEY
      var skeleton.key OFF
      #### DO YOU WANT TO PUT YOUR ARMOR BACK ON AT THE END? (IF IT TOOK ANY OFF FIRST?)
@@ -296,6 +305,9 @@ if ("$charactername" = "%CHARACTER4") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -367,6 +379,9 @@ if ("$charactername" = "%CHARACTER5") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -438,6 +453,9 @@ if ("$charactername" = "%CHARACTER6") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -509,6 +527,9 @@ if ("$charactername" = "%CHARACTER7") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -580,6 +601,9 @@ if ("$charactername" = "%CHARACTER8") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -651,6 +675,9 @@ if ("$charactername" = "%CHARACTER9") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -722,6 +749,9 @@ if ("$charactername" = "%CHARACTER10") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -793,6 +823,9 @@ if ("$charactername" = "%CHARACTER11") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -864,6 +897,9 @@ if ("$charactername" = "%CHARACTER12") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -935,6 +971,9 @@ if ("$charactername" = "%CHARACTER13") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -1006,6 +1045,9 @@ if ("$charactername" = "%CHARACTER14") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room
@@ -1077,6 +1119,9 @@ if ("$charactername" = "%CHARACTER15") then
      # HARVEST TRAPS? (ON or OFF)
      # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
      var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
      # ALWAYS DISMANTLE BOXES? (ON or OFF)
      # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
      # If OFF - Will only dismantle if there is no trash receptacle in room

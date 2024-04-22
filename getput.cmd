@@ -1,3 +1,23 @@
+############################################
+## GETPUT by SHROOM
+## USAGE:  .getput $1 $2 $3
+## .getput <ITEM> <FROM THIS CONTAINER> <PUT IN THIS CONTAINER>
+## .getput leather.pouch backpack rucksack
+# Will transfer all "leather pouches" from backpack and put them in rucksack. 
+# IF using multiple words for one variable use a period instead of space
+# ie  .getput my.sword  my.backpack  rucksack.on.shelf
+#
+# NOTES - Be specific with item names! 
+# Use . instead of spaces for 2 word items
+# Use MY when working with possible conflicting containers in the room ex:
+#
+# .getput rock back.on.shelf my.backpack
+# Will get all "rocks" from "backpack on shelf" and put them in "your backpack"
+#
+# .getput arrow shelf my.quiver
+# Get all arrows from a shelf and put in your quiver  
+
+
 ECHO ==============================================
 ECHO ** CORRECT SYNTAX IS .getput <item> <from this container> <put into this container>
 ECHO ** .getput $1 $2 $3
@@ -6,17 +26,6 @@ ECHO **
 ECHO ** USAGE: .getput $1 $2 $3
 ECHO ** .getput <ITEM> from <BAG> put it in <BAG>
 ECHO ==============================================
-# .getput leather.pouch backpack rucksack
-# Will transfer all "leather pouches" from backpack and put them in rucksack. 
-#
-# NOTES - Be specific with items. Use . instead of spaces. 
-# Use MY when working with possible conflicting containers in the room ex:
-#
-# .getput rock back.on.shelf my.backpack
-# Will get all "rocks" from "backpack on shelf" and put them in "your backpack"
-#
-# .getput arrow shelf my.quiver
-# Get all arrows from a shelf and put in your quiver  
 if_1 then goto Loop
 exit
 

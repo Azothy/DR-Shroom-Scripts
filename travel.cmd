@@ -14,8 +14,8 @@
 # Inspired by the OG Wizard Travel Script - But made 1000x better with the power of Genie
 # Originally written by Achilles
 # Revitalized and Robustified by Shroom
-# Updated: 12/19/23
-var version 5.1.7
+# Updated: 4/6/24
+var version 5.1.9
 #
 # REQUIRES EXPTRACKER PLUGIN! MANDATORY!
 #
@@ -135,7 +135,11 @@ if ("$charactername") = ("$char10") then var shardcitizen no
 #### DONT TOUCH ANYTHING BELOW THIS LINE
 ###########################################
 ###########################################
-# CHANGELOG - Latest Update: 12/19/23
+# CHANGELOG - Latest Update: 4/6/23
+#
+# - Fixed bug in starting script from 'Zaulfung, Crooked Treetop' causing infinite loop
+# - Robustified Travel INTO Zaulfung 
+# - Added feature for TRAVEL DRAGON at end to show where script was started from 
 #
 # - Fixed intermittent bug in travel when moving from Map 69 to 123 
 # - Should now micro pause and mapper reset to fix issues with sometimes showing Map = 0
@@ -317,7 +321,7 @@ var lastmoved NULL
 var detour NULL
 var therencoin 300
 var boarneeded 300
-
+var starting MAP:$zoneid | ROOM:$roomid
 if ("%destination" = "") then goto NODESTINATION
 eval destination toupper("%destination")
 TOP:
@@ -395,6 +399,12 @@ echo  | \____(      )___) )___
 echo   \______(_______;;; __;;;
 echo
 echo *** LET'S GO!!
+echo 
+echo * STARTING ROOM: $roomname 
+echo * MAP: $zoneid | ROOM: $roomid
+echo
+echo * DESTINATION: %destination
+echo 
 #DESTINATION
 #### SPECIAL ESCAPE SECTION FOR MAZES/HARD TO ESCAPE AREAS BY SHROOM
 #### THIS CHECKS IF WE ARE STARTING FROM A KNOWN MAZE / MESSED UP AREA THAT AUTOMAPPER GETS LOST IN
@@ -426,7 +436,7 @@ if matchre("$roomname", "Clover Fields") then gosub BROCKET_ESCAPE
 if matchre("$roomname", "Maelshyve's Fortress, Inner Sanctum") then gosub MAELSHYVE_FORTRESS_ESCAPE
 if matchre("$roomname", "(Maelshyve's Fortress, Hall of Malice|Glutton's Rest|Fallen Altar|Great Dais|Inner Sanctum)") then gosub MAELSHYVE_FORTRESS_ESCAPE
 if matchre("$roomname", "(Charred Caverns|Beneath the Zaulfung|Maelshyve's Threshold)") then gosub BENEATH_ZAULFUNG_ESCAPE
-if matchre("$roomname", "(Zaulfung, Dense Swamp|Kweld Gelvdael|Zaulfung, Urrem'tier's Spire)") then gosub ZAULFUNG_ESCAPE_0
+if matchre("$roomname", "(Zaulfung, Dense Swamp|Kweld Gelvdael|Zaulfung, Urrem'tier's Spire|Zaulfung, Crooked Treetop)") then gosub ZAULFUNG_ESCAPE_0
 if matchre("$roomname", "Zaulfung, Swamp") && matchre("$roomdesc", "Rancid mire") then gosub ZAULFUNG_ESCAPE
 if matchre("$roomname", "Zaulfung, Trackless Swamp") then gosub ZAULFUNG_ESCAPE_2
 if matchre("$roomname", "Velaka, Dunes") then gosub VELAKADUNES_ESCAPE
@@ -2102,7 +2112,14 @@ if (("$zoneid" = "7") && ($Athletics.Ranks >= %faldesu)) then
 if ("$zoneid" = "14c") then gosub FALDESU_NORTH
 if ("$zoneid" = "33a") then gosub AUTOMOVE 46
 if ("$zoneid" = "33") then gosub AUTOMOVE 1
-if (("$zoneid" = "31") && ("%detour" = "zaulfung")) then gosub AUTOMOVE 100
+if (("$zoneid" = "31") && ("%detour" = "zaulfung")) then
+     {
+          gosub AUTOMOVE 89
+          pause 0.1
+          put go curving path
+          pause 0.5
+          gosub SICKLY_TREE
+     }    
 if ("$zoneid" = "31") then
      {
           gosub AUTOMOVE 1
@@ -2514,6 +2531,31 @@ SHUFFLE_NORTH:
           }
      goto SHUFFLE_NORTH
 #######################################################################
+SICKLY_TREE:
+     pause 0.001
+     echo *** LOOKING FOR THE SICKLY TREE
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMWEIGHT east
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMWEIGHT east
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMWEIGHT northeast
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMMOVE
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMMOVE
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMWEIGHT west
+     if matchre("$roomobjs", "sickly tree") then goto SICKLY_TREE_2
+     gosub RANDOMWEIGHT west
+     goto SICKLY_TREE
+SICKLY_TREE_2:
+     pause 0.001
+     put climb sickly tree
+     pause 0.5
+     pause 0.3
+     if ("$zoneid" = "31") then goto SICKLY_TREE
+     return
 VELAKA_DUNES:
      pause 0.01
      if (matchre("%destination", "(haize?n?)") && matchre("$roomobjs", "(?i)twisting trail")) then
@@ -3220,8 +3262,8 @@ if ("$zoneid" = "127") then gosub AUTOMOVE 24
 goto ARRIVED
 
 AESRYBACK:
-  pause 0.1
-  pause 0.1
+  pause 0.01
+  pause 0.01
   var label AESRYBACK
   if ("$zoneid" = "98") then gosub AUTOMOVE 86
   if (matchre("$game", "(?i)DRX") && (%portal = 1) && (%ported = 0)) then gosub PORTAL_TIME
@@ -3231,7 +3273,7 @@ AESRYBACK:
   return
 
 QITRAVEL:
-  pause 0.1
+  pause 0.01
   var label QITRAVEL
   if (matchre("$game", "(?i)DRX") && (%portal = 1)) then
      {
@@ -3304,7 +3346,7 @@ ARRIVED:
      if (matchre("%destination", "\b(theren?)") && ("$zoneid" != "42")) then goto START
      if (matchre("%destination", "\b(boar?c?l?a?n?)") && ("$zoneid" != "127")) then goto START
      echo
-     echo ** Amazing!!
+     echo ** AMAZING!!
      echo
      echo      |\          .(' *) ' .
      echo      | \        ' .*) .'*
@@ -3329,6 +3371,7 @@ ARRIVED:
   # put #play Just Arrived.wav
   eval destination toupper("%destination")
   echo ## WOW! YOU ARRIVED AT YOUR DESTINATION: %destination in %t seconds!  That's FAST! ##
+  echo ## STARTED FROM: %starting
   put #echo >Log #1ad1ff * TRAVEL ARRIVAL: $zonename (Map: $zoneid | Room: $roomid)
   put #class arrive off
   exit
@@ -4320,12 +4363,12 @@ INFO_CHECK:
      return
 
 
-#### THIS AUTO SETS MAIN.BAG / BACKUP.BAG / THIRD.BAG VARIABLES
-#### FOR STOWING ROUTINE ONLY - BACKUP CONTAINERS IN CASE DEFAULT "STOW" FAILS - THIS WILL CATCH ANY COMMON LARGE CONTAINERS
-#### ~ THIS SHOULD ONLY FIRE IF THE MOVE.STOW ROUTINE TRIGGERS AND DEFAULT STOW DOES NOT FULLY CLEAR HANDS ~
-#### THIS WAS MADE AS HAPPY MEDIUM - IS MUCH BETTER THAN USING HARDCODED VARIABLES
-#### SETTING THE CONTAINERS AUTOMATICALLY MAKES IT EASY WITHOUT HAVING TO WORRY ABOUT USER VARIABLES / MULTI-CHARACTERS ETC..
-#### THIS SHOULD CATCH THE ~MAIN~ BAGS MOST PEOPLE HAVE AT LEAST ONE OR TWO OF
+## THIS AUTO SETS MAIN.BAG / BACKUP.BAG / THIRD.BAG VARIABLES
+## FOR STOWING ROUTINE ONLY - BACKUP CONTAINERS IN CASE DEFAULT "STOW" FAILS - THIS WILL CATCH ANY COMMON LARGE CONTAINERS
+## THIS SHOULD ONLY FIRE IF THE MOVE.STOW ROUTINE TRIGGERS AND DEFAULT STOW DOES NOT FULLY CLEAR HANDS ~
+## THIS WAS MADE AS HAPPY MEDIUM - IS MUCH BETTER THAN USING HARDCODED VARIABLES
+## SETTING CONTAINERS AUTOMATICALLY MAKES IT EASY WITHOUT HAVING TO WORRY ABOUT USER VARIABLES / MULTI-CHARACTERS ETC..
+## THIS SHOULD CATCH THE ~MAIN~ BAGS ALMOST EVERY CHARACTER HAS AT LEAST ONE OR TWO OF
 BAG_CHECK:
      var MAIN.BAG NULL
      var BACKUP.BAG NULL
@@ -4357,7 +4400,7 @@ BAG_CHECK:
      action var Shadows 1 when encompassing shadows
      action var Lootsack 1 when lootsack
      action var Satchel 1 when satchel
-     echo * Quickly Checking Containers
+     echo * Scanning for Containers..
      matchre BAG_PARSE INVENTORY
      put inv container
      matchwait 4
@@ -4372,11 +4415,11 @@ BAG_LOOP:
      if (%BagLoop > %TotalBags) then
           {
                echo
-               echo * Auto-setting container variables ~
+               echo * Auto-set container variables ~
                echo * Main: %MAIN.BAG
-               echo * Backup: %BACKUP.BAG
-               echo * Third: %THIRD.BAG
-               echo * Fourth: %FOURTH.BAG
+               if !matchre("%BACKUP.BAG", "NULL") then echo * Backup: %BACKUP.BAG
+               if !matchre("%THIRD.BAG", "NULL") then echo * Third: %THIRD.BAG
+               if !matchre("%FOURTH.BAG", "NULL") then echo * Fourth: %FOURTH.BAG
                echo
                goto BAG_RETURN
           }
@@ -4809,13 +4852,8 @@ NECRO.CHECKROOM:
 STOWING:
      delay 0.0001
      var LOCATION STOWING
-     if ("$righthand" = "vine") then put drop vine
-     if ("$lefthand" = "vine") then put drop vine
      if "$righthandnoun" = "rope" then put coil my rope
-     if "$righthand" = "bundle" || "$lefthand" = "bundle" then put wear bund;drop bun
      #if matchre("$righthandnoun", "(crossbow|bow|short bow)") then gosub unload
-     if matchre("$righthandnoun", "(block|granite block)") then put drop block
-     if matchre("$lefthandnoun", "(block|granite block)") then put drop block
      if matchre("$righthand", "(partisan|shield|buckler|lumpy bundle|halberd|staff|longbow|khuj)") then gosub wear my $1
      if matchre("$lefthand", "(partisan|shield|buckler|lumpy bundle|halberd|staff|longbow|khuj)") then gosub wear my $1
      if ("$righthand" != "Empty") then GOSUB STOW right
@@ -4827,8 +4865,6 @@ STOW:
 STOW1:
      delay 0.0001
      var LOCATION STOW1
-     if "$righthand" = "vine" then put drop vine
-     if "$lefthand" = "vine" then put drop vine
      matchre WAIT ^\.\.\.wait|^Sorry,
      matchre IMMOBILE ^You don't seem to be able to move to do that
      matchre WEBBED ^You can't do that while entangled in a web
@@ -4865,8 +4901,6 @@ STOW2:
 STOW3:
      delay 0.0001
      var LOCATION STOW3
-     if "$lefthandnoun" = "bundle" then put drop bun
-     if "$righthandnoun" = "bundle" then put drop bun
      matchre open.thing ^But that's closed
      matchre RETURN ^Wear what\?|^Stow what\?
      matchre RETURN ^You put
@@ -4882,8 +4916,6 @@ STOW3:
 STOW4:
      delay 0.0001
      var LOCATION STOW4
-     if "$lefthandnoun" = "bundle" then put drop bun
-     if "$righthandnoun" = "bundle" then put drop bun
      matchre open.thing ^But that's closed
      matchre RETURN ^Wear what\?|^Stow what\?
      matchre RETURN ^You put your
@@ -4902,11 +4934,9 @@ OPEN.THING:
      pause 0.2
      goto STOWING
 REM.WEAR:
-     put rem bund
-     put drop bund
-     wait
-     pause 0.5
-     RETURN
+     echo *** ERROR IN STOWING - MAKE SURE YOU HAVE ROOM IN CONTAINERS
+     echo *** ABORTING SCRIPT!!!
+     exit
 #############################################################################################
 #############################################################################################
 ### ESCAPING MODULES (For Escaping from Areas where Automapper doesn't work/path properly)
@@ -5559,7 +5589,7 @@ PUT:
      matchre PUT_STOW ^You need a free hand|^Free one of your hands|^That will be hard with both your hands full\!
      matchre PUT_STAND ^You should stand up first\.|^Maybe you should stand up\.
      matchre WAIT ^\[Enter your command again if you want to\.\]
-    matchre RETURN (You'?r?e?|As|With) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|corruption|count|combine|come|dance|decide|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slowly|spin|spread|sprinkle|start|stop|strap|struggle|swiftly|swing|switch|tap|take|the|though|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|you|zills) .*(?:\.|\!|\?)?
+    matchre RETURN (You'?r?e?|As|With|Using) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|concentrate|corruption|count|combine|come|dance|decide|deduce|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|measure|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slow|slowly|spin|spread|sprinkle|start|stick|stop|strap|struggle|swap|swiftly|swing|switch|tap|take|the|though|touch|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|yell|you|zills) .*(?:\.|\!|\?)?
      matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says,
      matchre RETURN ^The(.*)?(clerk|teller|attendant|mortar|pestle|tongs|bowl|riffler|hammer|gem|book|page|lockpick|sconce|voice|waters|contours|person|is|has|are|slides|fades|hinges|spell|not)
      matchre RETURN ^It('s)?(?:'s|a|and|the)?\s+?(?:would|will|is|a|already|dead|keen|practiced|graceful|stealthy|resounding|full|has)
@@ -6528,7 +6558,7 @@ RANDOMMOVE_1:
      if (%randomloop = 1) then gosub DARK_CHECK_1
      if !($standing) then gosub STAND
 ## IF WE'VE DONE 20/40 LOOPS, DO A QUICK LOOK AND MAKE SURE NOT ON A FERRY
-     if matchre("%moveloop", "\b(20|40)\b") then
+     if matchre("%moveloop", "\b(40)\b") then
           {
                echo * CANNOT FIND A ROOM EXIT??!
                put look

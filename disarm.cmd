@@ -1,8 +1,8 @@
 #debuglevel 5
 ################################################################################################################################
 ################################################################################################################################
-# Smart Disarm Script v14.7 - by Shroom
-# UPDATE - 11/14/23
+# Smart Disarm Script v14.9 - by Shroom
+# UPDATE - 4/7/24
 #
 # Specialized for thieves, works for anyone
 # - Auto Disarms and Picks / Loots all your boxes
@@ -82,6 +82,7 @@ INIT:
      var skeleton.key OFF
      var ARMOR_STOW OFF
      var DISMANTLE.ALL ON
+     var AUTOLOOT ON
      var trap_type NULL
      var BOXES 0
      var BOX 0
@@ -332,11 +333,12 @@ var total_difficulty 0
      pause 0.00001
      var mode normal
      echo
-     echo ========================
-	echo ** ~Computing Trap Difficulty.....
-	echo * Trap Type:  %trap_type = %trap_difficulty
+     echo ======================
+	echo * ~Computing Trap Difficulty~...
+	echo * Trap Type: %trap_type
+     echo * Trap Difficulty: %trap_difficulty
      echo * App Difficulty:  %app_difficulty
-	echo * Baseline Addition:  %baseline_difficulty
+	echo * Baseline Difficulty:  %baseline_difficulty
      evalmath total_difficulty (%total_difficulty + %baseline_difficulty)
      evalmath total_difficulty (%total_difficulty + %trap_difficulty)
      evalmath total_difficulty (%total_difficulty + %app_difficulty)
@@ -378,10 +380,11 @@ var total_difficulty 0
      if (%total_difficulty = 22) then var mode toss
      if (%total_difficulty = 23) then var mode toss
      if (%total_difficulty > 23) then var mode toss
-     echo ========================
+     echo ======================
      echo * Total Difficulty: %total_difficulty 
-     echo * Using Mode: %mode
-     echo ========================
+     echo *
+     echo * USING MODE: %mode
+     echo ======================
      echo
 ## SAVES COUNTER FOR EACH TRAP TYPE
      if ("%trap_type" = "concussion") then math concussion.count add 1
@@ -1013,7 +1016,7 @@ GIVEBOX:
                goto Continued
           }
      pause 0.1
-	gosub loot
+     if matchre("%AUTOLOOT", "(?i)(YES|ON|1)") then gosub loot
 	gosub dismantle
      pause 0.01
 Continued:
@@ -1611,7 +1614,7 @@ get_Gem_Pouch_1:
 		matchre fill_Gem_Pouch You get|^But that is|^You remove|^You slip
           matchre get_Gem_Pouch_alt ^What were you|^I could not find
 	put get my %gempouch
-	matchwait
+	matchwait 8
 get_Gem_Pouch_alt:
 	var LAST get_Gem_Pouch_alt
      if ("$righthand" != "Empty") then GOSUB STOW right
@@ -1620,8 +1623,8 @@ get_Gem_Pouch_alt:
 		matchre get_Gem_Pouch ^\.\.\.wait|^Sorry\,|^I could not|^Please rephrase|^You are still stunned
 		matchre fill_Gem_Pouch You get|^But that is
           matchre out_of_pouches ^What were you|^I could not find
-	put get my %gempouch from my watery portal
-	matchwait
+	put get my %gempouch from my portal
+	matchwait 8
 fill_Gem_Pouch:
      math pouchLoop add 1
      if (%pouchLoop > 3) then goto stow_Pouch
@@ -1634,7 +1637,8 @@ fill_Gem_Pouch:
 		matchre stow_Pouch ^You take|^There aren't any|You fill your|You open your
           matchre lock_sub ^It is locked
 	put fill my %gempouch with my %disarm.noun
-	matchwait
+	matchwait 8
+     goto stow_Pouch
 
 tied_Pouch:
      if !matchre("%tie.pouch", "(?i)(YES|ON)") then goto full_Pouch
@@ -1866,27 +1870,6 @@ YOGION:
      var yogi 1
      return
      
-DUMPSTER_SET:
-DUMPSTER_CHECK:
-     var dumpster NULL
-     if matchre("$roomobjs", "a small hole") then var dumpster hole
-     if matchre("$roomobjs", "a small mud puddle") then var dumpster puddle
-     if matchre("$roomobjs", "a marble statue ") then var dumpster statue
-     if matchre("$roomobjs", "(a disposal bin|a waste bin|firewood bin)") then var dumpster bin
-     if matchre("$roomobjs", "(a tree hollow|darken hollow)") then var dumpster hollow
-     if matchre("$roomobjs", "a bucket of viscous gloop|(a|metal|iron|steel|rusted|waste) bucket") then var dumpster bucket
-     if matchre("$roomobjs", "a large stone turtle") then var dumpster turtle
-     if matchre("$roomobjs", "an oak crate") then var dumpster crate
-     if matchre("$roomobjs", "a driftwood log") then var dumpster log
-     if matchre("$roomobjs", "(ivory|stone) urn") then var dumpster urn
-     if matchre("$roomobjs", "a waste basket") then var dumpster basket
-     if matchre("$roomobjs", "a bottomless pit") then var dumpster pit
-     if matchre("$roomobjs", "trash receptacle") then var dumpster receptacle
-     if matchre("$roomobjs", "domesticated gelapod") then var dumpster gelapod
-     if matchre("$roomobjs", "large wooden barrel") then var dumpster barrel
-     if matchre("$roomname", "^\[Garden Rooftop, Medical Pavilion\]") then var dumpster gutter
-     return
-     
 drop_box:
      pause 0.00001
      if matchre("$righthand", "training box") then put stow box
@@ -2102,14 +2085,14 @@ out_of_pouches:
      
 LOCKED_SKILLS:
      echo
-     echo ==================================
-     echo *** FINISHED PICKING BOXES!
-     echo ** Locksmithing: $Locksmithing.Ranks $Locksmithing.LearningRate/34 ***
-     echo ** %BOXES boxes this session - $Boxes boxes over all time
-     echo ==================================
+     echo =============================
+     echo * FINISHED PICKING BOXES!
+     echo * Locksmithing: $Locksmithing.Ranks $Locksmithing.LearningRate/34 ***
+     echo * %BOXES boxes this session - $Boxes boxes over all time
+     echo =============================
      echo
-     put #echo >Log #33fffc * Finished Boxes - Locksmithing: $Locksmithing.Ranks $Locksmithing.LearningRate/34
-     put #echo >Log #33fffc * %BOXES boxes this session - $Boxes boxes over all time
+     put #echo >Log #99ffcc * Disarm Done! Locksmithing: $Locksmithing.Ranks $Locksmithing.LearningRate/34
+     put #echo >Log #99ffcc * %BOXES boxes this session - $Boxes boxes over all time
 DONE:
      pause 0.0001
      pause 0.0001
@@ -3568,16 +3551,18 @@ PUT:
      matchre PUT_STOW ^You need a free hand|^Free one of your hands
      matchre PUT_STAND ^You should stand up first\.|^Maybe you should stand up\.
      matchre WAIT ^\[Enter your command again if you want to\.\]
-     matchre RETURN (You'?r?e?|As|With) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|corruption|count|combine|come|dance|decide|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slowly|spin|spread|sprinkle|start|stop|strap|struggle|swiftly|swing|switch|tap|take|the|though|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|you|zills) .*(?:\.|\!|\?)?
-     matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|^The clerk|A Dwarven|^.*He says,
+     matchre RETURN (^You'?r?e?|^As|^With|^Using).*(?:\.|\!|\?)?
+     matchre RETURN ^You can't pick that up with your hands that damaged\.|^Both your hands are missing\!
+     matchre RETURN (You'?r?e?|As|With|Using) (?:accept|adeptly|add|adjust|allow|already|are|aren't|ask|cut|attach|attempt|.+ to|.+ fan|bash|begin|bend|blow|breathe|briefly|bring|bundle|cannot|can't|carefully|cautiously|chop|circle|clasp|close|collect|collector's|concentrate|corruption|count|combine|come|dance|decide|deduce|dodge|don't|drum|draw|effortlessly|eyes|gracefully|deftly|desire|detach|drop|drape|exhale|fade|fail|fake|feel(?! fully rested)|feint|fill|find|filter|focus|form|fumble|gaze|gesture|giggle|gingerly|get|glance|grab|hand|hang|have|icesteel|inhale|insert|kiss|kneel|knock|leap|lean|let|lose|lift|loosen|lob|load|measure|move|must|mutter|mind|not|now|need|offer|open|parry|place|pick|push|pout|pour|put|pull|prepare|press|quietly|quickly|raise|read|reach|ready|realize|recall|remain|release|remove|retreat|reverently|rock|roll|rub|scan|search|secure|sense|set|sheathe|shield|should|shouldn't|shove|silently|sit|skin|slide|sling|slip|slow|slowly|spin|spread|sprinkle|start|stick|stop|strap|struggle|swap|swiftly|swing|switch|tap|take|the|though|touch|tie|tilt|toss|trace|try|tug|turn|twist|unload|untie|vigorously|wave|wear|weave|whisper|whistle|will|wink|wring|work|yank|yell|you|zills) .*(?:\.|\!|\?)?
+     matchre RETURN ^Brother Durantine|^Durantine|^Mags|^Ylono|^Malik|^Kilam|^Ragge|^Randal|^Catrox|^Kamze|^Unspiek|^Wyla|^Ladar|^Dagul|^Granzer|^Gemsmith|^Fekoeti|^Diwitt|(?:An|The|A) attendant|clerk|Dwarven|spider|^.*He says,
      matchre RETURN ^The(.*)?(clerk|teller|attendant|mortar|pestle|tongs|bowl|riffler|hammer|gem|book|page|lockpick|sconce|voice|waters|contours|person|is|has|are|slides|fades|hinges|spell|not)
      matchre RETURN ^It('s)?(?:'s|a|and|the)?\s+?(?:would|will|is|a|already|dead|keen|practiced|graceful|stealthy|resounding|full|has)
      matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime|\[Roundtime
-     matchre RETURN ^That('s)?\s+?(?:is|has|was|a|cannot|area|can't|won't|would|already|tool|will|cost|too)
+     matchre RETURN ^That('s)?\s+?(?:is|has|was|a|cannot|area|can't|won't|would|already|tool|will|cost|too|section)
      matchre RETURN ^With(?: (a|and|the))?\s+?(?:keen|practiced|graceful|stealthy|resounding)
      matchre RETURN ^This (is a .+ spell|is an exclusive|spell|ritual)
      matchre RETURN ^The .*(is|has|are|slides|fades|hinges|spell|not|vines|antique|(.+) spider|pattern)
-     matchre RETURN ^There('s)?\s+?(?:is(n't)?|does(n't)?|already|no|not)
+     matchre RETURN ^There('s|is)?\s+(?:is(n't)?)?|does(n't)?|already|nothing|not?
      matchre RETURN ^But (?:that|you|you're|you've|the)
      matchre RETURN ^Obvious (?:exits|paths)
      matchre RETURN ^There's no room|any more room|no matter how you arrange|have all been used\.
@@ -3589,7 +3574,7 @@ PUT:
      matchre RETURN I'm sorry, but I don't work on those|There isn't a scratch on that, and I'm not one to rob you\.
      matchre RETURN I don't work on those here\.|I don't repair those here|Please don't lose this ticket\!
      matchre RETURN ^Please rephrase that command\.|^I could not find|^Perhaps you should|^I don't|^Weirdly,|That can't
-     matchre RETURN \[You're|\[This is|too injured
+     matchre RETURN \[You're|^Your .*\.|\[This is|too injured
      matchre RETURN ^Moving|Brushing|Recalling|Unaware
      matchre RETURN ^.*\[Praying for \d+ sec\.\]
      matchre RETURN ^.+ is not in need|^That is closed\.
@@ -3628,9 +3613,28 @@ PUT:
      matchre RETURN ^Hold hands with whom\?
      matchre RETURN ^Something in the area interferes
      matchre RETURN ^With a .+ to your voice,
+     matchre RETURN ^You don't have a .* coin on you\!\s*The .* spider looks at you in forlorn disappointment\.
+     matchre RETURN ^Quietly touching your lips with the tips of your fingers as you kneel\, you make the Cleric's sign with your hand\.
+     matchre RETURN ^Maybe you should stand up\.
+     matchre RETURN ^You sense a successful empathic link has been forged|^Touch what|^I could not find
+     matchre RETURN ^The .+ has suffered too much damage and needs to be repaired at a crafting repair shop
+     matchre RETURN ^The .* is not damaged enough to warrant repair\.
+     matchre RETURN ^This spell cannot be targeted\.
+     matchre RETURN ^You are already focusing your appraisal on a subject\.
+     matchre RETURN ^You are already under the effects of an appraisal focus\.
+     matchre RETURN ^\[Ingredients can be added by using ASSEMBLE Ingredient1 WITH Ingredient2\]
+     matchre RETURN ^You can't seem to focus on that\.\s*Perhaps you're too mentally tired from researching similar principles recently\.
+     matchre RETURN ^\s*LINK ALL CANCEL\s*\- Breaks all links
+     matchre RETURN (bundle them with your logbook and then give|you trace|you just received a work order|You hand|You slide|You place)
+     matchre RETURN ^(You have no idea how to craft|The book is already turned|You turn your book|You realize you have items bundled with the logbook)
+     matchre RETURN (You measure out|You carefully break off|^You hand|\"There isn't a scratch on that|\"I don't repair those here\.)
+     matchre RETURN (Just give it to me again if you want|completely undamaged and does not need repair|not damaged enough to warrant repair)
+     matchre RETURN ^(You find your jar|The (\S+) can only hold)
+     matchre RETURN ^(You .*open|You .*close|That is already open|That is already closed)
      matchre RETURN ^Turning your focus solemnly inward
      matchre RETURN ^Slow, rich tones form a somber introduction
      matchre RETURN ^Images of streaking stars falling from the heavens
+     matchre RETURN ^Strangely, you don't feel like fighting right now\.
      matchre RETURN ^With .* movements you prepare your body for the .* spell\.
      matchre RETURN ^A strong wind swirls around you as you prepare the .* spell\.
      matchre RETURN ^Roundtime\:?|^\[Roundtime\:?|^\(Roundtime\:?|^\[Roundtime|^Roundtime
@@ -3658,7 +3662,7 @@ PUT:
      matchre RETURN ^Inhaling deeply, you adopt a cyclical rhythm in your breaths to reflect the ebb and flow of the natural world and steel yourself to prepare the .* spell\.
      matchre RETURN ^Calmly reaching out with one hand, a silvery-blue beam of light descends from the sky to fill your upturned palm with radiance as you prepare the .* spell\.
      matchre RETURN ^Turning your head slightly and gazing directly ahead with a calculating stare, tiny sparks of crystalline light flash around your eyes as you prepare the .* spell\.
-     matchre RETURN ^You take up a handful of dirt in your palm to prepare the .* spell\.  As you whisper arcane words, you gently blow the dust away and watch as it becomes swirling motes of glittering light that veil your hands in a pale aura\.
+     matchre RETURN ^You take up a handful of dirt in your palm to prepare the .* spell\.  As you whisper arcane words, you gently blow the dust away and watch as it becomes swirling motes of
      send %putaction
      matchwait 15
      put #echo >Log Crimson *** MISSING MATCH IN PUT! (%scriptname.cmd) ***
