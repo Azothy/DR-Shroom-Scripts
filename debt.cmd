@@ -2,21 +2,23 @@
 # Debt paying Script 
 # By Shroom of TF 
 ####################################
+echo
 echo ===========================
 echo *** PAYING OFF YOUR DEBT!!
 echo ===========================
-
+echo
 TO_TELLER:
      var plat 20
      var fine 0
      var wealth 0
      var nofundloop 0
-     gosub AUTOMOVE teller
 CHECKING_FINE:
+     echo
      echo ===============
-     echo *** CHECKING DEBT
+     echo *** CHECKING CITY DEBT
      echo ===============
-     pause 0.3
+     echo
+     pause 0.2
      if ("$zoneid" = "107") then goto FINECHECK_QI
      if ("$zoneid" = "99") then goto FINECHECK_QI
      if ("$zoneid" = "90") then goto FINECHECK_QI
@@ -31,10 +33,10 @@ CHECKING_FINE:
      pause
      echo
      echo *** CRITICAL ERROR!
-     echo *** UKNOWN JAIL LOCATION!!
+     echo *** UKNOWN CITY LOCATION!!
      echo
      put #echo >Log Red *** CRITICAL ERROR!!!!
-     put #echo >Log Red *** UNKOWN JAIL LOCATION: Zone- $zoneid Room- $roomid
+     put #echo >Log Red *** UNKOWN CITY LOCATION: Zone- $zoneid Room- $roomid
      put #echo >Log Red *** PAY YOUR FINE MANUALLY!
      pause 0.1
      exit
@@ -76,10 +78,12 @@ SET_FINE:
      eval fine replacere("%fine", " ", "")
      math currentfine add %fine
      pause 0.2
-     echo =====================
+     echo
+     echo ==================
      echo *** CHECKING CURRENT CASH
-     echo =====================
-     pause 0.3
+     echo ==================
+     echo
+     pause 0.1
      if ("$zoneid" = "107") then goto CASHCHECK_QI
      if ("$zoneid" = "99") then goto CASHCHECK_QI
      if ("$zoneid" = "90") then goto CASHCHECK_QI
@@ -136,9 +140,11 @@ SET_WEALTH:
 NO_WEALTH:
      var wealth 0
 FINE_PROCESS:
-     echo ================
+     echo
+     echo =============
      echo *** WEALTH: %wealth
-     echo ================
+     echo =============
+     echo
      pause 0.1
      if (%fine = 0) then goto NO_FINE
      if (%fine > 20000) then
@@ -148,9 +154,11 @@ FINE_PROCESS:
           }
      if (%wealth > %fine) then
           {
-               echo =============================
+               echo
+               echo =========================
                echo *** Paying debt with cash on hand!
-               echo =============================
+               echo =========================
+               echo
                pause 0.4
                goto PAY.DEBT
           }
@@ -161,6 +169,7 @@ FINE_PROCESS:
 WITHDRAW:
 var LOCATION WITHDRAW
      if ($invisible = 1) then gosub stopinvis
+     gosub AUTOMOVE teller
      pause 0.2
      pause 0.1
      matchre WITHDRAW ^\.\.\.wait|^Sorry\,
@@ -250,9 +259,12 @@ var LOCATION DONE.DEBT
      if ($invisible = 1) then gosub stopinvis
      send deposit all
      pause 0.1
-     echo ===================================
-     echo ** DONE! Paid off Debt: %fine 
-     echo ===================================
+     echo
+     echo ====================
+     echo ** DONE! Paid off Debt!
+     echo ** FINE PAID: %fine 
+     echo ====================
+     echo
      put #parse SCRIPT FINISHED!
      put #parse SCRIPT FINISHED!
      exit

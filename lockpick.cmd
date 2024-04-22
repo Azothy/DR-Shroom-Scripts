@@ -1,39 +1,67 @@
 #############################################
 # LOCKPICK CARVING SCRIPT BY SHROOM OF TF 
+#############################################
+###
 ### container1 is place to put MASTERS OR BELOW
-var container1 backpack on shelf
+     var container1 backpack on shelf
 ### container2 is place to put GRANDMASTERS
-var container2 second back on shelf
-###############################################
+     var container2 second back on shelf
+### KHRI you want to use
+     var khri hasten safe focus sight plunder muse avoidance
+     
+#############################################################################################################################################
 ## USAGE - .lockpick  (normal run, will carve lockpicks until out of keyblanks)
-## .lockpick 20 50 70 (will start script pre-setting total masters, GMs and total keyblanks already carved )
-## (Only used if you are say, restarting the script after restocking keyblanks, and you want to track the overall total carved)
-### DONT TOUCH ################################
+##
+## .lockpick 70 20 50 (will start script pre-setting TOTAL CARVED - TOTAL MASTERS - TOTAL GMS to those settings) 
+## .lockpick <total> <masters> <GMs> 
+## (Only used if you are say.. restarting the script after restocking keyblanks, and you want to track the overall total carved)
+#############################################################################################################################################
+
+### DONT TOUCH BELOW ##############################################################################################################################
+
 var masters 0
 var grandmasters 0
 var keyblanks 0
+var broken 0
 
-if_1 then var masters %1
-if_2 then var grandmasters %2
-if_3 then var keyblanks %3
+if_1 then var keyblanks %1
+if_2 then var masters %2
+if_3 then var grandmasters %3
 
+action goto ABORT when That's too heavy to go (on|in) there\!
+KHRI:
+     put khri %khri
+     pause 1
+     pause 0.5
+     
 TOP:
-     echo *******************************************
-     echo ** REMOVE ALL ARMOR - GET ALL WOUNDS HEALED!
-     echo ** REDUCE YOUR BURDEN - BEFORE CARVING!!
-     echo ******************************************
-     pause 2
+     if !matchre("$righthand", "Empty") then send stow right
+     if !matchre("$lefthand", "Empty") then send stow left
+     pause 0.001
+     pause 0.001
+     echo
+     echo ===========================
+     echo * FOR BEST RESULTS CARVING:
+     echo * REMOVE ALL ARMOR FIRST! 
+     echo * GET ALL WOUNDS HEALED!!
+     echo * REDUCE YOUR BURDEN!!!
+     echo * MAKE SURE YOU ARE IN TOWN!!!
+     echo ============================
+     echo
+     pause 3
      put smirk $charactername
      pause 0.5
      put get my carving knife
      pause 0.5
-     if ("$righthandnoun" != "knife") then goto 
-
-KHRI:
-     put khri hasten safe focus sight plunder muse avoidance
-     pause 1
+     if ("$righthandnoun" != "knife") then
+          {
+               put get my carving knife from my portal
+               pause 0.5              
+          }
+     if ("$righthandnoun" != "knife") then goto NOKNIFE
+     send khri safe hasten sight
      pause 0.5
-
+     pause 0.5
 CARVE:
 GET.KEY:
      math keyblanks add 1
@@ -45,6 +73,13 @@ GET.KEY:
      matchwait
 
 GET.KEY2:
+     pause 0.001
+     matchre Carvelock1 You get a|already holding
+     match Carvelock1 You need a free hand
+     matchre GET.KEY3 I could not find|What were you
+     put get my keyblank from my portal
+     matchwait
+GET.KEY3:
      pause 0.001
      matchre Carvelock1 You get a|already holding
      match Carvelock1 You need a free hand
@@ -73,26 +108,41 @@ CARVELOCK2:
      matchre End.Master proudly glance down at a master's|It would be better
      match Broken snap
      match Carvelock2 Wait
-     put carve my lock with my car knife
+     put carve my lock with my carv knife
      matchwait
 
 BROKEN:
-     pause
+     pause 0.1
+     math broken add 1
+     echo
      echo **** DOH! Broke one.. 
+     echo
+     pause 0.5
+     pause 0.5
      goto Carve
 
 End.Master:
      math masters add 1
-     pause 0.1
-     pause 0.1
-     put put lock in %container1
+     echo
+     echo **** CARVED A MASTER
+     echo
+     pause 0.3
+     pause 0.5
+     pause 0.0001
+     pause 0.0001
+     pause 0.0001
+     send put lock in %container1
      goto Finish
 
 End.GM:
      math grandmasters add 1
-     pause 0.1
-     pause 0.1
-     put put lock in %container2
+     echo
+     echo **** CARVED A GRANDMASTER!
+     echo
+     pause 0.3
+     pause 0.5
+     pause 0.0001
+     send put lock in %container2
      goto Finish
 
 FINISH:
@@ -100,18 +150,23 @@ FINISH:
      pause 0.1
      put exp
      waitfor Overall state of mind
-     echo  
-     echo *** %keyblanks lockpicks carved 
-     echo *** %masters masters
-     echo *** %grandmasters grandmasters
+     pause 0.1
      echo
-     goto KHRI
+     echo =================
+     echo *** %keyblanks TOTAL LOCKPICKS CARVED
+     echo *** %broken BROKEN
+     echo *** %masters MASTERS
+     echo *** %grandmasters GRANDMASTERS
+     echo =================
+     echo
+     pause 0.2
+     goto CARVE
 
 NOKNIFE:
      pause 0.1
-     echo *************************************
+     echo ==========================
      echo ** NO CARVING KNIFE FOUND! ABORTING
-     echo ************************************
+     echo ==========================
      echo
      goto STAND
      
@@ -119,10 +174,12 @@ FINISH2:
      pause 0.1
      put exp
      waitfor Overall state of mind
-     pause 0.1
-     echo ************************************
-     echo ****** ALL OUT OF KEYBLANKS *******
-     echo ************************************
+     pause 0.3
+     echo
+     echo ======================
+     echo *** ALL OUT OF KEYBLANKS ****
+     echo ======================
+     echo
      put stow knife
      pause 0.5
 STAND:
@@ -140,8 +197,27 @@ STAND:
      matchwait
 
 FINISHED:
+     pause 0.001
      put clean $charactername
-     put #echo >Log Lime **** Carved %keyblanks lockpicks 
-     put #echo >Log Lime **** %masters Masters %grandmasters Grandmasters
+     pause 0.001
+     pause 0.001
+     put #echo >Log Lime **** Lockpicks restocked on shelf - Carved %keyblanks Lockpicks
+     put #echo >Log Lime **** %masters Masters / %grandmasters Grandmasters
+     if ("$game" = "DRF") then
+          {
+               put chatt * LOCKPICK BOT: Restocked picks on shelf!
+               put chatt * Carved %keyblanks / %masters Masters - %grandmasters GMs
+          }
      pause 0.5
      exit
+     
+ABORT:
+echo
+echo *** CONTAINER IS OUT OF ROOM!!! MAKE SOME ROOM!
+echo
+     if (("$game" = "DRF") && ("%keyblanks" > "0")) then
+          {
+               put chatt * LOCKPICK BOT: Restocked picks on shelf!
+               put chatt * Carved %keyblanks / %masters Masters - %grandmasters GMs
+          }
+exit

@@ -1,3 +1,5 @@
+# version 1.2
+
 #################################################################
 ## REQUIRED VARIABLES FOR SHROOM'S SMART DISARM SCRIPT
 ## THIS MUST BE A SEPARATE SCRIPT AND NAMED disarm-vars.inc
@@ -7,13 +9,13 @@
 ## IF ONLY ONE CHARACTER THEN JUST SET CHARACTER1. REST CAN BE NULL
 ## EVERY CHARACTER THAT USES THIS SCRIPT MUST BE SETUP IN HERE
 var CHARACTER1 Shroom
-var CHARACTER2 Alucios
-var CHARACTER3 Valgrind
-var CHARACTER4 Hvinir
+var CHARACTER2 Acidbath
+var CHARACTER3 Arioth
+var CHARACTER4 Healbitch
 var CHARACTER5 Raidboss
-var CHARACTER6 NULL
-var CHARACTER7 NULL
-var CHARACTER8 NULL
+var CHARACTER6 Illuminati
+var CHARACTER7 Hashish
+var CHARACTER8 Fuku
 var CHARACTER9 NULL
 var CHARACTER10 NULL
 var CHARACTER11 NULL
@@ -36,10 +38,10 @@ if ("$charactername" = "%CHARACTER1") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 backpack
-     var container2 rucksack
-     var container3 shadow
-     var sheath baldric
+     var container1 watery portal
+     var container2 corrupted vortex
+     var container3 shadows
+     var sheath scavenger's belt
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer toolstrap
@@ -59,7 +61,7 @@ if ("$charactername" = "%CHARACTER1") then
      #### ARE YOU USING A LOCKPICK RING or LOCKPICK CASE? (ON or OFF) (Auto-Detects if case or ring)
      var lockpick.ring ON
      # WHERE DO YOU STORE EXTRA LOCKPICKS FOR RESTOCKING YOUR LOCKPICK RING/CASE? (IF ANY - Not necessary to set)
-     var pickstorage util belt
+     var pickstorage goldenweave belt
      # MAGIC SKELETON KEY? (ON or OFF) - ONLY FOR USE WITH A MAGIC LOCKPICKING SKELETON KEY
      var skeleton.key OFF
      #### DO YOU WANT TO PUT YOUR ARMOR BACK ON AT THE END? (IF IT TOOK ANY OFF FIRST?)
@@ -78,32 +80,31 @@ if ("$charactername" = "%CHARACTER1") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     ## Special Request - Pet box CREATOR
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to MAKE some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white.back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL ON
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
-     var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
-     var baseline_difficulty -1
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
+     var componentcontainer locksmith's pouch
      return
      }
      
@@ -112,9 +113,9 @@ if ("$charactername" = "%CHARACTER2") then
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
      var container1 backpack
-     var container2 haversack
-     var container3 duffel.bag
-     var sheath bag
+     var container2 lootsack
+     var container3 leather bag
+     var sheath war belt
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -126,7 +127,7 @@ if ("$charactername" = "%CHARACTER2") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container leather pouch
+     var gempouch.container thigh bag
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?
@@ -153,32 +154,31 @@ if ("$charactername" = "%CHARACTER2") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty 0
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -228,32 +228,31 @@ if ("$charactername" = "%CHARACTER3") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -261,10 +260,10 @@ if ("$charactername" = "%CHARACTER4") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 carryall
-     var container2 duffel.bag
-     var container3 oil.bag
-     var sheath harness
+     var container1 haversack
+     var container2 backpack
+     var container3 portal
+     var sheath handbag
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -276,7 +275,7 @@ if ("$charactername" = "%CHARACTER4") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container satin.pouch
+     var gempouch.container carryall
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?
@@ -284,7 +283,7 @@ if ("$charactername" = "%CHARACTER4") then
      #### ARE YOU USING A LOCKPICK RING or LOCKPICK CASE? (ON or OFF) (Auto-Detects if case or ring)
      var lockpick.ring ON
      # WHERE DO YOU STORE EXTRA LOCKPICKS FOR RESTOCKING YOUR LOCKPICK RING/CASE? (IF ANY - Not necessary to set)
-     var pickstorage bag
+     var pickstorage backpack
      # MAGIC SKELETON KEY? (ON or OFF) - ONLY FOR USE WITH A MAGIC LOCKPICKING SKELETON KEY
      var skeleton.key OFF
      #### DO YOU WANT TO PUT YOUR ARMOR BACK ON AT THE END? (IF IT TOOK ANY OFF FIRST?)
@@ -303,32 +302,31 @@ if ("$charactername" = "%CHARACTER4") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -378,32 +376,31 @@ if ("$charactername" = "%CHARACTER5") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -411,10 +408,10 @@ if ("$charactername" = "%CHARACTER6") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 bag
-     var container2 lootsack
-     var container3 pannier
-     var sheath harness
+     var container1 traveling bag
+     var container2 pannier
+     var container3 leather bag
+     var sheath hip pouch
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -453,32 +450,31 @@ if ("$charactername" = "%CHARACTER6") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -486,10 +482,10 @@ if ("$charactername" = "%CHARACTER7") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 bag
-     var container2 lootsack
-     var container3 pannier
-     var sheath harness
+     var container1 haversack
+     var container2 black bag
+     var container3 twilight pack
+     var sheath baldric
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -501,9 +497,9 @@ if ("$charactername" = "%CHARACTER7") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container thigh.pouch
+     var gempouch.container thigh bag
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
-     var tie.pouch OFF
+     var tie.pouch ON
      # ANY HAND WORN ARMOR?
      var knuckles knuckle
      #### ARE YOU USING A LOCKPICK RING or LOCKPICK CASE? (ON or OFF) (Auto-Detects if case or ring)
@@ -528,32 +524,31 @@ if ("$charactername" = "%CHARACTER7") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -561,10 +556,10 @@ if ("$charactername" = "%CHARACTER8") then
      {
      ## SET YOUR BAGS WHERE BOXES CAN BE FOUND
      ## AND/OR WHERE YOUR ARMOR/HAND ITEMS CAN BE STOWED
-     var container1 bag
-     var container2 lootsack
-     var container3 pannier
-     var sheath harness
+     var container1 carryall
+     var container2 haversack
+     var container3 scavenger's pack
+     var sheath saddlebag
      ## TIE CONTAINER (If you use a toolstrap/toolbelt etc container to TIE weapons etc to) 
      ## SET THE VERB OF THE TIE CONTAINER 
      var TieContainer NULL
@@ -576,7 +571,7 @@ if ("$charactername" = "%CHARACTER8") then
      ## DO YOUR GEM POUCHES HAVE SOME WEIRD SYNTAX? SET IT HERE. LEAVE AT GEM POUCH IF NORMAL
      var gempouch black pouch
      ## WHERE DO WE STORE YOUR COMPLETELY FULL, TIED UP GEM POUCHES? (CLOSABLE CONTAINER!)
-     var gempouch.container thigh.pouch
+     var gempouch.container saddlebag
      ## TIE YOUR GEM POUCHES? ON OR OFF - YES WILL TIE UP ANY FULL POUCHES
      var tie.pouch OFF
      # ANY HAND WORN ARMOR?
@@ -603,32 +598,31 @@ if ("$charactername" = "%CHARACTER8") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -678,32 +672,31 @@ if ("$charactername" = "%CHARACTER9") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -753,32 +746,31 @@ if ("$charactername" = "%CHARACTER10") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES OFF
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -828,32 +820,31 @@ if ("$charactername" = "%CHARACTER11") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES NO
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -903,32 +894,31 @@ if ("$charactername" = "%CHARACTER12") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES NO
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -978,32 +968,31 @@ if ("$charactername" = "%CHARACTER13") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES NO
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -1053,32 +1042,31 @@ if ("$charactername" = "%CHARACTER14") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES NO
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      
@@ -1128,32 +1116,31 @@ if ("$charactername" = "%CHARACTER15") then
      var STARTING.ROOM 45
      # SET YOUR "SAFE" ROOM (FOR DISARMING AREA-WIDE TRAPS THAT CAN HURT OTHERS)
      var SAFE.ROOM 45
-     #Special Request - Pet box Creator
-     #DISARM ONLY?? (ON or OFF) (Skips lockpicking/looting COMPLETELY - this is ONLY for if you just want to make some pet boxes)
-     var disarmOnly OFF
-     ## Set the special bag to put only disarmed boxes in
-     var disarmBag white back
-     ## PICK PET BOXES - (ON or OFF) - If ON, Gets all Boxes from your "disarmBag" (var above this) 
-     ## WILL ONLY PICK BLIND AND THEN PUT AWAY WHEN LOCKED
-     ## NOT RESPONSIBLE FOR YOU NOT HAVING DISARMED BOXES AND BLOWING YOUR FACE OFF 
-     var PET.BOXES NO
+     # HARVEST TRAPS? (ON or OFF)
+     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
+     var harvest OFF
+     # AUTOLOOT BOXES (ON or OFF) 
+     # LEAVE AUTOLOOT ON TO LET SCRIPT LOOT BOXES - TURN OFF TO ~SKIP~ LOOTING (using AUTOLOOT in game)
+     var AUTOLOOT ON
+     # ALWAYS DISMANTLE BOXES? (ON or OFF)
+     # If ON will ALWAYS dismantle boxes even if in a room with a bucket/trash bin
+     # If OFF - Will only dismantle if there is no trash receptacle in room
+     var DISMANTLE.ALL OFF
+     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
+     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
+     ## IF YOU TURN THIS ON SCRIPT WILL TRY TO AUTO-SELL COMPONENTS
+     var keepcomponent ON
+     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
+     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
+     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)
+     var baseline_difficulty -1
      ###################################
      # THIEF ONLY VARIABLES
      ###################################
      # SET THE KHRI YOU WANT TO USE (IGNORE IF NON-THIEF)
      var khri safe focus sight avoidance darken
-     # HARVEST TRAPS? (ON or OFF)
-     # Harvesting increases overall time of picking SIGNIFICANTLY but also increases EXP per box
-     var harvest OFF
-     # DO YOU WANT TO KEEP ALL THE COMPONENTS YOU HARVEST? (ON or OFF)
-     # SCRIPT WILL ALWAYS KEEP CUBES IF SCRIPT FINDS THEM, WILL DROP ANYTHING ELSE IF NO
-     var keepcomponent ON
-     # NAME OF YOUR COMPONENT CONTAINER
+     # NAME OF YOUR COMPONENT CONTAINER - SET TO NULL TO TURN OFF (HARVEST MUST BE ON)
      var componentcontainer dark.pouch
-     #### BASE DIFFICULTY ADJUSTER. FOR INCREASING DIFFICULTY MANUALLY ( -5 to 5 ) DEFAULT IS 0
-     #### LOWER THIS NUMBER TO MAKE TRAPS TEACH BETTER/HIGHER RISK - (USE QUICK/BLIND MORE OFTEN)
-     #### RAISE THIS NUMBER TO MAKE TRAPS EASIER/LESS LIKELY TO EXPLODE - (USE CAREFUL MORE OFTEN)     
-     var baseline_difficulty -1
      return
      }
      

@@ -642,12 +642,7 @@ CRAZY_ERROR:
      put WEAR %savedright
      pause 0.5
      exit
-     
-     
-     
-     
-     
-     
+##################################################################################################
 STOCKS:
      echo
      echo *** You got the stocks! Wait it out or plead for mercy

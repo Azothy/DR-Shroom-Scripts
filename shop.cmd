@@ -71,6 +71,7 @@ var fence 0
 var figure 0
 var firepit 0
 var footlocker 0
+var footstool 0
 var footrest 0
 var fountain 0
 var framework 0
@@ -115,6 +116,7 @@ var pedestal 0
 var peg 0
 var pegboard 0
 var pew 0
+var pilaster 0
 var pillow 0
 var pile 0
 var pipe 0
@@ -231,7 +233,7 @@ ACTION var cupboard 1 WHEN ^\s+(an?|some|the).+\bcupboarde?s?\b(?!.+(Dokoras?|Kr
 ACTION var cushion 1 WHEN ^\s+(an?|some|the).+\bcushione?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var curio 1 WHEN ^\s+(an?|some|the).+\bcurio?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var dais 1 WHEN ^\s+(an?|some|the).+\bdais\b(?!.+(Dokoras?|Kronars?|Lirums?))
-ACTION var desk 1 WHEN ^\s+(an?|some|the).+\bdisplaye?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
+ACTION var desk 1 WHEN ^\s+(an?|some|the).+\bdesk?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var display 1 WHEN ^\s+(an?|some|the).+\bdisplaye?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var drawer 1 WHEN ^\s+(an?|some|the).+\bdrawere?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var dresser 1 WHEN ^\s+(an?|some|the).+\bdressere?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
@@ -244,6 +246,7 @@ ACTION var fence 1 WHEN ^\s+(an?|some|the).+\bfencee?s?\b(?!.+(Dokoras?|Kronars?
 ACTION var figure 1 WHEN ^\s+(an?|some|the).+\bfigure?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var firepit 1 WHEN ^\s+(an?|some|the).+\bfirepite?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var footlocker 1 WHEN ^\s+(an?|some|the).+\bfootlockere?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
+ACTION var footstool 1 WHEN ^\s+(an?|some|the).+\bfootstools?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var footrest 1 WHEN ^\s+(an?|some|the).+\bfootreste?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var fountain 1 WHEN ^\s+(an?|some|the).+\bfountaine?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var framework 1 WHEN ^\s+(an?|some|the).+\bframeworke?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
@@ -293,6 +296,7 @@ ACTION var pile 1 WHEN ^\s+(an?|some|the).+\bpile?s?\b(?!.+(Dokoras?|Kronars?|Li
 ACTION var pipe 1 WHEN ^\s+(an?|some|the).+\bpipee?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var pit 1 WHEN ^\s+(an?|some|the).+\bpite?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var plank 1 WHEN ^\s+(an?|some|the).+\bplanke?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
+ACTION var pilaster 1 WHEN ^\s+(an?|some|the).+\bpilasters?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var planter 1 WHEN ^\s+(an?|some|the).+\bplantere?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var platter 1 WHEN ^\s+(an?|some|the).+\bplattere?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
 ACTION var plinth 1 WHEN ^\s+(an?|some|the).+\bplinthe?s?\b(?!.+(Dokoras?|Kronars?|Lirums?))
@@ -420,6 +424,7 @@ if %endtable = 1 then gosub shopvar endtable
 if %fence = 1 then gosub shopvar fence
 if %figure = 1 then gosub shopvar figure
 if %firepit = 1 then gosub shopvar firepit
+if %footstool = 1 then gosub shopvar footstool
 if %footlocker = 1 then gosub shopvar footlocker
 if %footrest = 1 then gosub shopvar footrest
 if %fountain = 1 then gosub shopvar fountain
@@ -465,6 +470,7 @@ if %pedestal = 1 then gosub shopvar pedestal
 if %peg = 1 then gosub shopvar peg
 if %pegboard = 1 then gosub shopvar pegboard
 if %pew = 1 then gosub shopvar pew
+if %pilaster = 1 then gosub shopvar pilaster
 if %pillow = 1 then gosub shopvar pillow
 if %pile = 1 then gosub shopvar pile
 if %pipe = 1 then gosub shopvar pipe
