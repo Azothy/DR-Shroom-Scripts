@@ -1,23 +1,19 @@
 #debug 5
 # POWER TRAVEL SCRIPT FOR GENIE 4 ~ TRAVELS TO/FROM ALMOST ~ANYWHERE~ IN DRAGONREALMS
-# USES PLAT PORTALS TO TRAVEL BETWEEN CITIES IF PLATINUM
-# CAN START SCRIPT FROM ANYWHERE IN THE GAME 
-# IT SHOULD KNOWS HOW TO NAVIGATE IN/OUT ALMOST ANY MAZE / PUZZLE AREA / FERRIES ETC
-# IT TAKES CERTAIN SHORTCUTS IF YOU HAVE THE NECESSARY RANKS (Athletics)
-#
-# put #class racial on
-# put #class rp on
-# put #class arrive off
-# put #class combat off
-# put #class joust off
-#
-# Inspired by the OG Wizard Travel Script - But made 1000x better with the power of Genie
-# Originally written by Achilles
-# Revitalized and Robustified by Shroom
-# Updated: 4/6/24
-var version 5.1.9
+# CAN START SCRIPT FROM ANYWHERE IN THE GAME
 #
 # REQUIRES EXPTRACKER PLUGIN! MANDATORY!
+#
+# Inspired by the OG Wizard Travel Script - But made 1000x better w/ the power of GENIE
+# Originally written by Achilles - Revitalized and Robustified by Shroom
+#
+# Updated: 6/25/24
+var version 5.2.2
+#
+# USES PLAT PORTALS TO TRAVEL BETWEEN CITIES IF PLATINUM
+# KNOWS HOW TO NAVIGATE OUT OF ANY MAZE / PUZZLE AREAS / FERRIES ETC
+# IT TAKES CERTAIN SHORTCUTS IF YOU HAVE THE NECESSARY RANKS (Athletics)
+# HANDLES DARK ROOMS WITH GUILD DARKVISION / CHECKS FOR GATHZENS ITEMS ETC
 #
 # USAGE:
 # .travel <location>
@@ -25,12 +21,15 @@ var version 5.1.9
 # .travel <location> <room number>
 #
 # EXAMPLES:
-# .travel shard - Travels to Shard
-# .travel shard 40 - Travel to SHARD - THEN moves to ROOM 40
-# .travel boar 25 - Travels to BOAR CLAN - THEN moves to ROOM 25
+# .travel shard - Travel to Shard
+# .travel stone - Travel to Stone Clan
 #
-# TO MOVE TO AN EXACT ROOM NUMBER IN A CERTAIN MAP
-# YOU MUST KNOW THE "DESTINATION" MAP LOCATION THEN CHOOSE A ROOM NUMBER/LABEL IN THAT MAP
+# ADVANCED:
+# .travel shard 40 - Travel to SHARD - THEN move to ROOM 40 in Shard
+# .travel boar 25 - Travel to BOAR CLAN - THEN move to ROOM 25 in Boar Clan
+#
+# TO MOVE TO AN EXACT ROOM NUMBER/LABEL IN A CERTAIN MAP
+# YOU MUST KNOW THE "DESTINATION" MAP LOCATION THEN CHOOSE A ROOM NUMBER/LABEL IN THAT EXACT MAP
 # OR SIMPLY CHOOSE A FINAL CITY / DESTINATION AND SCRIPT WILL TAKE YOU THERE
 #
 # VALID DESTINATIONS YOU CAN CHOOSE ARE:
@@ -61,6 +60,7 @@ var version 5.1.9
 ##########################################
 ##    ARE YOU A CITIZEN OF SHARD?       ##
 ##        CHOOSE yes or no              ##
+##   ONLY USED FOR THE SHARD GATE       ##
      var shardcitizen yes
 ##########################################
 ## MULTIPLE CHARACTER SUPPORT FOR THE SHARD CITIZEN VARIABLE
@@ -95,24 +95,23 @@ if ("$charactername") = ("$char10") then var shardcitizen no
 ##########################################
 ## RANKS TO USE ROSSMAN'S SHORTCUT      ##
 ## TO SWIM THE JANTSPYRE RIVER          ##
-## NORTH IS POSSIBLE ~175 W/ NO ARMOR   ##
 ## NORTH IS ~SAFE~ AROUND 200           ##
+## NORTH IS POSSIBLE ~175 W/ NO ARMOR   ##
 ## SOUTH IS MUCH EASIER, SAFE AT ~90    ##
-## NORTH
     var rossmannorth 200
-## SOUTH
     var rossmansouth 90
 ###########################################
 ##  RANKS TO SWIM THE FALDESU RIVER      ##
 ##  HAVEN TO NTR OR VICA VERSA           ##
-##  SAFE: 180 - 200                      ##
-##  POSSIBLE @ 160+ w/ buffs/no burden   ##
+##  SAFE = 190 - 200                     ##
+##  POSSIBLE= ~160+ w/ NO BURDEN/BUFFS   ##
     var faldesu 190
 ############################################
-##  RANKS TO SWIM THE SEGOLTHA RIVER      ##
-##  TIGER CLAN TO STR OR VICA VERSA       ##
-##  VERY TOUGH ONE! BE CAREFUL LOWERING!  ##
-##  SAFE: 550+ | BUFFED & STRONG: ~530    ##
+##  RANKS TO SWIM THE SEGOLTHA RIVER     ##
+##  TIGER CLAN TO STR OR VICA VERSA      ##
+##  VERY TOUGH ONE! CAREFUL LOWERING!    ##
+##  MAY GET STUCK IF YOU SET TOO LOW!    ##
+##  SAFE= 550+ | BUFFED & STRONG= ~530   ##
     var segoltha 550
 ##########################################
 ## RANKS TO CLIMB UNDERGONDOLA SHORTCUT ##
@@ -129,19 +128,25 @@ if ("$charactername") = ("$char10") then var shardcitizen no
 ## RANKS FOR VELAKA DESERT SHORTCUT TO MUSPARI ##
 ## THIS IS THE HARDEST SHORTCUT IN THE SCRIPT  ##
 ## ~750 BARE MIN for this one! - 780 IS 'SAFE' ##
-    var muspari.shortcut 770
+    var muspari.shortcut 780
 #################################################
 #### END OF VARIABLES!!!
 #### DONT TOUCH ANYTHING BELOW THIS LINE
 ###########################################
 ###########################################
-# CHANGELOG - Latest Update: 4/6/23
+# CHANGELOG - Latest Update: 6/25/24
+#
+# - Robustified PLAT PORTAL usage
+# - Streamlined and further robustified Light Source checks
+#
+# - Fixed bug in Light Source checks - Some subs were still using OLD random movement routine which didn't account for dark rooms
+# - Robustified Gaezthen Checks - Should now check for multiple different gaezthen types when searching for a Light Source
 #
 # - Fixed bug in starting script from 'Zaulfung, Crooked Treetop' causing infinite loop
-# - Robustified Travel INTO Zaulfung 
-# - Added feature for TRAVEL DRAGON at end to show where script was started from 
+# - Robustified Travel INTO Zaulfung
+# - Added feature for TRAVEL DRAGON at end to show where script was started from
 #
-# - Fixed intermittent bug in travel when moving from Map 69 to 123 
+# - Fixed intermittent bug in travel when moving from Map 69 to 123
 # - Should now micro pause and mapper reset to fix issues with sometimes showing Map = 0
 #
 # - Added Escape from Shard Favor Area detection (if script is started in there)
@@ -399,12 +404,12 @@ echo  | \____(      )___) )___
 echo   \______(_______;;; __;;;
 echo
 echo *** LET'S GO!!
-echo 
-echo * STARTING ROOM: $roomname 
+echo
+echo * STARTING ROOM: $roomname
 echo * MAP: $zoneid | ROOM: $roomid
 echo
 echo * DESTINATION: %destination
-echo 
+echo
 #DESTINATION
 #### SPECIAL ESCAPE SECTION FOR MAZES/HARD TO ESCAPE AREAS BY SHROOM
 #### THIS CHECKS IF WE ARE STARTING FROM A KNOWN MAZE / MESSED UP AREA THAT AUTOMAPPER GETS LOST IN
@@ -447,9 +452,9 @@ if matchre("$roomname", "\[\"Her Opulence\"\]|\[\"Hodierna's Grace\"\]|\[\"Kerti
 if (("$zoneid" = "0") || ("$roomid" = "0")) then
      {
           echo ### Unknown map or room id - Attempting to move in random direction to recover
-          gosub MOVERANDOM
+          gosub RANDOMMOVE
      }
-if (("$zoneid" = "0") || ("$roomid" = "0")) then gosub MOVERANDOM
+if (("$zoneid" = "0") || ("$roomid" = "0")) then gosub RANDOMMOVE
 if ("$zoneid" = "0") then
      {
           ECHO ### You are in a spot not recognized by Genie, please start somewhere else! ###
@@ -2119,7 +2124,7 @@ if (("$zoneid" = "31") && ("%detour" = "zaulfung")) then
           put go curving path
           pause 0.5
           gosub SICKLY_TREE
-     }    
+     }
 if ("$zoneid" = "31") then
      {
           gosub AUTOMOVE 1
@@ -4511,6 +4516,7 @@ EKKO:
      pause 0.02
 return
 PORTAL_TIME:
+     action var portal 0;var ported 0 when ^You step towards the shimmering portal, but the wall of magic around it flares\.
 ## CROSS PORTAL ENTRANCE Zone 1 Room 484
 CROSS_PORTAL:
      if ("$zoneid" = "1") then
@@ -4527,10 +4533,11 @@ CROSS_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "aesr?y?") then goto ARRIVED
           }
 ## AESRY PORTAL ENTRANCE Zone 99 Room 115
@@ -4548,10 +4555,11 @@ AESRY_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.2
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "shard?") then goto ARRIVED
                if matchre("%destination", "\b(grani?t?e?|garg?o?y?l?e?|spir?e?|horse?c?l?a?n?|fayr?i?n?s?|steel?c?l?a?w?|cori?k?s?|ada?n?f?|ylo?n?o?|wyve?r?n?|rave?n?s?|fan?g?|cov?e?)\b") then
                     {
@@ -4573,10 +4581,11 @@ SHARD_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(mriss?|merk?r?e?s?h?)") then goto ARRIVED
           }
 ## MERKRESH PORTAL ENTRANCE Zone 107 Room 273
@@ -4594,10 +4603,11 @@ MERKRESH_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(rive?r?h?a?v?e?n?|have?n?|rossm?a?n?)") then goto ARRIVED
           }
 ## RIVERHAVEN PORTAL ENTRANCE Zone 30 Room 331
@@ -4615,10 +4625,11 @@ RIVERHAVEN_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(ratha?)") then goto ARRIVED
           }
 ## RATHA PORTAL ENTRANCE Zone 90 Room 468
@@ -4636,10 +4647,11 @@ RATHA_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(el\'?b?a?i?n?s?|elbai?n?s?)") then goto ARRIVED
                if matchre("%destination", "\b(ther?e?n?b?o?r?o?u?g?h?|lang?e?n?f?i?r?t?h?|el\'?b?a?i?n?s?|elb?a?i?n?s?|raka?s?h?|thro?n?e?|forn?s?t?e?d?|hvar?a?l?)\b") then
                     {
@@ -4661,10 +4673,11 @@ ELBAINS_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(mus?p?a?r?i?)") then goto ARRIVED
           }
 ## MUSPARI PORTAL ENTRANCE Zone 47 Room 97
@@ -4681,10 +4694,11 @@ MUSPARI_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.4
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "(hiba?r?n?h?v?i?d?a?r?)") then goto ARRIVED
                if matchre("%destination", "\b(aing?h?a?z?a?l?|rave?n?s?|hib?a?r?n?h?v?i?d?a?r?|out?e?r?|inne?r?|boar?c?l?a?n?)\b") then
                     {
@@ -4711,10 +4725,11 @@ HIB_PORTAL:
                wait
                pause 0.4
                pause 0.1
+               if (%ported = 0) then return
                put #mapper reset
                pause 0.1
-               if ($roomid = 0) then gosub MOVERANDOM
-               if ($roomid = 0) then gosub MOVERANDOM
+               if ($roomid = 0) then gosub RANDOMMOVE
+               if ($roomid = 0) then gosub RANDOMMOVE
                if matchre("%destination", "cross?i?n?g?s?") then goto ARRIVED
                if matchre("%destination", "\b(knif?e?c?l?a?n?|tige?r?c?l?a?n?|dirg?e?|arth?e?d?a?l?e?|kaer?n?a?|ilay?a?t?a?i?p?|illa?y?a?t?a?i?p?a?|taipa|leth?d?e?r?i?e?l?|acen?a?m?a?c?r?a?|vipe?r?s?|guar?d?i?a?n?s?|leuc?r?o?s?|malod?o?r?o?u?s?|bucc?a?|dokt?|sorr?o?w?s?|misens?e?o?r?|beis?s?w?u?r?m?s?|ston?e?c?l?a?n?|bone?w?o?l?f?|germ?i?s?h?d?i?n?|alfr?e?n?s?|cara?v?a?n?s?a?r?y?)\b") then
                     {
@@ -4852,14 +4867,17 @@ NECRO.CHECKROOM:
 STOWING:
      delay 0.0001
      var LOCATION STOWING
-     if "$righthandnoun" = "rope" then put coil my rope
-     #if matchre("$righthandnoun", "(crossbow|bow|short bow)") then gosub unload
+     if ("$righthandnoun" = "rope") then
+          {
+               send coil my rope
+               pause 0.2
+          }
+     # if matchre("$righthandnoun", "(crossbow|bow|short bow)") then gosub unload
      if matchre("$righthand", "(partisan|shield|buckler|lumpy bundle|halberd|staff|longbow|khuj)") then gosub wear my $1
-     if matchre("$lefthand", "(partisan|shield|buckler|lumpy bundle|halberd|staff|longbow|khuj)") then gosub wear my $1
      if ("$righthand" != "Empty") then GOSUB STOW right
      if ("$lefthand" != "Empty") then GOSUB STOW left
      if ("$righthand" != "Empty") then put sheath
-     RETURN
+     return
 STOW:
      var todo $0
 STOW1:
@@ -5626,7 +5644,7 @@ PUT:
      matchre RETURN ^Your (?:actions|dance|nerves) .*(?:\.|\!|\?)?
      matchre RETURN ^Having no further use for .*, you discard it\.
      matchre RETURN ^After a moment, .*\.
-     matchre RETURN ^.* (?:is|are) not in need of cleaning\.
+     matchre RETURN ^.* (?:is|are) (not in need of cleaning|already activated)\.
      matchre RETURN \[Type INVENTORY HELP for more options\]|\[Use INVENTORY HELP for more options\.\]
      matchre RETURN ^A vortex|^A chance for|^In a flash|^It is locked|^An aftershock
      matchre RETURN ^In the .* you see .*\.
@@ -5640,6 +5658,7 @@ PUT:
      matchre RETURN ^Tie it off when it's empty\?
      matchre RETURN ^But the merchant can't see you|are invisible
      matchre RETURN Page|^As the world|^Obvious|^A ravenous energy
+     matchre RETURN ^A .* is currently
      matchre RETURN ^In the|^The attendant|^That is already open\.|^Your inner
      matchre RETURN ^(.+) hands you|^Searching methodically|^But you haven't prepared a symbiosis\!
      matchre RETURN ^Illustrations of complex,|^It is labeled|^Your nerves
@@ -5648,7 +5667,7 @@ PUT:
      matchre RETURN ^Weirdly, you can't manage
      matchre RETURN ^Hold hands with whom\?
      matchre RETURN ^Something in the area interferes
-     matchre RETURN ^With a .+ to your voice,
+     matchre RETURN ^With a .+
      matchre RETURN ^Turning your focus solemnly inward
      matchre RETURN ^Slow, rich tones form a somber introduction
      matchre RETURN ^Images of streaking stars falling from the heavens
@@ -5799,46 +5818,56 @@ USHNISH_GO_ZONE3:
      pause 0.5
      return
 #####################################################################################################
+# LIGHT SOURCE CHECK BY SHROOM - SCRIPT USES WHEN IN PITCH BLACK/DARK ROOMS
+# USE ANY KNOWN GUILD SKILLS/SPELLS TO ACTIVATE DARK VISION
+# IF NOT ACTIVE OR NO GUILD SPELL - CHECKS FOR/USES LIGHT-PRODUCING ITEMS (STARGLASS/LANTERN/GOGGLES)
 #####################################################################################################
-# PREMIERE LIGHT SOURCE CHECK BY SHROOM
-# USES ANY KNOWN GUILD SKILLS/SPELLS TO ATTEMPT TO ACTIVATE DARK VISION
-# IF STILL NOT ACTIVE - WILL CHECK FOR ITEMS THAT GIVE LIGHT (STARGLASS/LANTERN/GOGGLES) etc.
-#####################################################################################################
+LIGHT_CHECK:
 LIGHT_SOURCE:
      delay 0.0001
      echo
-     echo ~~~~~~~~~~~~~~~~~~~~~
+     echo ~~~~~~~~~~~~~~~~~~~~
      echo * DARK ROOM - NEED A LIGHT SOURCE
-     echo * Checking for DARKVISION
-     echo ~~~~~~~~~~~~~~~~~~~~~
+     echo * Checking for ~DARKVISION~
+     echo ~~~~~~~~~~~~~~~~~~~~
      echo
      delay 0.0001
      delay 0.0001
+     gosub STOWING
+     if ("$preparedspell" != "None") then
+          {
+               put RELEASE spell
+               pause 0.6
+               put RELEASE camb
+               pause 0.7
+          }
      if (("$guild" = "Ranger") && ($circle > 34)) then
           {
+               echo
                echo * RANGER - Beseeching Dark to Sing
-               gosub stowing
+               echo
                gosub PUT align 30
                pause 0.5
-               pause
+               pause 0.8
                gosub PUT beseech dark to sing
-               pause 0.5
+               pause 0.4
           }
      if ("$guild" = "Thief") then
           {
+               echo
                echo * THIEF - Khri Sight
+               echo
                gosub PUT khri sight
-               pause 0.2
+               pause 0.4
           }
      if (("$guild" = "Bard") && ($circle > 10)) then
           {
                send release cyclic
-               pause 0.4
-               pause 0.1
+               pause 0.5
+               pause 0.2
                put prep EYE 5
-               pause 16
+               pause 17
                put cast
-               pause
                pause 0.5
           }
 LIGHT_SOURCE_1:
@@ -5884,25 +5913,36 @@ LIGHT_SOURCE_3:
      if ("$guild" = "Paladin") then
           {
                send glyph light
-               pause 0.8
+               pause 0.7
                pause 0.2
           }
+LIGHT_SOURCE_4:
      gosub DARK_CHECK
      if (%darkroom = 0) then goto YES_DARKVISION
-     ### ADDITIONAL CHECKS HERE FOR GOGGLES / GAEZTHEN
-     goto GOGGLE_CHECK
-     return
-
-### WE REACH THIS SUB IF WE HAVE NO GUILD SKILL FOR DARK VISION
-### NOW WE CHECK FOR ITEMS THAT GIVE DARK VISION
-### CHECK FOR NIGHTVISION GOGGLES
+#############################################################
+# WE REACH HERE IF WE HAVE ~NO GUILD SKILLS FOR DARK VISION~
+# NOW CHECK DARK VISION ITEMS
+#############################################################
+### NIGHTVISION GOGGLES
 GOGGLE_CHECK:
 GOGGLE_YES:
+     gosub STOWING
+     echo
+     echo ~~~~~~~~~~~~~~~~~~~~~~~
+     echo * NO GUILD DARK VISION!
+     echo * CHECKING FOR GAETHZEN/STARGLASS/LANTERNS
+     echo ~~~~~~~~~~~~~~~~~~~~~~~~
+     echo
      delay 0.0001
      gosub PUT GET my goggle
-     pause 0.8
-     pause 0.3
-     if !matchre("$righthand $lefthand", "goggle") then goto STARGLASS_CHECK
+     pause 0.5
+     pause 0.2
+     if !matchre("$righthand $lefthand", "(?i)goggle") then
+          {
+               gosub PUT remove my goggle
+               pause 0.2
+          }
+     if !matchre("$righthand $lefthand", "(?i)goggle") then goto STARGLASS_CHECK
      matchre GOGGLE_YES \s*\.\.\.wait|^Sorry,|^Please wait\.|^You are still stunned
      matchre GOGGLE_STOW remains inert|^You rub|^What
      matchre GOGGLE_STOW ^Your tactile sense
@@ -5910,18 +5950,23 @@ GOGGLE_YES:
      matchwait 5
 GOGGLE_STOW:
      pause 0.0001
-     gosub stowing
+     gosub PUT WEAR my goggle
      pause 0.0001
-     if matchre("$righthand $lefthand", "goggle") then gosub stowing
+     gosub PUT rub my goggle
      gosub DARK_CHECK
      if (%darkroom = 0) then goto YES_DARKVISION
-### CHECK FOR A STARGLASS
+### STARGLASS ITEMS
 STARGLASS_CHECK:
-     gosub stowing
+     gosub STOWING
      pause 0.0001
      gosub PUT GET my starglass
      pause 0.5
-     pause 0.3
+     pause 0.2
+     if !matchre("$righthand $lefthand", "(?i)starglass") then
+          {
+               gosub PUT remove my starglass
+               pause 0.2
+          }
      if !matchre("$righthand $lefthand", "(?i)starglass") then goto GAETHZEN_CHECK
      gosub PUT CHARGE starglass 20
      pause 0.8
@@ -5934,56 +5979,95 @@ STARGLASS_CHECK:
      pause 0.0001
      gosub PUT WEAR my starglass
      pause 0.3
-     gosub stowing
+     # gosub stowing
      gosub DARK_CHECK
      if (%darkroom = 0) then goto YES_DARKVISION
-### CHECK FOR A GAETHZEN LANTERN
+### GAETHZEN LANTERNS
 GAETHZEN_CHECK:
-     var FullCharge 0
-     gosub stowing
-     gosub RETREAT
+     var Lantern.Types skull|salamander|sphere|wyvern|statuette|sunburst|star|lantern|firefly|rose|orchid|turnip
+     var Lantern.Check 0
+     var Lantern.Count 0
+     gosub STOWING
+     echo
+     echo * CHECKING FOR GATHZEN! *
+     echo * (Known types: %Lantern.Types)
+     echo
+     eval Lantern.Count count("%Lantern.Types", "|")
+     if (%Lantern.Check > %Lantern.Count) then goto LANTERN_CHECK
      pause 0.0001
-     gosub PUT GET gaethzen lantern
-     pause 0.7
-     pause 0.3
-     if !matchre("$righthand $lefthand", "(?i)lantern") then goto LANTERN_CHECK
+GAETHZEN_GET:
+     gosub PUT GET my gaethzen %Lantern.Types(%Lantern.Check)
+     pause 0.1
+     if !matchre("$righthand $lefthand", "(?i)%Lantern.Types(%Lantern.Check)") then
+          {
+               gosub PUT remove my %Lantern.Types(%Lantern.Check)
+               pause 0.4
+          }
+     if matchre("$righthand $lefthand", "(?i)%Lantern.Types(%Lantern.Check)") then goto GAETHZEN_SUCCESS
+GAETHZAN_FAIL:
+     math Lantern.Check add 1
+     if (%Lantern.Check > %Lantern.Count) then goto LANTERN_CHECK
+     goto GAETHZEN_GET
+
+GAETHZEN_SUCCESS:
+     var Gaethzen %Lantern.Types(%Lantern.Check)
+     var FullCharge 0
+     var Activated 0
+     echo
+     echo * FOUND A GAETHZEN! TYPE: %Gaethzen
+     echo
+     if ($monstercount > 1) then gosub RETREAT
+     pause 0.0001
+     pause 0.2
+     if !matchre("$righthand $lefthand", "(?i)%Gaethzen") then goto LANTERN_CHECK
      echo
      echo ~~~~~~~~~~~~~~
      echo * CHARGING GAETHZEN
      echo ~~~~~~~~~~~~~~
      echo
      action var FullCharge 1 when ^The .+ is already holding as much power as you could possibly charge it with\.
-     gosub PUT CHARGE lantern 25
+     action var Activated 1 when ^.* is currently activated\.
+     gosub PUT CHARGE %Gaethzen 15
      pause 2
      if (%FullCharge = 1) then goto GAETHZEN_2
-     gosub PUT CHARGE lantern 25
+     if (%Activated = 1) then goto GAETHZEN_3
+     gosub PUT CHARGE %Gaethzen 15
      pause 2
+     if (%Activated = 1) then goto GAETHZEN_3
      if (%FullCharge = 1) then goto GAETHZEN_2
-     gosub PUT CHARGE lantern 15
-     pause 2
-     if (%FullCharge = 1) then goto GAETHZEN_2
-     gosub PUT CHARGE lantern 10
+     gosub PUT CHARGE %Gaethzen 10
      pause 2
 GAETHZEN_2:
-     gosub PUT focus my lantern
-     pause 0.2
-     gosub PUT rub my lantern
+     gosub PUT focus my %Gaethzen
      pause 0.5
-     put wear my lantern
+     pause 0.3
+     gosub PUT rub my %Gaethzen
+     pause 0.5
+     pause 0.3
+GAETHZEN_3:
+     pause 0.0001
+     send wear my %Gaethzen
      pause 0.2
      pause 0.0001
+     if !matchre("$righthand", "Empty") then send wear my $righthandnoun
+     if !matchre("$lefthand", "Empty") then send wear my $lefthandnoun
      action remove ^The .+ is already holding as much power as you could possibly charge it with\.
-     gosub stowing
+     action remove ^.* is currently activated\.
      gosub DARK_CHECK
      if (%darkroom = 0) then goto YES_DARKVISION
-### CHECK HERE FOR A NORMAL OIL LANTERN
+### NORMAL OIL LANTERNS
 LANTERN_CHECK:
      var TriedOil 0
-     gosub stowing
+     gosub STOWING
      pause 0.0001
      gosub PUT GET my lantern
-     pause 0.7
-     pause 0.3
+     pause 0.5
+     pause 0.2
+     if !matchre("$righthand $lefthand", "(?i)lantern") then
+          {
+               gosub PUT remove my lantern
+               pause 0.2
+          }
      if !matchre("$righthand $lefthand", "(?i)lantern") then goto TORCH_CHECK
 LANTERN_DROP:
      gosub PUT drop my lantern
@@ -5995,8 +6079,8 @@ LANTERN_DROP:
           {
                echo * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
                put #echo >Log #FF3E00 * FLINT/WEAPON ERROR IN LIGHT SOURCE - Righthand: $righthand / Lefthand: $lefthand
-               gosub stowing
-               goto GAETHZEN_YES
+               gosub STOWING
+               goto TORCH_CHECK
           }
 LANTERN_LIGHT:
      pause 0.0001
@@ -6032,19 +6116,19 @@ LIT_LANTERN:
      put wear lantern
      pause 0.2
 LANTERN_DONE:
-     gosub stowing
      pause 0.0001
      gosub DARK_CHECK
      if (%darkroom = 0) then goto YES_DARKVISION
-### CHECK FOR A TORCH
+### FINAL CHECK FOR TORCH / FLINT
 TORCH_CHECK:
      gosub stowing
      echo
      echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     echo * ATTEMPTING LAST RESORT FOR LIGHT CHECK!
-     echo * FLINT / TORCH / KNIFE
+     echo * ATTEMPTING LAST RESORT LIGHT CHECK!
+     echo * TORCH - FLINT - KNIFE
      echo * CONSIDER ~NOT~ HUNTING IN A DARK AREA...
-     echo * THE FUCK FUCKERY OF ALL DR....
+     echo * THE FUCKERY OF ALL DR...
+     echo * OR PICK UP A STARGLASS/GAEZTHEN/LANTERN!!
      echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      echo
      pause 0.5
@@ -6127,7 +6211,8 @@ NO_DARKVISION:
      echo * NO DARK VISION SKILL FOUND!
      echo * AND MISSING FLINT/TORCH/LANTERN
      echo * STUCK IN THE DARK! HAHA..
-     echo * Get a torch/flint at least...
+     echo * Get a TORCH/FLINT at least...
+     echo * OR A STARGLASS/GAEZTHEN/LANTERN
      echo ~~~~~~~~~~~~~~~~~~~~~~~~~
      echo
      put #echo >Log Red ** NO DARKVISION/TORCH/LIGHTER FOUND!
@@ -6148,7 +6233,6 @@ DARK_CHECK_1:
 DARK_YES:
      var darkroom 1
      var darkTime $gametime
-     gosub LIGHT_SOURCE
      return
 LIGHT_YES:
      var darkroom 0
@@ -6556,6 +6640,7 @@ RANDOMMOVE_1:
      math moveloop add 1
      math randomloop add 1
      if (%randomloop = 1) then gosub DARK_CHECK_1
+     if (%darkroom = 1) then gosub LIGHT_SOURCE
      if !($standing) then gosub STAND
 ## IF WE'VE DONE 20/40 LOOPS, DO A QUICK LOOK AND MAKE SURE NOT ON A FERRY
      if matchre("%moveloop", "\b(40)\b") then
@@ -6566,7 +6651,7 @@ RANDOMMOVE_1:
                gosub FERRY_CHECK
           }
 ### TRY A LIGHT SOURCE IF ROOM IS PITCH BLACK AND THEN TRY TRUE RANDOM DIRECTIONS
-     if (%moveloop > 25) then
+     if (%moveloop > 20) then
           {
                if matchre("$roomobjs $roomdesc","pitch black") then gosub LIGHT_SOURCE
                var lastmoved null
@@ -7183,9 +7268,9 @@ NODESTINATION:
   Echo ## Either you did not enter a destination
   Echo ## Or your destination is not recognized.  Please try again!
   Echo ##
-  Echo ## SYNTAX IS: 
+  Echo ## SYNTAX IS:
   Echo ## .travel CITYNAME or .travel CITYNAME ROOMNUMBER/LABEL
-  Echo ## 
+  Echo ##
   Echo ## EXAMPLES:
   Echo ## .travel cross - Travel to Crossing
   Echo ## .travel cross 144 - Travel to crossing THEN move to room 144
@@ -7221,13 +7306,13 @@ NODESTINATION:
   Echo ## Raven's Point | Ain Ghazal| Outer Hib ##
   Echo ## Inner Hib | Hibarnhvidar |Boar Clan   ##
   Echo -------------------------------------------
-  Echo ## Qi:                                         
+  Echo ## Qi:
   Echo ## Aesry Surlaenis'a | Ratha | M'riss    ##
   Echo ## Mer'Kresh | Hara'jaal (TF ONLY)       ##
   Echo ## Taisgath                              ##
   Echo -------------------------------------------
   Echo -------------------------------------------
-  Echo ## SPECIAL:                                         
+  Echo ## SPECIAL:
   Echo ## YEET (TOP SECRET - DO NOT USE :P)     ##
   ECHO ## *UNLESS YOU LIKE SURPRISES ;)         ##
   Echo -------------------------------------------
